@@ -1,0 +1,129 @@
+@import "tailwindcss";
+
+/* Tailwind v4 dark mode configuration (same pattern as gemini-chat-app) */
+@variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #faf5ff;
+  --foreground: #3b0764;
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+}
+
+.dark {
+  --background: #0c0a14;
+  --foreground: #ede9fe;
+  --accent: #a855f7;
+  --accent-hover: #c084fc;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Markdown / report styles ------------------------------------------------ */
+.markdown-content {
+  line-height: 1.7;
+}
+.markdown-content h1 { font-size: 1.6rem; font-weight: 700; margin: 1.25rem 0 0.75rem; }
+.markdown-content h2 { font-size: 1.3rem; font-weight: 700; margin: 1.1rem 0 0.6rem; }
+.markdown-content h3 { font-size: 1.1rem; font-weight: 600; margin: 1rem 0 0.5rem; }
+.markdown-content p { margin-bottom: 0.85rem; }
+.markdown-content ul, .markdown-content ol { margin-left: 1.4rem; margin-bottom: 0.85rem; list-style: revert; }
+.markdown-content li { margin-bottom: 0.25rem; }
+.markdown-content a { color: #a855f7; text-decoration: underline; }
+.markdown-content a:hover { color: #c084fc; }
+.markdown-content code {
+  background-color: rgba(168, 85, 247, 0.12);
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.25rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875em;
+}
+.markdown-content blockquote {
+  border-left: 3px solid #a855f7;
+  padding-left: 0.9rem;
+  margin: 0.85rem 0;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Inline citation chips [n] in the report */
+.citation-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.15rem;
+  padding: 0 0.25rem;
+  margin: 0 0.1rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.15rem;
+  border-radius: 0.3rem;
+  color: #fff;
+  background: linear-gradient(to right, #7c3aed, #c026d3);
+  text-decoration: none;
+  vertical-align: super;
+  cursor: pointer;
+}
+.citation-link:hover { filter: brightness(1.1); }
+
+/* Violet ambient glow (dark-first, low opacity) --------------------------- */
+.scout-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(100px);
+  opacity: 0.18;
+  pointer-events: none;
+  will-change: transform;
+}
+.dark .scout-orb { opacity: 0.22; }
+.scout-orb-1 {
+  width: 32rem; height: 32rem; top: -10rem; left: -6rem;
+  background: radial-gradient(circle, #a855f7 0%, transparent 70%);
+  animation: scout-drift-1 70s ease-in-out infinite alternate;
+}
+.scout-orb-2 {
+  width: 26rem; height: 26rem; bottom: -8rem; right: -6rem;
+  background: radial-gradient(circle, #d946ef 0%, transparent 70%);
+  animation: scout-drift-2 86s ease-in-out infinite alternate;
+}
+@keyframes scout-drift-1 {
+  0% { transform: translate(0,0) scale(1); }
+  100% { transform: translate(5rem, 8rem) scale(1.1); }
+}
+@keyframes scout-drift-2 {
+  0% { transform: translate(0,0) scale(1); }
+  100% { transform: translate(-5rem, -6rem) scale(0.92); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scout-orb { animation: none !important; }
+}
+
+/* Step card entrance animation */
+@keyframes step-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.step-in { animation: step-in 0.28s ease-out both; }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.pulse-dot { animation: pulse-dot 1.2s ease-in-out infinite; }
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #6b21a8; border-radius: 4px; opacity: 0.4; }
+::-webkit-scrollbar-thumb:hover { background: #7c3aed; }
