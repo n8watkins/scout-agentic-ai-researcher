@@ -5,8 +5,8 @@ import { logger } from '@/lib/logger';
 
 /**
  * Shared demo-pool usage snapshot. GET /api/usage returns
- * { pool: { used, budget, resetAt, available } }. A research run is the unit,
- * not tokens, because one run is many model calls.
+ * { pool: { used, budget, resetAt, available } }. The unit is actual model
+ * calls (one research run ≈ 15 calls), capped per rolling 24h window.
  */
 export interface UsageInfo {
   pool: {

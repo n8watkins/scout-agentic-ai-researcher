@@ -114,7 +114,11 @@ There's a quieter safety detail too: `fetch_url` is an SSRF liability if you let
 it. Sanitizing the page content isn't enough — the *request itself* is the risk.
 So before fetching, Scout resolves the hostname and blocks private, loopback,
 and link-local addresses (no `http://169.254.169.254/` cloud-metadata reads),
-enforces http/https only, an 8-second timeout, and a 2MB cap.
+enforces http/https only, an 8-second timeout, and a 2MB cap. Crucially, a
+one-time check isn't enough: a 302 redirect or a DNS rebind can point a
+vetted-looking URL at an internal address on the *next* hop. So Scout follows
+redirects manually (`redirect: 'manual'`) and re-validates the host on every
+hop rather than trusting `fetch`'s automatic following.
 
 ## Why SSE, not WebSockets
 

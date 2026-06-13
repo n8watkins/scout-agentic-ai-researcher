@@ -9,7 +9,7 @@ It's a portfolio piece with one thesis: **an agent is just a while-loop, and
 make that legible — the plan, each `think → search → read` step, and the
 source-grounded synthesis all stream in as they happen.
 
-**Live demo:** _(Render free tier)_
+**Live demo:** _TODO — set to the Render URL once deployed (Render free tier)._
 
 Heads up before you click: it's on Render's free tier, so if nobody has visited
 in 15 minutes the server spins down and the first load takes 30 to 60 seconds
@@ -32,7 +32,11 @@ reload, not a redeploy.
   budget is hit first, the report is labelled "stopped early."
 - **Free to try, BYOK optional.** Runs go on a shared demo key while it has
   capacity; bring your own free Gemini key (stored only in your browser) for
-  unlimited runs.
+  unlimited runs. The demo key is budgeted by **actual model calls** (one run ≈
+  15 calls), hard-capped at 250 calls per rolling 24h — the shared key is split
+  with the voice-agent demo. That counter is in-memory/per-process (it resets on
+  a cold start and isn't shared across instances); a durable cross-instance cap
+  would live in an external KV like Upstash, intentionally not added here.
 
 ## How it works
 
@@ -50,8 +54,10 @@ question
   `fetch_url`, `finish`. Deliberately tiny; the point is the loop, not a kitchen
   sink.
 - **`src/lib/agent/fetchUrl.ts`** — SSRF-hardened fetcher: http/https only,
-  resolves the host and blocks private/loopback/link-local IPs, 8s timeout, 2MB
-  cap, DOMPurify on the content.
+  resolves the host and blocks private/loopback/link-local IPs, **follows
+  redirects manually and re-validates the host on every hop** (so a 302 or a
+  DNS rebind can't slip past the one-time check), 8s timeout, 2MB cap, DOMPurify
+  on the content.
 - **`src/lib/search.ts`** — Tavily (primary) → Google CSE (fallback) →
   Wikipedia/DuckDuckGo (keyless best-effort, so the demo works with no search
   key configured).
@@ -107,7 +113,16 @@ npm run dev          # next dev -p 3100
 npm run build        # production build
 npm run start        # next start -p 3100
 npm run type-check   # tsc --noEmit
+npm test             # vitest run (unit tests)
 ```
+
+## Deploying to Render
+
+A [`render.yaml`](render.yaml) blueprint is included: a free Node web service
+that runs `npm ci && npm run build` (which compiles better-sqlite3's native
+addon) and starts Next on Render's injected `$PORT`. Set `GEMINI_API_KEY` and
+the optional search keys as dashboard secrets (`sync: false`). The free tier's
+disk is ephemeral, so saved runs reset on redeploy — see the note up top.
 
 ## The build log
 

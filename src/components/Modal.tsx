@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import { useDialogA11y } from '@/hooks/useDialogA11y';
 
 interface ModalProps {
   isOpen: boolean;
@@ -14,6 +15,8 @@ interface ModalProps {
 
 /** Base modal shell — violet-reskinned, blurred backdrop, scroll lock. */
 export default function Modal({ isOpen, onClose, children, title, maxWidth = 'max-w-3xl' }: ModalProps) {
+  const dialogRef = useDialogA11y(isOpen, onClose);
+
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : 'unset';
     return () => {
@@ -29,7 +32,12 @@ export default function Modal({ isOpen, onClose, children, title, maxWidth = 'ma
       onClick={onClose}
     >
       <div
-        className={`bg-white dark:bg-gray-900 rounded-2xl ${maxWidth} w-full border border-violet-200 dark:border-violet-900/60 shadow-2xl shadow-violet-500/20 dark:shadow-violet-500/30 relative max-h-[90vh] flex flex-col`}
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        tabIndex={-1}
+        className={`bg-white dark:bg-gray-900 rounded-2xl ${maxWidth} w-full border border-violet-200 dark:border-violet-900/60 shadow-2xl shadow-violet-500/20 dark:shadow-violet-500/30 relative max-h-[90vh] flex flex-col outline-none`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-gray-100 dark:border-gray-800">

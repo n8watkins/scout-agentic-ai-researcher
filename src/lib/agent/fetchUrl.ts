@@ -8,12 +8,16 @@ import { htmlToReadableText } from '../sanitize';
  * The *request itself* is the risk, not just the content. So before fetching:
  *  - allow only http/https
  *  - resolve the hostname and block private, loopback, and link-local IPs
+ *  - follow redirects MANUALLY, re-validating the host on every hop (otherwise
+ *    a 302 to http://169.254.169.254/ or a DNS-rebind would slip past a
+ *    one-time check, since fetch re-resolves on each hop)
  *  - enforce a request timeout (~8s) and a response-size cap (~2MB)
  */
 
 const TIMEOUT_MS = 8000;
 const MAX_BYTES = 2 * 1024 * 1024; // 2MB
 const MAX_TEXT_CHARS = 24_000; // ~6k tokens
+const MAX_REDIRECTS = 5;
 
 export interface FetchUrlResult {
   ok: boolean;
@@ -78,12 +82,6 @@ export async function fetchUrl(rawUrl: string, signal?: AbortSignal): Promise<Fe
     return { ok: false, url: rawUrl, text: '', title: '', error: 'Only http/https URLs are allowed' };
   }
 
-  try {
-    await assertSafeHost(url.hostname);
-  } catch (err) {
-    return { ok: false, url: rawUrl, text: '', title: '', error: (err as Error).message };
-  }
-
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   if (signal) {
@@ -92,14 +90,48 @@ export async function fetchUrl(rawUrl: string, signal?: AbortSignal): Promise<Fe
   }
 
   try {
-    const res = await fetch(url, {
-      signal: controller.signal,
-      redirect: 'follow',
-      headers: {
-        'User-Agent': 'ScoutResearchBot/1.0 (+https://github.com/n8watkins)',
-        Accept: 'text/html,application/xhtml+xml,text/plain;q=0.9,*/*;q=0.5',
-      },
-    });
+    // Follow redirects MANUALLY so we re-validate the host on every hop. A
+    // one-time pre-fetch check is bypassable: fetch re-resolves DNS on each
+    // hop (rebinding) and a 3xx can point at a blocked address.
+    let res: Response;
+    let redirects = 0;
+    while (true) {
+      if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+        return { ok: false, url: url.toString(), text: '', title: '', error: 'Only http/https URLs are allowed' };
+      }
+      try {
+        await assertSafeHost(url.hostname);
+      } catch (err) {
+        return { ok: false, url: url.toString(), text: '', title: '', error: (err as Error).message };
+      }
+
+      res = await fetch(url, {
+        signal: controller.signal,
+        redirect: 'manual',
+        headers: {
+          'User-Agent': 'ScoutResearchBot/1.0 (+https://github.com/n8watkins)',
+          Accept: 'text/html,application/xhtml+xml,text/plain;q=0.9,*/*;q=0.5',
+        },
+      });
+
+      // 3xx with a Location → validate the next hop before following it.
+      if (res.status >= 300 && res.status < 400 && res.headers.has('location')) {
+        if (++redirects > MAX_REDIRECTS) {
+          return { ok: false, url: url.toString(), text: '', title: '', error: 'Too many redirects' };
+        }
+        let next: URL;
+        try {
+          next = new URL(res.headers.get('location')!, url);
+        } catch {
+          return { ok: false, url: url.toString(), text: '', title: '', error: 'Invalid redirect target' };
+        }
+        // Drain the redirect body before reusing the connection.
+        await res.body?.cancel().catch(() => {});
+        url = next;
+        continue;
+      }
+      break;
+    }
 
     if (!res.ok) {
       return { ok: false, url: url.toString(), text: '', title: '', error: `HTTP ${res.status}` };

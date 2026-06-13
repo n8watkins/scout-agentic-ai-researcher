@@ -11,6 +11,7 @@ import {
 } from './prompts';
 import type { AgentStep, Citation, RunOptions, StepType, ToolCall } from './types';
 import { logger } from '../logger';
+import { recordDemoModelCall } from '../usage';
 
 let stepSeq = 0;
 function makeStep(type: StepType, partial: Partial<AgentStep> = {}): AgentStep {
@@ -34,8 +35,16 @@ export async function* runAgent(
   question: string,
   opts: RunOptions
 ): AsyncGenerator<AgentStep> {
-  const { apiKey, model, maxSteps = 8, signal } = opts;
+  const { apiKey, model, maxSteps = 8, signal, byok } = opts;
   const ai = makeClient(apiKey);
+
+  // Every Gemini call goes through here so demo-key calls are metered against
+  // the shared daily cap. BYOK calls bypass the counter entirely.
+  type GenParams = Parameters<typeof ai.models.generateContent>[0];
+  const generate = (params: GenParams): Promise<GenerateContentResponse> => {
+    if (!byok) recordDemoModelCall();
+    return ai.models.generateContent(params);
+  };
 
   const citations: Citation[] = [];
   // Working memory: compact transcript of what the agent has done/learned.
@@ -53,7 +62,7 @@ export async function* runAgent(
   // --- Optional up-front plan -------------------------------------------
   yield makeStep('status', { label: 'Planning' });
   try {
-    const planRes = await ai.models.generateContent({
+    const planRes = await generate({
       model,
       contents: planPrompt(question),
       config: { abortSignal: signal },
@@ -76,7 +85,7 @@ export async function* runAgent(
     let res: GenerateContentResponse;
     try {
       yield makeStep('status', { label: 'Thinking' });
-      res = await ai.models.generateContent({
+      res = await generate({
         model,
         contents: buildContents(question, transcript),
         config: {
@@ -157,7 +166,7 @@ export async function* runAgent(
         } else {
           // Summarize to control the context budget — full text stays in the
           // citation record (SourcesPanel), not the transcript.
-          const summary = await summarize(ai, model, question, result.text, signal);
+          const summary = await summarize(generate, model, question, result.text, signal);
           const idx = registerSource(result.title, result.url, summary, result.text);
           observation = `Read [${idx}] ${result.title} (${result.url}):\n${summary}`;
         }
@@ -184,7 +193,7 @@ export async function* runAgent(
   yield makeStep('status', { label: 'Writing' });
   let report: string;
   try {
-    report = await synthesize(ai, model, question, citations, stoppedEarly, signal);
+    report = await synthesize(generate, model, question, citations, stoppedEarly, signal);
   } catch (err) {
     if (isAbort(err)) return;
     report = `I ran into an error writing the report: ${(err as Error).message}`;
@@ -228,8 +237,12 @@ function firstToolCall(res: GenerateContentResponse): ToolCall | null {
   return null;
 }
 
+type MeteredGenerate = (
+  params: Parameters<ReturnType<typeof makeClient>['models']['generateContent']>[0]
+) => Promise<GenerateContentResponse>;
+
 async function summarize(
-  ai: ReturnType<typeof makeClient>,
+  generate: MeteredGenerate,
   model: string,
   question: string,
   rawText: string,
@@ -237,7 +250,7 @@ async function summarize(
 ): Promise<string> {
   if (!rawText.trim()) return 'Not relevant.';
   try {
-    const res = await ai.models.generateContent({
+    const res = await generate({
       model,
       contents: summarizeObservationPrompt(question, rawText.slice(0, 12_000)),
       config: { abortSignal: signal },
@@ -252,7 +265,7 @@ async function summarize(
 }
 
 async function synthesize(
-  ai: ReturnType<typeof makeClient>,
+  generate: MeteredGenerate,
   model: string,
   question: string,
   citations: Citation[],
@@ -265,7 +278,7 @@ async function synthesize(
   const sourcesBlock = citations
     .map((c) => `[${c.index}] ${c.title} (${c.url})\n${c.snippet}`)
     .join('\n\n');
-  const res = await ai.models.generateContent({
+  const res = await generate({
     model,
     contents: synthesisPrompt(question, sourcesBlock, stoppedEarly),
     config: { abortSignal: signal },

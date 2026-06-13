@@ -14,8 +14,8 @@ interface PoolMeterBarProps {
 }
 
 /**
- * Shared demo-pool capacity meter, fed by GET /api/usage. A run is the unit
- * (one run = many model calls), so the budget is in runs, not tokens.
+ * Shared demo-pool capacity meter, fed by GET /api/usage. The budget unit is
+ * actual model calls (one research run ≈ 15 calls), capped per rolling 24h.
  */
 export function PoolMeterBar({ usage, variant = 'light' }: PoolMeterBarProps) {
   const light = variant === 'light';
@@ -63,7 +63,7 @@ export function PoolMeterBar({ usage, variant = 'light' }: PoolMeterBarProps) {
         {exhausted
           ? `Demo capacity used up${reset ? ` — resets ${reset}` : ''}. Add your own free key to keep researching.`
           : reset
-            ? `${usage.pool.available} runs left · resets ${reset}`
+            ? `${usage.pool.available} model calls left · resets ${reset}`
             : 'Everyone shares this free demo budget'}
       </p>
     </div>

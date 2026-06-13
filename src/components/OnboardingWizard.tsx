@@ -7,6 +7,7 @@ import InlineKeyEntry from './InlineKeyEntry';
 import { PoolMeterBar } from './UsageMeter';
 import { useUsageInfo } from '@/hooks/useUsageInfo';
 import { useApiKey } from '@/hooks/useApiKey';
+import { useDialogA11y } from '@/hooks/useDialogA11y';
 import { randomSampleQuestion } from '@/lib/sampleQuestions';
 
 interface OnboardingWizardProps {
@@ -25,6 +26,7 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
   const [showKeyEntry, setShowKeyEntry] = useState(false);
   const usage = useUsageInfo();
   const { hasApiKey } = useApiKey();
+  const dialogRef = useDialogA11y(isOpen, onComplete);
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : 'unset';
@@ -46,7 +48,12 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
       data-testid="onboarding-wizard"
     >
       <div
-        className="bg-white dark:bg-gray-900 rounded-2xl max-w-5xl w-full border border-violet-200 dark:border-violet-900/60 shadow-2xl shadow-violet-500/20 dark:shadow-violet-500/40 relative max-h-[90vh] flex flex-col"
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Welcome to Scout"
+        tabIndex={-1}
+        className="bg-white dark:bg-gray-900 rounded-2xl max-w-5xl w-full border border-violet-200 dark:border-violet-900/60 shadow-2xl shadow-violet-500/20 dark:shadow-violet-500/40 relative max-h-[90vh] flex flex-col outline-none"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header: step pills + skip */}

@@ -18,14 +18,15 @@ export function htmlToReadableText(html: string): string {
     KEEP_CONTENT: true,
   });
 
-  // Second pass: extract text. isomorphic-dompurify gives us a DOM in both envs.
+  // Second pass: extract text. In the browser a `DOMParser` is available and
+  // gives accurate text extraction. On the server (where fetched pages are
+  // actually processed) there is no global `DOMParser`, so this always falls
+  // through to the regex tag-strip below — that path is the real workhorse here.
   let text: string;
-  try {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(clean, 'text/html');
-    text = doc.body?.textContent ?? clean;
-  } catch {
-    // No DOMParser (pure node) — fall back to a tag strip.
+  if (typeof DOMParser !== 'undefined') {
+    const doc = new DOMParser().parseFromString(clean, 'text/html');
+    text = doc.body?.textContent ?? clean.replace(/<[^>]+>/g, ' ');
+  } else {
     text = clean.replace(/<[^>]+>/g, ' ');
   }
 

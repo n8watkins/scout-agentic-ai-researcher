@@ -25,6 +25,7 @@ export default function ResearchInput({
   const [touched, setTouched] = useState(false);
 
   const submit = () => {
+    if (disabled) return;
     const q = value.trim();
     if (!q) {
       setTouched(true);

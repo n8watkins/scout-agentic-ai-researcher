@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from 'react';
 import type { AgentStep, Citation } from '@/lib/agent/types';
 import { refreshUsage } from './useUsageInfo';
+import { sessionHeader } from '@/lib/session';
 
 export type RunStatus = 'idle' | 'running' | 'done' | 'error' | 'aborted';
 
@@ -145,7 +146,7 @@ export function useResearchStream() {
       if (report) {
         void fetch('/api/runs', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...sessionHeader() },
           body: JSON.stringify({
             id: runId,
             question,

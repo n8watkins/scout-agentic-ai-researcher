@@ -1,0 +1,38 @@
+# Render deploy config for Scout (agentic researcher).
+# A Node web service: `npm ci` compiles better-sqlite3's native addon against
+# the Render Node runtime, then `next build` produces the production server.
+# Saved-run SQLite lives on the instance's ephemeral disk (see README) — fine
+# for a demo. Secrets (sync: false) must be set in the Render dashboard.
+services:
+  - type: web
+    name: scout-agentic-researcher
+    runtime: node
+    plan: free
+    region: oregon
+    branch: master
+    buildCommand: npm ci && npm run build
+    # Bind to Render's injected $PORT rather than the local dev port 3100.
+    startCommand: npx next start -p $PORT
+    healthCheckPath: /api/healthz
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Shared demo Gemini key (optional; BYOK preferred). Set in dashboard.
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SCOUT_MODEL
+        value: gemini-3.1-flash-lite
+      # Demo model-call cap per rolling 24h on the shared key (this app's half
+      # of a 500/day key shared with the voice agent).
+      - key: SCOUT_DEMO_CALL_BUDGET
+        value: "250"
+      # Web search keys (optional — falls back to keyless Wikipedia). Dashboard.
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: GOOGLE_SEARCH_API_KEY
+        sync: false
+      - key: GOOGLE_SEARCH_ENGINE_ID
+        sync: false
+      - key: NEXT_PUBLIC_APP_URL
+        sync: false

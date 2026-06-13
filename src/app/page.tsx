@@ -109,6 +109,7 @@ export default function Home() {
               onSubmit={handleSubmit}
               onStop={stop}
               isRunning={isRunning}
+              disabled={!question.trim()}
             />
 
             {state.error && (

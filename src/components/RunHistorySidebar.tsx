@@ -13,6 +13,7 @@ import type { SavedRun } from '@/lib/agent/types';
 import { useApiKey } from '@/hooks/useApiKey';
 import InlineKeyEntry from './InlineKeyEntry';
 import SidebarUsageMeter from './UsageMeter';
+import { sessionHeader } from '@/lib/session';
 
 interface RunHistorySidebarProps {
   activeRunId: string | null;
@@ -36,7 +37,7 @@ export default function RunHistorySidebar({
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch('/api/runs');
+      const res = await fetch('/api/runs', { headers: sessionHeader() });
       if (!res.ok) return;
       const data = (await res.json()) as { runs: RunSummary[] };
       setRuns(data.runs ?? []);
@@ -51,7 +52,7 @@ export default function RunHistorySidebar({
 
   const handleSelect = async (id: string) => {
     try {
-      const res = await fetch(`/api/runs/${id}`);
+      const res = await fetch(`/api/runs/${id}`, { headers: sessionHeader() });
       if (!res.ok) return;
       const data = (await res.json()) as { run: SavedRun };
       onSelectRun(data.run);
@@ -62,7 +63,7 @@ export default function RunHistorySidebar({
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    await fetch(`/api/runs/${id}`, { method: 'DELETE' });
+    await fetch(`/api/runs/${id}`, { method: 'DELETE', headers: sessionHeader() });
     void load();
   };
 

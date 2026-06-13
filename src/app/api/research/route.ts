@@ -4,17 +4,12 @@ import { resolveApiKey, DEFAULT_MODEL } from '@/lib/gemini';
 import { reserveDemoRun } from '@/lib/usage';
 import { encodeComment, encodeStep, SSE_HEADERS } from '@/lib/sse';
 import { logger } from '@/lib/logger';
+import { clientIp } from '@/lib/request';
 import type { AgentStep } from '@/lib/agent/types';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
-
-function clientIp(req: NextRequest): string {
-  const fwd = req.headers.get('x-forwarded-for');
-  if (fwd) return fwd.split(',')[0].trim();
-  return req.headers.get('x-real-ip') ?? 'unknown';
-}
 
 /**
  * POST /api/research — start a run, stream agent steps as Server-Sent Events.
