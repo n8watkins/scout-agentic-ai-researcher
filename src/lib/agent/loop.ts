@@ -13,6 +13,13 @@ import type { AgentStep, Citation, RunOptions, StepType, ToolCall } from './type
 import { logger } from '../logger';
 import { recordDemoModelCall } from '../usage';
 
+/**
+ * After this many consecutive ACT iterations that add no new source (including
+ * duplicate short-circuits), break early into synthesis rather than burning the
+ * rest of the step budget spinning on the same sources.
+ */
+const MAX_NO_PROGRESS = 2;
+
 let stepSeq = 0;
 function makeStep(type: StepType, partial: Partial<AgentStep> = {}): AgentStep {
   return {
@@ -50,6 +57,15 @@ export async function* runAgent(
   // Working memory: compact transcript of what the agent has done/learned.
   const transcript: string[] = [];
   let stoppedEarly = false;
+
+  // Action memory: dedupe wasted work. A repeated search query or a re-fetch
+  // of an already-read URL burns a step (and, for fetch, a model summarize
+  // call) for nothing. We short-circuit those before touching the network.
+  const issuedQueries = new Set<string>();
+  const fetchedUrls = new Set<string>();
+  // Consecutive ACT iterations that added no new source. A short-circuit
+  // counts as no-progress; a fetch yielding a new source resets it.
+  let noProgress = 0;
 
   const registerSource = (title: string, url: string, snippet: string, fullText?: string): number => {
     const existing = citations.find((c) => c.url === url);
@@ -116,71 +132,121 @@ export async function* runAgent(
     }
 
     // --- ACT ---
+    const citationsBefore = citations.length;
     if (call.name === 'web_search') {
       const query = String(call.args.query ?? '').trim();
+      const queryKey = normalizeQuery(query);
       yield makeStep('tool_call', {
         label: `Searching: ${query}`,
         toolCall: call,
         iteration,
       });
-      yield makeStep('status', { label: 'Searching' });
 
-      let observation: string;
-      try {
-        const results = await webSearch(query, signal);
-        if (results.length === 0) {
-          observation = `No results for "${query}".`;
-        } else {
-          const lines = results.map((r) => {
-            const idx = registerSource(r.title, r.url, r.snippet);
-            return `[${idx}] ${r.title} — ${r.url}\n    ${r.snippet}`;
-          });
-          observation = `Search results for "${query}":\n${lines.join('\n')}`;
+      // Duplicate-action short-circuit: don't re-run a query we've issued.
+      // Nudge the model instead of spending a step on the same search.
+      if (issuedQueries.has(queryKey)) {
+        const observation = `You already searched "${query}". Choose a different source or call finish.`;
+        transcript.push(`Action: web_search("${query}")\nObservation: ${observation}`);
+        yield makeStep('observation', {
+          label: `Already searched "${query}"`,
+          content: observation,
+          citations: snapshot(citations),
+          iteration,
+        });
+      } else {
+        issuedQueries.add(queryKey);
+        yield makeStep('status', { label: 'Searching' });
+
+        let observation: string;
+        try {
+          const results = await webSearch(query, signal);
+          if (results.length === 0) {
+            observation = `No results for "${query}".`;
+          } else {
+            const lines = results.map((r) => {
+              const idx = registerSource(r.title, r.url, r.snippet);
+              return `[${idx}] ${r.title} — ${r.url}\n    ${r.snippet}`;
+            });
+            observation = `Search results for "${query}":\n${lines.join('\n')}`;
+          }
+        } catch (err) {
+          if (isAbort(err)) return;
+          observation = `Search failed: ${(err as Error).message}`;
         }
-      } catch (err) {
-        if (isAbort(err)) return;
-        observation = `Search failed: ${(err as Error).message}`;
+        transcript.push(`Action: web_search("${query}")\nObservation: ${observation}`);
+        yield makeStep('observation', {
+          label: `Results for "${query}"`,
+          content: observation,
+          citations: snapshot(citations),
+          iteration,
+        });
       }
-      transcript.push(`Action: web_search("${query}")\nObservation: ${observation}`);
-      yield makeStep('observation', {
-        label: `Results for "${query}"`,
-        content: observation,
-        citations: snapshot(citations),
-        iteration,
-      });
     } else if (call.name === 'fetch_url') {
       const url = String(call.args.url ?? '').trim();
+      const urlKey = normalizeUrl(url);
       const host = safeHost(url);
       yield makeStep('tool_call', {
         label: `Reading: ${host}`,
         toolCall: call,
         iteration,
       });
-      yield makeStep('status', { label: 'Reading' });
 
-      let observation: string;
-      try {
-        const result = await fetchUrl(url, signal);
-        if (!result.ok) {
-          observation = `Could not read ${url}: ${result.error}`;
-        } else {
-          // Summarize to control the context budget — full text stays in the
-          // citation record (SourcesPanel), not the transcript.
-          const summary = await summarize(generate, model, question, result.text, signal);
-          const idx = registerSource(result.title, result.url, summary, result.text);
-          observation = `Read [${idx}] ${result.title} (${result.url}):\n${summary}`;
+      // Duplicate-action short-circuit: don't re-read a URL we've fetched.
+      // This also saves the extra model "summarize" call a fetch would cost.
+      if (fetchedUrls.has(urlKey)) {
+        const existing = citations.find((c) => normalizeUrl(c.url) === urlKey);
+        const ref = existing ? ` ([${existing.index}])` : '';
+        const observation = `You already read ${url}${ref}. Choose a different source or call finish.`;
+        transcript.push(`Action: fetch_url("${url}")\nObservation: ${observation}`);
+        yield makeStep('observation', {
+          label: `Already read ${host}`,
+          content: observation,
+          citations: snapshot(citations),
+          iteration,
+        });
+      } else {
+        fetchedUrls.add(urlKey);
+        yield makeStep('status', { label: 'Reading' });
+
+        let observation: string;
+        try {
+          const result = await fetchUrl(url, signal);
+          if (!result.ok) {
+            observation = `Could not read ${url}: ${result.error}`;
+          } else {
+            // Summarize to control the context budget — full text stays in the
+            // citation record (SourcesPanel), not the transcript.
+            const summary = await summarize(generate, model, question, result.text, signal);
+            const idx = registerSource(result.title, result.url, summary, result.text);
+            observation = `Read [${idx}] ${result.title} (${result.url}):\n${summary}`;
+          }
+        } catch (err) {
+          if (isAbort(err)) return;
+          observation = `Could not read ${url}: ${(err as Error).message}`;
         }
-      } catch (err) {
-        if (isAbort(err)) return;
-        observation = `Could not read ${url}: ${(err as Error).message}`;
+        transcript.push(`Action: fetch_url("${url}")\nObservation: ${observation}`);
+        yield makeStep('observation', {
+          label: `Read ${host}`,
+          content: observation,
+          citations: snapshot(citations),
+          iteration,
+        });
       }
-      transcript.push(`Action: fetch_url("${url}")\nObservation: ${observation}`);
-      yield makeStep('observation', {
-        label: `Read ${host}`,
-        content: observation,
-        citations: snapshot(citations),
-        iteration,
-      });
+    }
+
+    // No-progress detection: an ACT iteration that added no new source (a
+    // failed/empty search, or a duplicate short-circuit) counts against the
+    // budget; a fetch that yields a new source resets the counter.
+    if (citations.length > citationsBefore) {
+      noProgress = 0;
+    } else {
+      noProgress++;
+    }
+
+    // Spinning on the same sources — bail into synthesis rather than burn budget.
+    if (noProgress >= MAX_NO_PROGRESS) {
+      stoppedEarly = true;
+      break;
     }
 
     // Did we just consume the last allowed step without finishing?
@@ -290,6 +356,28 @@ function snapshot(citations: Citation[]): Citation[] {
   // Strip fullText from streamed copies to keep SSE frames small; the
   // SourcesPanel hydrates fullText from the final saved run if needed.
   return citations.map(({ index, title, url, snippet }) => ({ index, title, url, snippet }));
+}
+
+/** Normalize a search query for dedupe: trim + lowercase + collapse whitespace. */
+function normalizeQuery(query: string): string {
+  return query.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+/**
+ * Normalize a URL for dedupe: lowercased host, trailing slash and fragment
+ * stripped. Falls back to a trimmed/lowercased string if it can't be parsed.
+ */
+function normalizeUrl(url: string): string {
+  try {
+    const u = new URL(url.trim());
+    u.hash = '';
+    u.hostname = u.hostname.toLowerCase();
+    let out = u.toString();
+    if (out.endsWith('/')) out = out.slice(0, -1);
+    return out;
+  } catch {
+    return url.trim().toLowerCase().replace(/\/+$/, '');
+  }
 }
 
 function safeHost(url: string): string {
