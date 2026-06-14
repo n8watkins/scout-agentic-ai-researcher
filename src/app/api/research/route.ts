@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { runAgent } from '@/lib/agent/loop';
-import { resolveApiKey, DEFAULT_MODEL } from '@/lib/gemini';
+import { resolveApiKey, pickModel } from '@/lib/gemini';
 import { reserveDemoRun } from '@/lib/usage';
 import { encodeComment, encodeStep, SSE_HEADERS } from '@/lib/sse';
 import { logger } from '@/lib/logger';
@@ -17,7 +17,7 @@ export const maxDuration = 120;
  * choice here rather than a WebSocket.
  */
 export async function POST(req: NextRequest) {
-  let body: { question?: string };
+  let body: { question?: string; model?: string };
   try {
     body = await req.json();
   } catch {
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
         for await (const step of runAgent(question, {
           apiKey: resolved.apiKey,
           byok: resolved.byok,
-          model: DEFAULT_MODEL,
+          model: pickModel(body.model, resolved.byok),
           maxSteps: 8,
           signal: ac.signal,
         })) {

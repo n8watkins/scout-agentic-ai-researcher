@@ -12,6 +12,7 @@ import type { RunSummary } from '@/lib/db';
 import type { SavedRun } from '@/lib/agent/types';
 import { useApiKey } from '@/hooks/useApiKey';
 import InlineKeyEntry from './InlineKeyEntry';
+import ModelPicker from './ModelPicker';
 import SidebarUsageMeter from './UsageMeter';
 import ThemeToggle from './ThemeToggle';
 import { sessionHeader } from '@/lib/session';
@@ -127,6 +128,8 @@ export default function RunHistorySidebar({
       {/* Footer: usage + BYOK + about */}
       <div className="p-3 space-y-2 border-t border-violet-200 dark:border-violet-900/40">
         <SidebarUsageMeter hasOwnKey={hasApiKey} />
+
+        <ModelPicker />
 
         <div className="rounded-lg border border-violet-200 dark:border-violet-800/50">
           <button

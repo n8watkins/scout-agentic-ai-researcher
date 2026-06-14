@@ -49,7 +49,7 @@ export function useResearchStream() {
     setState(INITIAL);
   }, []);
 
-  const run = useCallback(async (question: string, apiKey: string | null) => {
+  const run = useCallback(async (question: string, apiKey: string | null, model?: string) => {
     abortRef.current?.abort();
     const ac = new AbortController();
     abortRef.current = ac;
@@ -69,7 +69,7 @@ export function useResearchStream() {
           'Content-Type': 'application/json',
           ...(apiKey ? { 'x-gemini-key': apiKey } : {}),
         },
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ question, ...(model ? { model } : {}) }),
         signal: ac.signal,
       });
 

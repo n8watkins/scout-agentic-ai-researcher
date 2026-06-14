@@ -12,12 +12,14 @@ import ReportView from '@/components/ReportView';
 import SourcesPanel from '@/components/SourcesPanel';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useApiKey } from '@/hooks/useApiKey';
+import { useModel } from '@/hooks/useModel';
 import { useResearchStream } from '@/hooks/useResearchStream';
 import type { SavedRun } from '@/lib/agent/types';
 
 export default function Home() {
   const { showWizard, completeOnboarding, reopen } = useOnboarding();
   const { apiKey } = useApiKey();
+  const { model } = useModel();
   const { state, run, stop, reset, loadSaved } = useResearchStream();
 
   const [question, setQuestion] = useState('');
@@ -28,7 +30,7 @@ export default function Home() {
   const isRunning = state.status === 'running';
 
   const handleSubmit = async (q: string) => {
-    await run(q, apiKey);
+    await run(q, apiKey, model);
     setRefreshKey((k) => k + 1);
   };
 
