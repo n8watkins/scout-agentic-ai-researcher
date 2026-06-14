@@ -153,7 +153,7 @@ npm run dev                  # http://localhost:3100
 ```
 
 Port **3100** is chosen so this runs alongside the other portfolio apps
-(net-trailers:3000, gemini-chat-app:5000, voice-agent:3200).
+(net-trailers:3000, gemini-chat-app:5000, echo:3200).
 
 ### Environment
 
@@ -189,7 +189,7 @@ Scout runs on a **shared server demo key** while it has capacity, so you can try
 it with zero setup. To keep that key from getting drained (or abused), it's
 budgeted by **actual model calls** — one run is roughly 15 calls (plan, several
 think/search/read turns, per-page summaries, and synthesis), and the pool is
-hard-capped at **250 calls per rolling 24h**, shared with the voice-agent demo.
+hard-capped at **250 calls per rolling 24h**, shared with the Echo demo.
 
 That counter is **in-memory / per-process** — it resets on a Render cold start
 and isn't shared across instances. A durable, cross-instance cap would live in an
