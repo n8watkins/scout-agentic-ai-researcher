@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, BeakerIcon } from '@heroicons/react/24/outline';
 import OnboardingWizard from '@/components/OnboardingWizard';
 import AboutModal from '@/components/AboutModal';
 import RunHistorySidebar from '@/components/RunHistorySidebar';
@@ -10,9 +10,11 @@ import ThemeToggle from '@/components/ThemeToggle';
 import AgentTrace from '@/components/AgentTrace';
 import ReportView from '@/components/ReportView';
 import SourcesPanel from '@/components/SourcesPanel';
+import DevPanel from '@/components/DevPanel';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useApiKey } from '@/hooks/useApiKey';
 import { useModel } from '@/hooks/useModel';
+import { useDevView } from '@/hooks/useDevView';
 import { useResearchStream } from '@/hooks/useResearchStream';
 import type { SavedRun } from '@/lib/agent/types';
 
@@ -20,6 +22,7 @@ export default function Home() {
   const { showWizard, completeOnboarding, reopen } = useOnboarding();
   const { apiKey } = useApiKey();
   const { model } = useModel();
+  const { devView, toggle: toggleDevView } = useDevView();
   const { state, run, stop, reset, loadSaved } = useResearchStream();
 
   const [question, setQuestion] = useState('');
@@ -75,6 +78,8 @@ export default function Home() {
           onSelectRun={handleSelectRun}
           onNewRun={handleNewRun}
           onOpenAbout={() => setAboutOpen(true)}
+          devView={devView}
+          onToggleDevView={toggleDevView}
         />
       </div>
       {sidebarOpen && (
@@ -89,7 +94,20 @@ export default function Home() {
             <Bars3Icon className="w-6 h-6" />
           </button>
           <span className="font-bold text-violet-900 dark:text-white">Scout</span>
-          <ThemeToggle className="ml-auto" />
+          <button
+            onClick={toggleDevView}
+            aria-pressed={devView}
+            aria-label="Toggle under-the-hood developer view"
+            title="Under the hood"
+            className={`ml-auto inline-flex items-center justify-center rounded-lg p-2 transition-colors ${
+              devView
+                ? 'bg-violet-600 text-white'
+                : 'text-violet-700 hover:bg-violet-100 dark:text-violet-200 dark:hover:bg-violet-800/40'
+            }`}
+          >
+            <BeakerIcon className="w-4 h-4" />
+          </button>
+          <ThemeToggle />
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 py-6 md:px-8 md:py-8">
@@ -123,6 +141,10 @@ export default function Home() {
             )}
 
             <AgentTrace steps={state.steps} status={state.status} statusLabel={state.statusLabel} />
+
+            {devView && (
+              <DevPanel events={state.telemetry} maxSteps={8} running={isRunning} />
+            )}
 
             {state.report && (
               <ReportView

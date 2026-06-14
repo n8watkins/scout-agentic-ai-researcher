@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import type { AgentStep, Citation } from '@/lib/agent/types';
+import type { TraceEvent } from '@/lib/devtrace';
 import { refreshUsage } from './useUsageInfo';
 import { sessionHeader } from '@/lib/session';
 
@@ -11,6 +12,8 @@ export interface ResearchState {
   status: RunStatus;
   question: string;
   steps: AgentStep[];
+  /** Developer-telemetry events for the "Under the hood" panel (additive). */
+  telemetry: TraceEvent[];
   report: string;
   citations: Citation[];
   stoppedEarly: boolean;
@@ -23,6 +26,7 @@ const INITIAL: ResearchState = {
   status: 'idle',
   question: '',
   steps: [],
+  telemetry: [],
   report: '',
   citations: [],
   stoppedEarly: false,
@@ -58,6 +62,7 @@ export function useResearchStream() {
     setState({ ...INITIAL, status: 'running', question, statusLabel: 'Planning', runId });
 
     const collected: AgentStep[] = [];
+    const telemetry: TraceEvent[] = [];
     let report = '';
     let citations: Citation[] = [];
     let stoppedEarly = false;
@@ -114,6 +119,14 @@ export function useResearchStream() {
       }
 
       function handleStep(step: AgentStep) {
+        if (step.type === 'telemetry') {
+          // Additive dev-panel telemetry — never touches the visible timeline.
+          if (step.trace) {
+            telemetry.push(step.trace);
+            setState((s) => ({ ...s, telemetry: [...telemetry] }));
+          }
+          return;
+        }
         if (step.type === 'status') {
           if (step.label) setState((s) => ({ ...s, statusLabel: step.label! }));
           return;
@@ -186,6 +199,8 @@ export function useResearchStream() {
         status: 'done',
         question: saved.question,
         steps: saved.steps,
+        // Telemetry is live-only (not persisted); a loaded run shows none.
+        telemetry: [],
         report: saved.report,
         citations: saved.citations,
         stoppedEarly: saved.stoppedEarly,

@@ -7,6 +7,7 @@ import {
   InformationCircleIcon,
   KeyIcon,
   PlusIcon,
+  BeakerIcon,
 } from '@heroicons/react/24/outline';
 import type { RunSummary } from '@/lib/db';
 import type { SavedRun } from '@/lib/agent/types';
@@ -24,6 +25,9 @@ interface RunHistorySidebarProps {
   onSelectRun: (run: SavedRun) => void;
   onNewRun: () => void;
   onOpenAbout: () => void;
+  /** "Under the hood" dev-view state + toggle (lives in page.tsx). */
+  devView: boolean;
+  onToggleDevView: () => void;
 }
 
 export default function RunHistorySidebar({
@@ -32,6 +36,8 @@ export default function RunHistorySidebar({
   onSelectRun,
   onNewRun,
   onOpenAbout,
+  devView,
+  onToggleDevView,
 }: RunHistorySidebarProps) {
   const [runs, setRuns] = useState<RunSummary[]>([]);
   const [showKey, setShowKey] = useState(false);
@@ -155,6 +161,34 @@ export default function RunHistorySidebar({
             </div>
           )}
         </div>
+
+        {/* "Under the hood" dev-view toggle — off by default, persisted. */}
+        <button
+          onClick={onToggleDevView}
+          aria-pressed={devView}
+          className={`w-full inline-flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+            devView
+              ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white'
+              : 'text-violet-700 hover:bg-violet-100 dark:text-violet-200 dark:hover:bg-violet-800/30 border border-violet-200 dark:border-violet-800/50'
+          }`}
+          title="Show the model calls, tokens, latency and cost underneath each run"
+        >
+          <span className="inline-flex items-center gap-1.5">
+            <BeakerIcon className="w-4 h-4" />
+            Under the hood
+          </span>
+          <span
+            className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${
+              devView ? 'bg-white/30' : 'bg-violet-300 dark:bg-violet-700/60'
+            }`}
+          >
+            <span
+              className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                devView ? 'translate-x-3.5' : 'translate-x-0.5'
+              }`}
+            />
+          </span>
+        </button>
 
         <div className="flex items-center gap-2">
           <button

@@ -2,6 +2,8 @@
  * Core agent types shared by the loop, the SSE route, and the client hook.
  */
 
+import type { TraceEvent } from '../devtrace';
+
 export type StepType =
   | 'plan'
   | 'thought'
@@ -10,7 +12,13 @@ export type StepType =
   | 'answer'
   | 'status'
   | 'error'
-  | 'done';
+  | 'done'
+  /**
+   * Developer-telemetry frame ("Under the hood"). Purely additive: the
+   * existing UI ignores it (AgentTrace filters to its known visible types),
+   * while the dev panel reads `step.trace`. See src/lib/devtrace.ts.
+   */
+  | 'telemetry';
 
 export type ToolName = 'web_search' | 'fetch_url' | 'finish';
 
@@ -46,6 +54,8 @@ export interface AgentStep {
   citations?: Citation[];
   /** True when the run hit the step budget before finishing. */
   stoppedEarly?: boolean;
+  /** Developer-telemetry payload — present only on `type: 'telemetry'` steps. */
+  trace?: TraceEvent;
   createdAt: number;
 }
 

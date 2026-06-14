@@ -42,9 +42,14 @@ function script(responses: Scripted[]): void {
       return {
         text: '',
         functionCalls: [{ name: next.call.name, args: next.call.args ?? {} }],
+        usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 },
       };
     }
-    return { text: next.text, functionCalls: [] };
+    return {
+      text: next.text,
+      functionCalls: [],
+      usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 },
+    };
   });
 }
 
@@ -146,5 +151,66 @@ describe('no-progress early stop', () => {
     expect(answer?.stoppedEarly).toBe(true);
     const done = steps.find((s) => s.type === 'done');
     expect(done?.stoppedEarly).toBe(true);
+  });
+});
+
+describe('developer telemetry (additive)', () => {
+  it('emits model_call telemetry for plan/react-step/summarize/synthesize and tool_exec for tools, without altering visible steps', async () => {
+    webSearch.mockResolvedValue([{ title: 'A', url: 'https://a.com', snippet: 's' }]);
+    fetchUrl.mockResolvedValue({
+      ok: true,
+      url: 'https://a.com/article',
+      title: 'Article',
+      text: 'body text',
+    });
+    script([
+      { text: 'plan' }, // plan phase
+      { call: { name: 'web_search', args: { query: 'q1' } } }, // react-step
+      { call: { name: 'fetch_url', args: { url: 'https://a.com/article' } } }, // react-step
+      { text: 'summary' }, // summarize phase
+      { call: { name: 'finish' } }, // react-step (stop)
+      { text: 'final report [1]' }, // synthesize phase
+    ]);
+
+    const steps = await collect('q');
+
+    const telemetry = steps.filter((s) => s.type === 'telemetry');
+    const modelCalls = telemetry.filter((s) => s.trace?.kind === 'model_call');
+    const toolExecs = telemetry.filter((s) => s.trace?.kind === 'tool_exec');
+
+    // Phases present: plan, react-step(s), summarize, synthesize.
+    const phases = modelCalls.map((s) =>
+      s.trace?.kind === 'model_call' ? s.trace.phase : ''
+    );
+    expect(phases).toContain('plan');
+    expect(phases).toContain('react-step');
+    expect(phases).toContain('summarize');
+    expect(phases).toContain('synthesize');
+
+    // Tool exec events for both tools, with timing + ok flag + raw result.
+    expect(toolExecs.map((s) => (s.trace?.kind === 'tool_exec' ? s.trace.name : ''))).toEqual(
+      expect.arrayContaining(['web_search', 'fetch_url'])
+    );
+    const first = toolExecs[0]?.trace;
+    if (first?.kind === 'tool_exec') {
+      expect(first.ok).toBe(true);
+      expect(first.endedAt).toBeGreaterThanOrEqual(first.startedAt);
+    }
+
+    // Tokens + cost captured from usageMetadata.
+    const mc = modelCalls[0]?.trace;
+    if (mc?.kind === 'model_call') {
+      expect(mc.tokensIn).toBe(10);
+      expect(mc.tokensOut).toBe(5);
+      expect(mc.costUsd).toBeGreaterThan(0);
+    }
+
+    // Additive: the visible step types are exactly the pre-existing set.
+    const visibleTypes = new Set(
+      steps.filter((s) => s.type !== 'telemetry').map((s) => s.type)
+    );
+    expect(visibleTypes.has('answer')).toBe(true);
+    expect(visibleTypes.has('done')).toBe(true);
+    expect(visibleTypes.has('telemetry')).toBe(false);
   });
 });

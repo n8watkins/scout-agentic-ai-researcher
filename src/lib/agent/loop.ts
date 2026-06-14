@@ -12,6 +12,7 @@ import {
 import type { AgentStep, Citation, RunOptions, StepType, ToolCall } from './types';
 import { logger } from '../logger';
 import { recordDemoModelCall } from '../usage';
+import { estimateCostUsd, type ModelCallPhase, type TraceEvent } from '../devtrace';
 
 /**
  * After this many consecutive ACT iterations that add no new source (including
@@ -30,6 +31,16 @@ function makeStep(type: StepType, partial: Partial<AgentStep> = {}): AgentStep {
   };
 }
 
+let traceSeq = 0;
+function nextTraceId(prefix: string): string {
+  return `${prefix}-${Date.now()}-${traceSeq++}`;
+}
+
+/** Wrap a developer-telemetry event in an additive `telemetry` step. */
+function telemetryStep(trace: TraceEvent): AgentStep {
+  return makeStep('telemetry', { trace });
+}
+
 /**
  * The ReAct loop. An agent is a while-loop with a step budget and an explicit
  * stop condition — that's the whole thesis. Each iteration:
@@ -45,12 +56,27 @@ export async function* runAgent(
   const { apiKey, model, maxSteps = 8, signal, byok } = opts;
   const ai = makeClient(apiKey);
 
+  // Developer telemetry buffer. The `generate` wrapper and tool calls push
+  // `TraceEvent`s here as they resolve; the generator drains it into additive
+  // `telemetry` steps (see `drain()` calls below). Purely observational — it
+  // never affects control flow or the visible steps.
+  const telemetry: TraceEvent[] = [];
+
   // Every Gemini call goes through here so demo-key calls are metered against
-  // the shared daily cap. BYOK calls bypass the counter entirely.
+  // the shared daily cap. BYOK calls bypass the counter entirely. It's also the
+  // single choke point where we capture per-call telemetry (model, phase,
+  // timing, tokens, raw I/O, tool call) — additive, behavior unchanged.
   type GenParams = Parameters<typeof ai.models.generateContent>[0];
-  const generate = (params: GenParams): Promise<GenerateContentResponse> => {
+  const generate = async (
+    params: GenParams,
+    phase: ModelCallPhase = 'react-step'
+  ): Promise<GenerateContentResponse> => {
     if (!byok) recordDemoModelCall();
-    return ai.models.generateContent(params);
+    const startedAt = Date.now();
+    const res = await ai.models.generateContent(params);
+    const endedAt = Date.now();
+    captureModelCall(telemetry, model, phase, startedAt, endedAt, params, res);
+    return res;
   };
 
   const citations: Citation[] = [];
@@ -75,14 +101,27 @@ export async function* runAgent(
     return index;
   };
 
+  // Drain any buffered telemetry into additive `telemetry` steps. Called after
+  // each await boundary so dev-panel events stream in near-real-time. A no-op
+  // generator for the existing UI, which filters telemetry out.
+  function* drain(): Generator<AgentStep> {
+    while (telemetry.length > 0) {
+      yield telemetryStep(telemetry.shift()!);
+    }
+  }
+
   // --- Optional up-front plan -------------------------------------------
   yield makeStep('status', { label: 'Planning' });
   try {
-    const planRes = await generate({
-      model,
-      contents: planPrompt(question),
-      config: { abortSignal: signal },
-    });
+    const planRes = await generate(
+      {
+        model,
+        contents: planPrompt(question),
+        config: { abortSignal: signal },
+      },
+      'plan'
+    );
+    yield* drain();
     const planText = textOf(planRes);
     if (planText) {
       transcript.push(`Plan:\n${planText}`);
@@ -101,20 +140,24 @@ export async function* runAgent(
     let res: GenerateContentResponse;
     try {
       yield makeStep('status', { label: 'Thinking' });
-      res = await generate({
-        model,
-        contents: buildContents(question, transcript),
-        config: {
-          systemInstruction: SYSTEM_PROMPT,
-          tools: [{ functionDeclarations: TOOL_DECLARATIONS }],
-          abortSignal: signal,
+      res = await generate(
+        {
+          model,
+          contents: buildContents(question, transcript),
+          config: {
+            systemInstruction: SYSTEM_PROMPT,
+            tools: [{ functionDeclarations: TOOL_DECLARATIONS }],
+            abortSignal: signal,
+          },
         },
-      });
+        'react-step'
+      );
     } catch (err) {
       if (isAbort(err)) return;
       yield makeStep('error', { content: `Model call failed: ${(err as Error).message}` });
       break;
     }
+    yield* drain();
 
     const call = firstToolCall(res);
     const thought = textOf(res);
@@ -158,8 +201,19 @@ export async function* runAgent(
         yield makeStep('status', { label: 'Searching' });
 
         let observation: string;
+        const toolStartedAt = Date.now();
         try {
           const results = await webSearch(query, signal);
+          telemetry.push({
+            kind: 'tool_exec',
+            id: nextTraceId('tool'),
+            name: 'web_search',
+            args: { query },
+            startedAt: toolStartedAt,
+            endedAt: Date.now(),
+            ok: true,
+            rawResult: results,
+          });
           if (results.length === 0) {
             observation = `No results for "${query}".`;
           } else {
@@ -171,9 +225,20 @@ export async function* runAgent(
           }
         } catch (err) {
           if (isAbort(err)) return;
+          telemetry.push({
+            kind: 'tool_exec',
+            id: nextTraceId('tool'),
+            name: 'web_search',
+            args: { query },
+            startedAt: toolStartedAt,
+            endedAt: Date.now(),
+            ok: false,
+            rawResult: String(err),
+          });
           observation = `Search failed: ${(err as Error).message}`;
         }
         transcript.push(`Action: web_search("${query}")\nObservation: ${observation}`);
+        yield* drain();
         yield makeStep('observation', {
           label: `Results for "${query}"`,
           content: observation,
@@ -209,8 +274,22 @@ export async function* runAgent(
         yield makeStep('status', { label: 'Reading' });
 
         let observation: string;
+        const toolStartedAt = Date.now();
         try {
           const result = await fetchUrl(url, signal);
+          telemetry.push({
+            kind: 'tool_exec',
+            id: nextTraceId('tool'),
+            name: 'fetch_url',
+            args: { url },
+            startedAt: toolStartedAt,
+            endedAt: Date.now(),
+            ok: result.ok,
+            // Raw fetched text, BEFORE summarization — what the model actually got.
+            rawResult: result.ok
+              ? { title: result.title, url: result.url, text: result.text }
+              : { error: result.error },
+          });
           if (!result.ok) {
             observation = `Could not read ${url}: ${result.error}`;
           } else {
@@ -222,9 +301,20 @@ export async function* runAgent(
           }
         } catch (err) {
           if (isAbort(err)) return;
+          telemetry.push({
+            kind: 'tool_exec',
+            id: nextTraceId('tool'),
+            name: 'fetch_url',
+            args: { url },
+            startedAt: toolStartedAt,
+            endedAt: Date.now(),
+            ok: false,
+            rawResult: String(err),
+          });
           observation = `Could not read ${url}: ${(err as Error).message}`;
         }
         transcript.push(`Action: fetch_url("${url}")\nObservation: ${observation}`);
+        yield* drain();
         yield makeStep('observation', {
           label: `Read ${host}`,
           content: observation,
@@ -264,6 +354,7 @@ export async function* runAgent(
     if (isAbort(err)) return;
     report = `I ran into an error writing the report: ${(err as Error).message}`;
   }
+  yield* drain();
 
   yield makeStep('answer', {
     content: report,
@@ -304,7 +395,8 @@ function firstToolCall(res: GenerateContentResponse): ToolCall | null {
 }
 
 type MeteredGenerate = (
-  params: Parameters<ReturnType<typeof makeClient>['models']['generateContent']>[0]
+  params: Parameters<ReturnType<typeof makeClient>['models']['generateContent']>[0],
+  phase?: ModelCallPhase
 ) => Promise<GenerateContentResponse>;
 
 async function summarize(
@@ -316,11 +408,14 @@ async function summarize(
 ): Promise<string> {
   if (!rawText.trim()) return 'Not relevant.';
   try {
-    const res = await generate({
-      model,
-      contents: summarizeObservationPrompt(question, rawText.slice(0, 12_000)),
-      config: { abortSignal: signal },
-    });
+    const res = await generate(
+      {
+        model,
+        contents: summarizeObservationPrompt(question, rawText.slice(0, 12_000)),
+        config: { abortSignal: signal },
+      },
+      'summarize'
+    );
     const out = textOf(res);
     return out || rawText.slice(0, 800);
   } catch (err) {
@@ -344,12 +439,65 @@ async function synthesize(
   const sourcesBlock = citations
     .map((c) => `[${c.index}] ${c.title} (${c.url})\n${c.snippet}`)
     .join('\n\n');
-  const res = await generate({
-    model,
-    contents: synthesisPrompt(question, sourcesBlock, stoppedEarly),
-    config: { abortSignal: signal },
-  });
+  const res = await generate(
+    {
+      model,
+      contents: synthesisPrompt(question, sourcesBlock, stoppedEarly),
+      config: { abortSignal: signal },
+    },
+    'synthesize'
+  );
   return textOf(res) || 'No report could be generated.';
+}
+
+/**
+ * Build a `model_call` TraceEvent from a resolved generateContent call and
+ * push it onto the telemetry buffer. Tokens come from `usageMetadata`; cost is
+ * the §6 estimate. Purely observational — never throws into the loop.
+ */
+function captureModelCall(
+  telemetry: TraceEvent[],
+  model: string,
+  phase: ModelCallPhase,
+  startedAt: number,
+  endedAt: number,
+  params: { contents?: unknown },
+  res: GenerateContentResponse
+): void {
+  try {
+    const usage = res.usageMetadata;
+    const tokensIn = usage?.promptTokenCount ?? 0;
+    const tokensOut = usage?.candidatesTokenCount ?? 0;
+    const call = res.functionCalls?.[0];
+    telemetry.push({
+      kind: 'model_call',
+      id: nextTraceId('call'),
+      phase,
+      model,
+      startedAt,
+      endedAt,
+      tokensIn,
+      tokensOut,
+      costUsd: estimateCostUsd(model, tokensIn, tokensOut),
+      prompt: serializeContents(params.contents),
+      rawResponse: res.text ?? '',
+      toolCall: call ? { name: call.name ?? '', args: call.args ?? {} } : null,
+    });
+  } catch (err) {
+    // Telemetry must never break a run.
+    logger.warn('Failed to capture model-call telemetry', { err: String(err) });
+  }
+}
+
+/** Best-effort human-readable serialization of a `contents` payload. */
+function serializeContents(contents: unknown): string {
+  if (contents == null) return '';
+  if (typeof contents === 'string') return contents;
+  try {
+    return JSON.stringify(contents, null, 2);
+  } catch {
+    return String(contents);
+  }
 }
 
 function snapshot(citations: Citation[]): Citation[] {
