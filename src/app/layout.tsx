@@ -5,10 +5,28 @@ import './globals.css';
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
+const title = 'Scout — Agentic Research Assistant';
+const description =
+  'Ask a hard question and watch an AI plan, search the web, read sources, and write a cited report — live, step by step.';
+
 export const metadata: Metadata = {
-  title: 'Scout — Agentic Research Assistant',
-  description:
-    'Ask a hard question and watch an AI plan, search the web, read sources, and write a cited report — live, step by step.',
+  metadataBase: new URL('https://portfolio.n8builds.dev/scout'),
+  title,
+  description,
+  // Image refs are injected automatically by file-based metadata
+  // (opengraph-image.tsx → og:image + twitter:image).
+  openGraph: {
+    title,
+    description,
+    url: 'https://portfolio.n8builds.dev/scout',
+    siteName: 'Scout',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title,
+    description,
+  },
 };
 
 /**
