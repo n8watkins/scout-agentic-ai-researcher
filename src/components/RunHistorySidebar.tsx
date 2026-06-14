@@ -13,6 +13,7 @@ import type { SavedRun } from '@/lib/agent/types';
 import { useApiKey } from '@/hooks/useApiKey';
 import InlineKeyEntry from './InlineKeyEntry';
 import SidebarUsageMeter from './UsageMeter';
+import ThemeToggle from './ThemeToggle';
 import { sessionHeader } from '@/lib/session';
 
 interface RunHistorySidebarProps {
@@ -68,16 +69,16 @@ export default function RunHistorySidebar({
   };
 
   return (
-    <aside className="w-72 flex-shrink-0 h-full flex flex-col bg-violet-950/40 dark:bg-black/40 backdrop-blur border-r border-violet-900/40 text-violet-100">
+    <aside className="w-72 flex-shrink-0 h-full flex flex-col bg-violet-50/80 dark:bg-black/40 backdrop-blur border-r border-violet-200 dark:border-violet-900/40 text-violet-900 dark:text-violet-100">
       {/* Brand */}
-      <div className="px-4 py-4 border-b border-violet-900/40">
+      <div className="px-4 py-4 border-b border-violet-200 dark:border-violet-900/40">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-black shadow-lg shadow-violet-500/30">
             S
           </div>
           <div>
-            <p className="font-bold text-white leading-none">Scout</p>
-            <p className="text-[11px] text-violet-300/80">Agentic research</p>
+            <p className="font-bold text-violet-900 dark:text-white leading-none">Scout</p>
+            <p className="text-[11px] text-violet-500 dark:text-violet-300/80">Agentic research</p>
           </div>
         </div>
       </div>
@@ -94,11 +95,11 @@ export default function RunHistorySidebar({
 
       {/* History */}
       <div className="flex-1 overflow-y-auto px-3">
-        <p className="text-[11px] uppercase tracking-wide text-violet-400/80 font-semibold px-1 mb-2 flex items-center gap-1">
+        <p className="text-[11px] uppercase tracking-wide text-violet-500 dark:text-violet-400/80 font-semibold px-1 mb-2 flex items-center gap-1">
           <ClockIcon className="w-3.5 h-3.5" /> Saved runs
         </p>
         {runs.length === 0 ? (
-          <p className="text-xs text-violet-400/70 px-1">No saved runs yet. Your completed research will appear here.</p>
+          <p className="text-xs text-violet-500/80 dark:text-violet-400/70 px-1">No saved runs yet. Your completed research will appear here.</p>
         ) : (
           <ul className="space-y-1">
             {runs.map((r) => (
@@ -107,8 +108,8 @@ export default function RunHistorySidebar({
                   onClick={() => handleSelect(r.id)}
                   className={`group w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-start gap-2 ${
                     activeRunId === r.id
-                      ? 'bg-violet-700/50 text-white'
-                      : 'hover:bg-violet-800/40 text-violet-200'
+                      ? 'bg-violet-200 text-violet-900 dark:bg-violet-700/50 dark:text-white'
+                      : 'text-violet-700 hover:bg-violet-100 dark:text-violet-200 dark:hover:bg-violet-800/40'
                   }`}
                 >
                   <span className="flex-1 line-clamp-2 leading-snug">{r.question}</span>
@@ -124,13 +125,13 @@ export default function RunHistorySidebar({
       </div>
 
       {/* Footer: usage + BYOK + about */}
-      <div className="p-3 space-y-2 border-t border-violet-900/40">
+      <div className="p-3 space-y-2 border-t border-violet-200 dark:border-violet-900/40">
         <SidebarUsageMeter hasOwnKey={hasApiKey} />
 
-        <div className="rounded-lg border border-violet-800/50">
+        <div className="rounded-lg border border-violet-200 dark:border-violet-800/50">
           <button
             onClick={() => setShowKey(!showKey)}
-            className="w-full px-3 py-2 flex items-center justify-between text-left text-xs text-violet-200 hover:bg-violet-800/30 rounded-lg transition-colors"
+            className="w-full px-3 py-2 flex items-center justify-between text-left text-xs text-violet-700 hover:bg-violet-100 dark:text-violet-200 dark:hover:bg-violet-800/30 rounded-lg transition-colors"
           >
             <span className="inline-flex items-center gap-1.5">
               <KeyIcon className="w-4 h-4" />
@@ -146,19 +147,22 @@ export default function RunHistorySidebar({
             </svg>
           </button>
           {showKey && (
-            <div className="px-3 pb-3 pt-1 text-violet-100">
+            <div className="px-3 pb-3 pt-1 text-violet-900 dark:text-violet-100">
               <InlineKeyEntry />
             </div>
           )}
         </div>
 
-        <button
-          onClick={onOpenAbout}
-          className="w-full inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-violet-200 hover:bg-violet-800/30 transition-colors"
-        >
-          <InformationCircleIcon className="w-4 h-4" />
-          About Scout
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onOpenAbout}
+            className="flex-1 inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-violet-700 hover:bg-violet-100 dark:text-violet-200 dark:hover:bg-violet-800/30 transition-colors"
+          >
+            <InformationCircleIcon className="w-4 h-4" />
+            About Scout
+          </button>
+          <ThemeToggle />
+        </div>
       </div>
     </aside>
   );

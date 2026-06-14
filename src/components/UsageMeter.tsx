@@ -19,9 +19,15 @@ interface PoolMeterBarProps {
  */
 export function PoolMeterBar({ usage, variant = 'light' }: PoolMeterBarProps) {
   const light = variant === 'light';
-  const labelClass = light ? 'text-gray-700 dark:text-gray-200' : 'text-violet-200';
-  const subClass = light ? 'text-gray-500 dark:text-gray-400' : 'text-violet-300/80';
-  const trackClass = light ? 'bg-gray-200 dark:bg-gray-700' : 'bg-violet-950/60';
+  const labelClass = light
+    ? 'text-gray-700 dark:text-gray-200'
+    : 'text-violet-800 dark:text-violet-200';
+  const subClass = light
+    ? 'text-gray-500 dark:text-gray-400'
+    : 'text-violet-600 dark:text-violet-300/80';
+  const trackClass = light
+    ? 'bg-gray-200 dark:bg-gray-700'
+    : 'bg-violet-200 dark:bg-violet-950/60';
 
   if (!usage?.pool || usage.pool.budget <= 0) {
     return (
@@ -80,19 +86,19 @@ export default function SidebarUsageMeter({ hasOwnKey }: SidebarUsageMeterProps)
 
   return (
     <div
-      className="px-3 py-2 bg-violet-900/30 rounded-lg border border-violet-700/40"
+      className="px-3 py-2 bg-violet-100 dark:bg-violet-900/30 rounded-lg border border-violet-200 dark:border-violet-700/40"
       data-testid="sidebar-usage-meter"
     >
       {hasOwnKey ? (
         <div>
           <div className="flex items-center justify-between text-xs mb-1">
-            <span className="font-semibold text-violet-200">Your API key</span>
-            <span className="flex items-center gap-1 text-green-400">
-              <span className="w-1.5 h-1.5 bg-green-400 rounded-full" />
+            <span className="font-semibold text-violet-800 dark:text-violet-200">Your API key</span>
+            <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
+              <span className="w-1.5 h-1.5 bg-green-500 dark:bg-green-400 rounded-full" />
               active
             </span>
           </div>
-          <p className="text-xs text-violet-300/80">Unlimited research on your own key</p>
+          <p className="text-xs text-violet-600 dark:text-violet-300/80">Unlimited research on your own key</p>
         </div>
       ) : (
         <PoolMeterBar usage={usage} variant="dark" />

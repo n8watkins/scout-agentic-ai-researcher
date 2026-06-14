@@ -6,6 +6,7 @@ import OnboardingWizard from '@/components/OnboardingWizard';
 import AboutModal from '@/components/AboutModal';
 import RunHistorySidebar from '@/components/RunHistorySidebar';
 import ResearchInput from '@/components/ResearchInput';
+import ThemeToggle from '@/components/ThemeToggle';
 import AgentTrace from '@/components/AgentTrace';
 import ReportView from '@/components/ReportView';
 import SourcesPanel from '@/components/SourcesPanel';
@@ -81,11 +82,12 @@ export default function Home() {
       {/* Main workspace */}
       <main className="relative flex-1 flex flex-col min-w-0 z-10">
         {/* Mobile top bar */}
-        <div className="md:hidden flex items-center gap-3 px-4 py-3 border-b border-violet-900/30">
-          <button onClick={() => setSidebarOpen(true)} className="text-violet-300">
+        <div className="md:hidden flex items-center gap-3 px-4 py-3 border-b border-violet-200 dark:border-violet-900/30">
+          <button onClick={() => setSidebarOpen(true)} className="text-violet-600 dark:text-violet-300">
             <Bars3Icon className="w-6 h-6" />
           </button>
-          <span className="font-bold text-white">Scout</span>
+          <span className="font-bold text-violet-900 dark:text-white">Scout</span>
+          <ThemeToggle className="ml-auto" />
         </div>
 
         <div className="flex-1 overflow-y-auto px-4 py-6 md:px-8 md:py-8">
