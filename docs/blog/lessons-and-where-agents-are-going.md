@@ -18,7 +18,9 @@ plan → (think → call a tool → read the result) × N → decide you're done
 
 That's a loop. The two things that make it *work* are unglamorous: a **step budget** (it can't loop forever) and an **explicit `finish` tool** (the model signals "done" by calling a tool, not by vibes). I hand-rolled this loop instead of reaching for a framework, specifically because I wanted to *see* it — the whole point of the project is that the reasoning is legible, and a framework would have hidden the one thing I was trying to learn.
 
-The genuinely hard part is "deciding when you're done." Too eager and it answers from one source; too cautious and it burns the whole step budget circling. That isn't a model problem you can prompt away — it's a control-flow problem you design.
+The genuinely hard part is "deciding when you're done." Too eager and it answers from one source; too cautious and it burns the whole step budget circling. That isn't a model problem you can prompt away — it's a control-flow problem you design. Two cheap guards earned their keep here beyond the raw step cap: a *duplicate-action short-circuit* (don't re-run a search you already ran or re-fetch a URL you already read — nudge the model instead of spending a step), and a *no-progress early-stop* (after a couple of iterations that add no new source, bail into synthesis rather than spin). Both are a few lines; both came from watching the loop waste budget in exactly those ways.
+
+And "watching" turned out to be the operative word. Once I'd internalized that an agent is a loop with a budget, the obvious next move was to *make the budget visible* — so Scout grew an "under the hood" panel that X-rays the loop while it runs: each model call with its token count, latency, and an estimated dollar cost, the raw `web_search`/`fetch_url` results *before* the summarization step compresses them, and a steps-vs-`maxSteps` bar that fills as the run spends its allowance. The thesis stops being a slogan the moment you can see the budget bar climb toward its cap. It's also where the cheap guards above earned visible proof: you can watch the no-progress counter trip instead of the bar running to the wall.
 
 ## Lesson 2: the tools are the product, not the model
 
@@ -47,6 +49,8 @@ This is the same problem the whole industry is circling: an agent that *cites* i
 ## Lesson 6: agents don't cost like chat
 
 One chat message is one model call. One Scout run is *up to eight* — plan, several searches and reads, synthesis. On a shared free-tier key with a daily cap, the cost math is completely different, and the rate-limiting has to be sized per-*run*, not per-message. "Agentic" is a multiplier on every cost line, which is easy to forget until the quota evaporates.
+
+That multiplier also quietly dictated a product decision. I wanted to offer a few Gemini models, but the free tier caps the lighter `flash-lite` at 500 requests a day and the rest at 20 *each* — and an agent eats those in a handful of runs. So the demo key only ever serves the one model whose quota can survive a public link; everything more capable is unlocked only when a visitor brings their own key, enforced by a server-side allowlist rather than trusting whatever model the client asks for. The lesson underneath: with agents, the quota *is* part of the design surface. A model picker isn't just a dropdown — it's a budget you have to ration, and where you draw the shared-vs-bring-your-own line is a cost decision wearing a UI.
 
 ## Where this sits in AI right now
 

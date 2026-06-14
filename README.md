@@ -52,6 +52,17 @@ from.
 - **Free to try, BYOK optional.** Runs go on a shared demo key while it has
   capacity; bring your own free Gemini key (stored only in your browser) for
   unlimited runs. (See [the demo-key model](#the-demo-key--byok-model) below.)
+- **Pick your model.** A sidebar picker offers `gemini-3.1-flash-lite` on the
+  shared key; the more capable models (2.5-flash, 2.5-flash-lite,
+  3-flash-preview, 3.5-flash) unlock once you add your own key. Free-tier quotas
+  are tight, so a server-side allowlist gates the heavier models to BYOK runs.
+- **"Under the hood" dev panel.** A Beaker toggle X-rays the loop: per-call
+  model id, tokens in/out, latency, an **estimated $**, the raw
+  `web_search`/`fetch_url` results *before* summarization, and a
+  **steps-vs-budget bar**. An agent is a `while` loop with a budget — this makes
+  the budget visible. Off by default, opt-in per browser.
+- **Light/dark theme.** A toggle flips the theme; an inline script in the layout
+  sets it before paint, so there's no flash of the wrong theme on load.
 
 Why it's interesting as a portfolio piece: it's a tool-using agent that
 **plans and self-corrects in the open**, with real failure modes handled (runaway
@@ -130,6 +141,15 @@ sequenceDiagram
 - **`src/lib/db.ts` / `src/app/api/runs/*`** — `better-sqlite3` run history,
   scoped per client session (`x-scout-session`) with payload caps and a write
   rate limit.
+- **`src/lib/gemini.ts`** — model + key resolution: the `MODELS` allowlist and a
+  server-side `pickModel(requested, byok)` gate that only honors a requested
+  model if it's shared-tier *or* the run carries a BYOK key (never trust the
+  client), falling back to the default otherwise.
+- **`src/lib/devtrace.ts` / `src/components/DevPanel.tsx`** — the "Under the
+  hood" telemetry layer. The loop emits additive `model_call` / `tool_exec`
+  trace events (model, phase, timing, tokens, raw I/O) that never touch control
+  flow; the panel renders them as a call waterfall, per-call cost, and a
+  steps-vs-budget bar.
 
 ## Stack
 
@@ -137,7 +157,8 @@ sequenceDiagram
 - **`@google/genai`** (the current Gemini SDK — better streaming and
   function-calling ergonomics than the legacy `@google/generative-ai` the older
   portfolio apps use). Model default **`gemini-3.1-flash-lite`**, configurable
-  via `SCOUT_MODEL`.
+  via `SCOUT_MODEL` or per-run from the sidebar model picker (heavier models
+  BYOK-gated).
 - **better-sqlite3** for saved runs · **isomorphic-dompurify** for sanitizing
   fetched pages · **react-markdown** + **remark-gfm** for rendering reports ·
   **Heroicons** + **lucide-react** for icons.
