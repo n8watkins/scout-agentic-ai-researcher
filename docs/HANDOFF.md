@@ -2,6 +2,13 @@
 
 > Zero-context handoff for **Scout**, an agentic research assistant. Read this in full before working. Don't re-ask decisions recorded here. Portfolio-wide context: `../../HANDOFF.md`. Build plan: `../../AGENTIC_RESEARCHER_PLAN.md`.
 
+## ⚠️ Update — 2026-06-14 (session #2) — read `../../HANDOFF.md` for the full picture
+The sections below are from session #1 and are partly stale. Current truth:
+- **SHIPPED PUBLIC** at `github.com/n8watkins/scout-agentic-ai-researcher`; `master` tracks `origin`, clean. (Ignore older "not pushed / no remote / branch `hardening-pass`" notes below.)
+- Local dir is now **`scout/`** (was `agentic-researcher/`).
+- Added since: **light/dark theme toggle**, **loop hardening** (duplicate-action + no-progress short-circuit in `loop.ts`), **favicon + OG cards**, a **Gemini model picker** (`MODELS` allowlist + server `pickModel(requested, byok)` gate in `src/lib/gemini.ts`; only `gemini-3.1-flash-lite` on the shared key, rest BYOK-only), and an **"Under the hood" dev panel** (Beaker toggle → `src/components/DevPanel.tsx`, telemetry in `src/lib/devtrace.ts`). master @ `5a0bdf5`, 25 tests green.
+- Next Scout work: **decide + build embeddings** per `../../SCOUT_EMBEDDINGS_PLAN.md` (design only so far).
+
 ## What this is
 A Next.js app that does **visible, cited web research**: type a question → it plans, runs a ReAct loop (search → read → repeat), and streams a cited report — you watch every step. The thesis (and blog): *an agent is a `while` loop with a budget and a stop condition.*
 
