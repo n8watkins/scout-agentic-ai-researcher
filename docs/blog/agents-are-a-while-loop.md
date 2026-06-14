@@ -158,4 +158,6 @@ lines. That's the point.
 ---
 
 _Scout is open source. The loop is `src/lib/agent/loop.ts` if you want to read
-the five lines for yourself._
+the five lines for yourself. For the wider view — the 2025–2026 agent market,
+who's building frameworks, and the reliability math — see
+[The state of AI agents](./the-state-of-ai-agents.md)._

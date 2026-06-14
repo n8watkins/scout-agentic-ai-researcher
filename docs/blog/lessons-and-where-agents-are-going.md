@@ -57,3 +57,7 @@ This is the **agentic wave**. Through 2025–2026 the center of gravity shifted 
 Near-term, tools like this compress the front half of knowledge work — the "go read fifteen sources and summarize with citations" that eats analyst, paralegal, and journalist hours. The realistic shape isn't "the AI does the research"; it's **"the AI does the gathering and you do the judging."** The grounding-and-verification problem is unsolved enough that a human stays in the loop for anything that matters, which means the near-term job shift is toward *supervising* research agents, not being replaced by them.
 
 The less obvious shift is in infrastructure: the value (and the new roles) move into the boring layers — tool protocols, sandboxing the things agents can touch, and *evaluating* whether an agent's output is actually trustworthy. The model is increasingly a commodity; the loop, the tools, and the guardrails around them are where the engineering — and the risk — actually live.
+
+---
+
+*For the zoomed-out version of this argument — a sourced 2025–2026 market read, who's building the agent frameworks, the reliability math, and where I think it's all going — see [The state of AI agents](./the-state-of-ai-agents.md).*
