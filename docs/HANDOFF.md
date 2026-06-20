@@ -1,8 +1,8 @@
 # Scout — session handoff
 
-> Zero-context handoff for **Scout**, an agentic research assistant. Read this in full before working. Don't re-ask decisions recorded here. Portfolio-wide context: `../../HANDOFF.md`. Build plan: `AGENTIC_RESEARCHER_PLAN.md` (this folder).
+> Zero-context handoff for **Scout**, an agentic research assistant. Read this in full before working. Don't re-ask decisions recorded here. Build plan: `AGENTIC_RESEARCHER_PLAN.md` (this folder).
 
-## ✅ Current truth — read `../../HANDOFF.md` for portfolio-wide context
+## ✅ Current truth
 **Audit 2026-06-20:** verified the claims below against the live repo and reconciled the stale session-#1 sections (see "Historical state" footnote at the bottom). The session-#2 header SHA was one commit behind HEAD; corrected here.
 
 - **SHIPPED PUBLIC** at `github.com/n8watkins/scout-agentic-ai-researcher`. Remote `origin` is set; **`master` tracks `origin/master`**, working tree clean apart from these doc changes. (Ignore any older "not pushed / no remote / branch `hardening-pass`" notes — those describe session #1 and are obsolete.)
@@ -38,7 +38,7 @@ A Next.js app that does **visible, cited web research**: type a question → it 
 - `better-sqlite3` is a native module; `next.config.ts` externalizes it. The Render build (`npm ci`) compiles it.
 
 ## Next steps (ordered)
-1. **Deploy to Render** via `render.yaml` (free tier; the user handles the actual deploy); replace the `TODO` live-demo URL in `README.md`. Wire the subpath `portfolio.n8builds.dev/scout` (per portfolio decisions in `../../HANDOFF.md` — `basePath` + rewrites; SSE may need a subdomain fallback).
+1. **Deploy to Render** via `render.yaml` (free tier; the user handles the actual deploy); replace the `TODO` live-demo URL in `README.md`. Wire the subpath `portfolio.n8builds.dev/scout` (per portfolio decisions — `basePath` + rewrites; SSE may need a subdomain fallback).
 2. **Decide + build embeddings** per `SCOUT_EMBEDDINGS_PLAN.md` (resolve its 8 open decisions first; Phase 1a = semantic source-dedup is the smallest valuable slice; uses `gemini-embedding-001`).
 3. **Optional:** Upstash KV for a durable demo cap (current 250/day cap is in-memory/per-process; resets on Render cold start).
 
@@ -58,7 +58,7 @@ A Next.js app that does **visible, cited web research**: type a question → it 
 - `tests/*.test.{ts,tsx}` (Vitest, 33 tests) · `render.yaml` (deploys `branch: master`) · `vitest.config.ts`.
 - Plan docs (this folder): `AGENTIC_RESEARCHER_PLAN.md` (original build plan) · `SCOUT_EMBEDDINGS_PLAN.md` (embeddings design).
 
-## Shared portfolio decisions (Scout-relevant — full picture in `../../HANDOFF.md`)
+## Shared portfolio decisions (Scout-relevant)
 - **Model picker tiers:** `gemini-3.1-flash-lite` is the only model allowed on the **shared** demo key; the rest (`gemini-2.5-flash`, `gemini-2.5-flash-lite`, `gemini-3-flash-preview`, `gemini-3.5-flash`) are **BYOK-only** (~20/day each on the free tier). All support function calling. Same `pickModel` gate pattern as Echo.
 - **LLM standard:** all generation is `gemini-3.1-flash-lite` via the current `@google/genai` SDK. No Gemini 2.0/2.5 in use for generation. Embeddings would use `gemini-embedding-001`.
 - **Domain DECIDED:** `n8builds.dev`; apps attach as subpaths — `portfolio.n8builds.dev/scout`. Deploy = Render free tier (the user runs the deploy).
