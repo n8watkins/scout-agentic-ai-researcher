@@ -6,8 +6,8 @@
  * token counts, latency and an estimated cost (from the pricing table below)
  * so the dev panel can show what's actually happening underneath the product.
  *
- * The schema mirrors §3 of UNDER_THE_HOOD_PLAN.md and is shared (in shape)
- * with Echo. Scout only emits `model_call`, `tool_exec` and `stage` today;
+ * The TraceEvent schema is shared (in shape) with Echo's dev-panel telemetry.
+ * Scout only emits `model_call`, `tool_exec` and `stage` today;
  * `state` is kept for cross-app parity.
  */
 
