@@ -41,6 +41,9 @@ A Next.js app that does **visible, cited web research**: type a question → it 
 1. **Deploy to Render** via `render.yaml` (free tier; the user handles the actual deploy); replace the `TODO` live-demo URL in `README.md`. Wire the subpath `portfolio.n8builds.dev/scout` (per portfolio decisions — `basePath` + rewrites; SSE may need a subdomain fallback).
 2. **Decide + build embeddings** per `SCOUT_EMBEDDINGS_PLAN.md` (resolve its 8 open decisions first; Phase 1a = semantic source-dedup is the smallest valuable slice; uses `gemini-embedding-001`).
 3. **Optional:** Upstash KV for a durable demo cap (current 250/day cap is in-memory/per-process; resets on Render cold start).
+4. **Optional — dev-panel polish (was "Phase 4" of the cross-app dev-panel spec; panel itself shipped at `5a0bdf5`):** persist the panel's open/closed state across reloads, tidy the **mobile layout** of the waterfall, and refine the readouts. Pure polish — the telemetry (`src/lib/devtrace.ts`) and rendering (`src/components/DevPanel.tsx`) are complete.
+
+> **Pending manual QA:** `docs/QA_TESTING.md` lists the can't-be-headless checks (model-picker BYOK gating, dev panel, theme FOUC, onboarding, favicon/OG). All features are built; the QA pass is owed once the app is deployed.
 
 > **Audit 2026-06-20 — completed items removed from this list (were stale):** merging `hardening-pass` + adding a remote/push (done — `master` is public on `origin`); the light/dark theme toggle (done — `ThemeToggle.tsx`, no dead dark-only CSS); ReAct loop hardening / duplicate-URL + no-progress detection (done — `798d8e7`, in `loop.ts`).
 
