@@ -116,7 +116,9 @@ export default function Home() {
         />
 
         <div className="flex-1 flex min-h-0">
-          <div className="flex-1 overflow-y-auto">
+          {/* Center column: scrolling transcript + docked composer (aligned) */}
+          <div className="flex-1 flex flex-col min-w-0">
+            <div className="flex-1 overflow-y-auto">
             {!hasContent ? (
               /* Idle: hero + composer vertically centered */
               <div className="min-h-full flex flex-col items-center justify-center px-4 py-10">
@@ -180,6 +182,26 @@ export default function Home() {
                 </div>
               </div>
             )}
+            </div>
+
+            {/* Composer docked at the bottom of the center column — aligned with the text */}
+            {hasContent && (
+              <div className="flex-none border-t border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/70 backdrop-blur">
+                <div className="max-w-3xl mx-auto w-full">
+                  {reportReady ? (
+                    <ChatComposer
+                      value={chat.input}
+                      onChange={chat.setInput}
+                      onSend={chat.send}
+                      streaming={chat.streaming}
+                      error={chat.error}
+                    />
+                  ) : (
+                    <div className="px-3 py-2.5">{composer}</div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Sources as a wider right-side column on large screens */}
@@ -189,25 +211,6 @@ export default function Home() {
             </aside>
           )}
         </div>
-
-        {/* Bottom composer dock: chat once a report is ready, else the research box */}
-        {hasContent && (
-          <div className="flex-none border-t border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/70 backdrop-blur">
-            <div className="max-w-3xl mx-auto w-full">
-              {reportReady ? (
-                <ChatComposer
-                  value={chat.input}
-                  onChange={chat.setInput}
-                  onSend={chat.send}
-                  streaming={chat.streaming}
-                  error={chat.error}
-                />
-              ) : (
-                <div className="px-3 py-2.5">{composer}</div>
-              )}
-            </div>
-          </div>
-        )}
       </main>
 
       {sidebarOpen && (
