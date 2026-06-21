@@ -20,13 +20,13 @@ interface PoolMeterBarProps {
 export function PoolMeterBar({ usage, variant = 'light' }: PoolMeterBarProps) {
   const light = variant === 'light';
   const labelClass = light
-    ? 'text-gray-700 dark:text-gray-200'
+    ? 'text-slate-700 dark:text-slate-200'
     : 'text-slate-800 dark:text-slate-200';
   const subClass = light
-    ? 'text-gray-500 dark:text-gray-400'
+    ? 'text-slate-500 dark:text-slate-400'
     : 'text-slate-500 dark:text-slate-400';
   const trackClass = light
-    ? 'bg-gray-200 dark:bg-gray-700'
+    ? 'bg-slate-200 dark:bg-slate-700'
     : 'bg-slate-200 dark:bg-slate-950/60';
 
   if (!usage?.pool || usage.pool.budget <= 0) {

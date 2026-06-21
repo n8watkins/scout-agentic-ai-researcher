@@ -43,7 +43,7 @@ const AboutContent: React.FC = () => {
     <div>
       {/* Header */}
       <div className="text-center mb-5">
-        <h2 className="text-gray-900 dark:text-white text-3xl font-bold mb-4">Welcome to Scout</h2>
+        <h2 className="text-slate-900 dark:text-white text-3xl font-bold mb-4">Welcome to Scout</h2>
       </div>
 
       {/* Introduction with portrait + bio + socials */}
@@ -57,7 +57,7 @@ const AboutContent: React.FC = () => {
             className="w-16 h-16 rounded-full object-cover border-2 border-blue-500 shadow-md"
           />
           <div className="text-center">
-            <p className="text-gray-700 dark:text-gray-200 text-sm leading-relaxed">
+            <p className="text-slate-700 dark:text-slate-200 text-sm leading-relaxed">
               I&apos;m Nathan, and this is a Portfolio project designed to showcase modern web dev
               practices with a real-world application. Scout shows what an AI agent actually is under
               the hood &mdash; it highlights my skills in full-stack development, LLM tool-use, and
@@ -67,7 +67,7 @@ const AboutContent: React.FC = () => {
         </div>
 
         <div className="space-y-3">
-          <ul className="space-y-2 text-gray-700 dark:text-gray-200 text-sm">
+          <ul className="space-y-2 text-slate-700 dark:text-slate-200 text-sm">
             <li className="flex items-start space-x-2">
               <span className="text-blue-600 dark:text-blue-400 mt-0.5">•</span>
               <span>
@@ -153,7 +153,7 @@ const AboutContent: React.FC = () => {
       {/* Key Features */}
       <div className="space-y-4">
         <div>
-          <h3 className="text-gray-900 dark:text-white text-lg font-bold mb-3 text-center">
+          <h3 className="text-slate-900 dark:text-white text-lg font-bold mb-3 text-center">
             🌟 Key Features
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -183,7 +183,7 @@ const AboutContent: React.FC = () => {
             />
             <FeatureCard
               tone="gray"
-              icon={<CodeBracketIcon className="w-6 h-6 text-gray-700 dark:text-gray-300" />}
+              icon={<CodeBracketIcon className="w-6 h-6 text-slate-700 dark:text-slate-300" />}
               title="Open source on GitHub"
               desc="Full source available — fork it, read the loop, learn from it."
             />
@@ -215,8 +215,8 @@ const AboutContent: React.FC = () => {
         </div>
 
         {/* Under the hood */}
-        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
-          <h3 className="text-gray-900 dark:text-white text-base font-bold mb-3 text-center">
+        <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+          <h3 className="text-slate-900 dark:text-white text-base font-bold mb-3 text-center">
             ⚡ Under the hood
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -240,14 +240,14 @@ const AboutContent: React.FC = () => {
 
         {/* Tech Stack */}
         <div className="bg-slate-50 dark:bg-slate-900/20 p-3 rounded-xl">
-          <h3 className="text-gray-900 dark:text-white text-sm font-bold mb-2 text-center">
+          <h3 className="text-slate-900 dark:text-white text-sm font-bold mb-2 text-center">
             🛠️ Tech Stack
           </h3>
           <div className="flex flex-wrap justify-center gap-2">
             {TECH.map((t) => (
               <span
                 key={t.name}
-                className="inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-gray-800 rounded-full text-xs font-semibold text-gray-700 dark:text-gray-200 border border-slate-200 dark:border-slate-700 shadow-sm"
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-slate-800 rounded-full text-xs font-semibold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 shadow-sm"
               >
                 {t.icon}
                 {t.name}
@@ -258,7 +258,7 @@ const AboutContent: React.FC = () => {
 
         {/* Footer idiom (net-trailers style) */}
         <div className="p-4 bg-slate-50 dark:bg-slate-900/20 rounded-xl border border-slate-200 dark:border-slate-800">
-          <p className="text-gray-700 dark:text-gray-300 text-sm text-center">
+          <p className="text-slate-700 dark:text-slate-300 text-sm text-center">
             <span className="font-semibold text-blue-600 dark:text-blue-400">
               Portfolio project showcasing:
             </span>{' '}
@@ -275,7 +275,7 @@ const TONES: Record<string, string> = {
   fuchsia: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800',
   amber: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800',
   green: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
-  gray: 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700',
+  gray: 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700',
   teal: 'bg-teal-50 dark:bg-teal-900/20 border-teal-200 dark:border-teal-800',
 };
 
@@ -288,8 +288,8 @@ const FeatureCard: React.FC<{
   <div className={`flex items-start space-x-3 p-3 rounded-lg border ${TONES[tone]}`}>
     <span className="mt-0.5 flex-shrink-0">{icon}</span>
     <div>
-      <p className="text-sm font-bold text-gray-900 dark:text-white">{title}</p>
-      <p className="text-xs text-gray-600 dark:text-gray-300">{desc}</p>
+      <p className="text-sm font-bold text-slate-900 dark:text-white">{title}</p>
+      <p className="text-xs text-slate-600 dark:text-slate-300">{desc}</p>
     </div>
   </div>
 );
@@ -301,7 +301,7 @@ const UnderHood: React.FC<{ tone: string; title: string; items: string[] }> = ({
 }) => (
   <div>
     <p className={`text-xs font-bold mb-2 ${tone}`}>{title}</p>
-    <ul className="text-xs space-y-1.5 text-gray-700 dark:text-gray-300">
+    <ul className="text-xs space-y-1.5 text-slate-700 dark:text-slate-300">
       {items.map((it) => (
         <li key={it} className="flex items-start space-x-1.5">
           <span className={`font-bold mt-0.5 ${tone}`}>✓</span>

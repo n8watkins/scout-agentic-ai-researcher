@@ -40,14 +40,14 @@ export default function InlineKeyEntry({ onSaved, autoFocus = false }: InlineKey
           </span>
           <button
             onClick={removeApiKey}
-            className="text-xs text-gray-400 hover:text-red-500 underline"
+            className="text-xs text-slate-400 hover:text-red-500 underline"
           >
             Remove
           </button>
         </div>
       )}
 
-      <ol className="text-sm text-gray-600 dark:text-gray-300 space-y-1 list-decimal list-inside">
+      <ol className="text-sm text-slate-600 dark:text-slate-300 space-y-1 list-decimal list-inside">
         <li>
           Open{' '}
           <a
@@ -81,12 +81,12 @@ export default function InlineKeyEntry({ onSaved, autoFocus = false }: InlineKey
             }}
             placeholder="AIza... or AQ..."
             autoFocus={autoFocus}
-            className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+            className="w-full px-3 py-2 pr-10 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
           />
           <button
             type="button"
             onClick={() => setShowKey(!showKey)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
             aria-label={showKey ? 'Hide key' : 'Show key'}
           >
             {showKey ? (
@@ -105,7 +105,7 @@ export default function InlineKeyEntry({ onSaved, autoFocus = false }: InlineKey
           type="button"
           onClick={handleSave}
           disabled={!inputValue.trim()}
-          className="px-4 py-2 bg-blue-600 dark:bg-slate-700 text-white text-sm font-medium rounded-lg hover:bg-slate-700 dark:hover:bg-blue-600 transition disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-blue-600 dark:bg-slate-700 text-white text-sm font-medium rounded-lg hover:bg-slate-700 dark:hover:bg-blue-600 transition disabled:bg-slate-300 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
         >
           {hasApiKey ? 'Update Key' : 'Save Key'}
         </button>

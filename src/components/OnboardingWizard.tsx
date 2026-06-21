@@ -53,15 +53,15 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
         aria-modal="true"
         aria-label="Welcome to Scout"
         tabIndex={-1}
-        className="bg-white dark:bg-gray-900 rounded-2xl max-w-5xl w-full border border-slate-200 dark:border-slate-900/60 shadow-2xl shadow-blue-500/20 dark:shadow-blue-500/40 relative max-h-[90vh] flex flex-col outline-none"
+        className="bg-white dark:bg-slate-900 rounded-2xl max-w-5xl w-full border border-slate-200 dark:border-slate-900/60 shadow-2xl shadow-blue-500/20 dark:shadow-blue-500/40 relative max-h-[90vh] flex flex-col outline-none"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header: step pills + skip */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-gray-100 dark:border-gray-800">
+        <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-3">
             {STEPS.map((label, i) => (
               <React.Fragment key={label}>
-                {i > 0 && <div className="w-8 h-px bg-gray-300 dark:bg-gray-600" />}
+                {i > 0 && <div className="w-8 h-px bg-slate-300 dark:bg-slate-600" />}
                 <div className="flex items-center gap-2">
                   <span
                     className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
@@ -69,14 +69,14 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
                         ? 'bg-blue-600 text-white shadow-sm'
                         : step > i
                           ? 'bg-green-500 text-white'
-                          : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                          : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
                     }`}
                   >
                     {step > i ? '✓' : i + 1}
                   </span>
                   <span
                     className={`text-sm font-medium hidden sm:inline ${
-                      step === i ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-gray-500'
+                      step === i ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'
                     }`}
                   >
                     {label}
@@ -87,7 +87,7 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
           </div>
           <button
             onClick={onComplete}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
             aria-label="Skip intro"
             title="Skip intro"
           >
@@ -102,8 +102,8 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
               {/* Thesis callout */}
               <div className="mb-5 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800 flex items-start gap-3">
                 <SparklesIcon className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-gray-700 dark:text-gray-200">
-                  <span className="font-bold text-gray-900 dark:text-white">
+                <p className="text-sm text-slate-700 dark:text-slate-200">
+                  <span className="font-bold text-slate-900 dark:text-white">
                     Scout doesn&apos;t just answer &mdash; it shows its work.
                   </span>{' '}
                   Watch it plan, search, read, and cite, one step at a time. That visible agent loop
@@ -116,10 +116,10 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
           ) : (
             <div data-testid="onboarding-step-get-started" className="max-w-2xl mx-auto space-y-5">
               <div className="text-center">
-                <h2 className="text-gray-900 dark:text-white text-3xl font-bold mb-2">
+                <h2 className="text-slate-900 dark:text-white text-3xl font-bold mb-2">
                   You can run a research question right now
                 </h2>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">
+                <p className="text-slate-600 dark:text-slate-300 text-sm">
                   No signup, no API key &mdash; runs use a shared free demo key while it has capacity.
                 </p>
               </div>
@@ -132,7 +132,7 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
               {/* Surprise me */}
               <button
                 onClick={handleSurprise}
-                className="w-full px-4 py-3 rounded-xl border border-blue-300 dark:border-slate-700 bg-white dark:bg-gray-800 text-slate-700 dark:text-blue-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors flex items-center justify-center gap-2"
+                className="w-full px-4 py-3 rounded-xl border border-blue-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-blue-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors flex items-center justify-center gap-2"
                 data-testid="onboarding-surprise"
               >
                 <SparklesIcon className="w-5 h-5" />
@@ -140,10 +140,10 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
               </button>
 
               {/* BYOK expander */}
-              <div className="rounded-xl border border-gray-200 dark:border-gray-700">
+              <div className="rounded-xl border border-slate-200 dark:border-slate-700">
                 <button
                   onClick={() => setShowKeyEntry(!showKeyEntry)}
-                  className="w-full px-4 py-3 flex items-center justify-between text-left text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl transition-colors"
+                  className="w-full px-4 py-3 flex items-center justify-between text-left text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors"
                   data-testid="onboarding-byok-toggle"
                 >
                   <span>
@@ -167,7 +167,7 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
                 )}
               </div>
 
-              <p className="text-xs text-gray-400 dark:text-gray-500 text-center">
+              <p className="text-xs text-slate-400 dark:text-slate-500 text-center">
                 You can add or change a key anytime from the sidebar.
               </p>
             </div>
@@ -175,12 +175,12 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
         </div>
 
         {/* Footer navigation */}
-        <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-3">
+        <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
           {step === 0 ? (
             <>
               <button
                 onClick={onComplete}
-                className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                className="px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
               >
                 Skip intro
               </button>
@@ -196,7 +196,7 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
             <>
               <button
                 onClick={() => setStep(0)}
-                className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors flex items-center gap-1"
+                className="px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors flex items-center gap-1"
               >
                 <ChevronLeftIcon className="w-4 h-4" />
                 Back

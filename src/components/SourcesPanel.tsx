@@ -19,8 +19,8 @@ export default function SourcesPanel({
   if (citations.length === 0 && !running) return null;
 
   return (
-    <div className="rounded-2xl border border-slate-200 dark:border-slate-900/50 bg-white dark:bg-gray-900/60 backdrop-blur p-5">
-      <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-900/50 bg-white dark:bg-slate-900/60 backdrop-blur p-5">
+      <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
         Sources
         <span className="text-sm font-semibold text-blue-600 dark:text-blue-300 tabular-nums">
           ({citations.length})
@@ -37,7 +37,7 @@ export default function SourcesPanel({
       </h2>
 
       {citations.length === 0 ? (
-        <p className="text-sm text-gray-400 dark:text-gray-500 py-2">Looking for sources&hellip;</p>
+        <p className="text-sm text-slate-400 dark:text-slate-500 py-2">Looking for sources&hellip;</p>
       ) : (
         <ol className="space-y-2">
           {citations.map((c) => (
@@ -94,7 +94,7 @@ function SourceItem({ citation: c }: { citation: Citation }) {
             {faviconFor(c.url)}
             {c.title || c.url}
           </a>
-          <p className="text-xs text-gray-400 dark:text-gray-500 truncate flex items-center gap-1">
+          <p className="text-xs text-slate-400 dark:text-slate-500 truncate flex items-center gap-1">
             <LinkIcon className="w-3 h-3 flex-shrink-0" />
             {hostOf(c.url)}
           </p>
@@ -104,7 +104,7 @@ function SourceItem({ citation: c }: { citation: Citation }) {
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-label={open ? 'Hide preview' : 'Show preview'}
-            className="flex-shrink-0 self-start mt-0.5 text-gray-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
+            className="flex-shrink-0 self-start mt-0.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
           >
             <ChevronDownIcon className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
           </button>
@@ -117,7 +117,7 @@ function SourceItem({ citation: c }: { citation: Citation }) {
           }`}
         >
           <div className="overflow-hidden">
-            <p className="px-2.5 pb-2.5 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+            <p className="px-2.5 pb-2.5 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
               {c.snippet}
             </p>
           </div>

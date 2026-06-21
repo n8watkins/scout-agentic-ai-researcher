@@ -125,7 +125,7 @@ function Row({
   return (
     <div className="step-in flex gap-3 relative">
       <div className="flex flex-col items-center">
-        <div className="w-8 h-8 rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center shadow-sm z-10">
+        <div className="w-8 h-8 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center shadow-sm z-10">
           {icon}
         </div>
         <div className="flex-1 w-px bg-slate-200 dark:bg-slate-900/60 my-1" />

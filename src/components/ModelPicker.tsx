@@ -35,7 +35,7 @@ export default function ModelPicker() {
           value={model}
           onChange={(e) => setModel(e.target.value)}
           aria-label="Gemini model"
-          className="w-full px-2.5 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors cursor-pointer"
+          className="w-full px-2.5 py-2 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors cursor-pointer"
         >
           {MODELS.map((m) => {
             const locked = m.tier === 'byok' && !hasApiKey;

@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback, useEffect, useRef } from 'react';
 import { PaperAirplaneIcon } from '@heroicons/react/24/outline';
 
 interface ChatComposerProps {
@@ -12,6 +13,17 @@ interface ChatComposerProps {
 
 /** Docked follow-up composer for "talk to the report". Enter sends. */
 export default function ChatComposer({ value, onChange, onSend, streaming, error }: ChatComposerProps) {
+  const taRef = useRef<HTMLTextAreaElement>(null);
+  const autosize = useCallback(() => {
+    const el = taRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 128)}px`;
+  }, []);
+  useEffect(() => {
+    autosize();
+  }, [value, autosize]);
+
   return (
     <div className="px-3 py-2.5">
       {error && (
@@ -21,6 +33,7 @@ export default function ChatComposer({ value, onChange, onSend, streaming, error
       )}
       <div className="flex items-end gap-2">
         <textarea
+          ref={taRef}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={(e) => {

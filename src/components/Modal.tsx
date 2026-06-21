@@ -37,14 +37,14 @@ export default function Modal({ isOpen, onClose, children, title, maxWidth = 'ma
         aria-modal="true"
         aria-label={title}
         tabIndex={-1}
-        className={`bg-white dark:bg-gray-900 rounded-2xl ${maxWidth} w-full border border-slate-200 dark:border-slate-900/60 shadow-2xl shadow-blue-500/20 dark:shadow-blue-500/30 relative max-h-[90vh] flex flex-col outline-none`}
+        className={`bg-white dark:bg-slate-900 rounded-2xl ${maxWidth} w-full border border-slate-200 dark:border-slate-900/60 shadow-2xl shadow-blue-500/20 dark:shadow-blue-500/30 relative max-h-[90vh] flex flex-col outline-none`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-gray-100 dark:border-gray-800">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h2>
+        <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">{title}</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
             aria-label="Close"
           >
             <XMarkIcon className="w-6 h-6" />
