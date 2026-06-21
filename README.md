@@ -193,7 +193,19 @@ PORT=3100
 # file (ephemeral on Render's free tier). A free Turso DB (turso.tech) persists.
 TURSO_DATABASE_URL=
 TURSO_AUTH_TOKEN=
+
+# Optional: GitHub sign-in (Auth.js) for cross-device sync. Without these the
+# app stays local-first (runs + chats saved on-device via IndexedDB).
+AUTH_GITHUB_ID=
+AUTH_GITHUB_SECRET=
+AUTH_SECRET=
+NEXTAUTH_URL=http://localhost:3100
 ```
+
+**Persistence tiers:** signed out, runs + chats are saved **on your device**
+(IndexedDB) — private, survives redeploys, no account. Sign in with GitHub
+(optional) to **sync across devices** via Turso, keyed by your GitHub id; on
+first sign-in you're offered to import your on-device runs into the account.
 
 With **no search key**, Scout falls back to Wikipedia's keyless search API, so
 the demo produces real citable sources out of the box — add a Tavily key for

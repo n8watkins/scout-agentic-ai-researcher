@@ -48,3 +48,13 @@ services:
         sync: false
       - key: TURSO_AUTH_TOKEN
         sync: false
+      # Optional GitHub sign-in (Auth.js) for cross-device sync. Without these
+      # the app stays local-first. Callback: <url>/api/auth/callback/github
+      - key: AUTH_GITHUB_ID
+        sync: false
+      - key: AUTH_GITHUB_SECRET
+        sync: false
+      - key: AUTH_SECRET
+        sync: false
+      - key: NEXTAUTH_URL
+        value: https://scout-agentic-researcher.onrender.com
