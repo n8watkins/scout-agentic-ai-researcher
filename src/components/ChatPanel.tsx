@@ -180,9 +180,9 @@ export default function ChatPanel({ report, citations, apiKey, model, runId }: C
   }, [input, streaming, messages, apiKey, report, citations, model]);
 
   return (
-    <div className="rounded-2xl border border-violet-200 dark:border-violet-900/50 bg-white/70 dark:bg-gray-900/60 backdrop-blur p-5">
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-900/50 bg-white/70 dark:bg-gray-900/60 backdrop-blur p-5">
       <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
-        <ChatBubbleLeftRightIcon className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+        <ChatBubbleLeftRightIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
         Ask about this report
       </h2>
       <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
@@ -195,15 +195,15 @@ export default function ChatPanel({ report, citations, apiKey, model, runId }: C
           {messages.map((m, i) =>
             m.role === 'user' ? (
               <div key={i} className="flex justify-end">
-                <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-violet-600 text-white px-3.5 py-2 text-sm">
+                <div className="max-w-[85%] rounded-2xl rounded-br-sm bg-blue-600 text-white px-3.5 py-2 text-sm">
                   {m.content}
                 </div>
               </div>
             ) : (
               <div key={i} className="flex justify-start">
-                <div className="max-w-[90%] rounded-2xl rounded-bl-sm bg-violet-50 dark:bg-violet-900/20 border border-violet-100 dark:border-violet-900/40 px-3.5 py-2">
+                <div className="max-w-[90%] rounded-2xl rounded-bl-sm bg-slate-50 dark:bg-slate-900/20 border border-slate-100 dark:border-slate-900/40 px-3.5 py-2">
                   {m.searched && (
-                    <p className="text-[11px] font-medium text-violet-500 dark:text-violet-400 mb-1 inline-flex items-center gap-1">
+                    <p className="text-[11px] font-medium text-blue-500 dark:text-blue-400 mb-1 inline-flex items-center gap-1">
                       <GlobeAltIcon className="w-3.5 h-3.5" /> searched the web
                     </p>
                   )}
@@ -243,13 +243,13 @@ export default function ChatPanel({ report, citations, apiKey, model, runId }: C
           placeholder="Ask a follow-up about this report…"
           rows={1}
           disabled={streaming}
-          className="flex-1 resize-none rounded-xl border border-violet-300 dark:border-violet-800 bg-white/80 dark:bg-gray-900/70 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-violet-500 focus:border-transparent disabled:opacity-60"
+          className="flex-1 resize-none rounded-xl border border-blue-300 dark:border-slate-800 bg-white/80 dark:bg-gray-900/70 px-3.5 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-60"
         />
         <button
           onClick={() => void send()}
           disabled={streaming || !input.trim()}
           aria-label="Send"
-          className="flex-shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-xl bg-violet-600 hover:bg-violet-500 text-white transition-colors disabled:opacity-50"
+          className="flex-shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white transition-colors disabled:opacity-50"
         >
           <PaperAirplaneIcon className="w-5 h-5" />
         </button>

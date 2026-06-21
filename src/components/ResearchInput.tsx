@@ -49,7 +49,7 @@ export default function ResearchInput({
           placeholder="Ask a hard research question — Scout will plan, search, read, and cite…"
           rows={3}
           disabled={isRunning}
-          className="w-full resize-none rounded-2xl border border-violet-300 dark:border-violet-800 bg-white/80 dark:bg-gray-900/70 backdrop-blur px-4 py-3 pr-4 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-violet-500 focus:border-transparent disabled:opacity-60 shadow-sm"
+          className="w-full resize-none rounded-2xl border border-blue-300 dark:border-slate-800 bg-white/80 dark:bg-gray-900/70 backdrop-blur px-4 py-3 pr-4 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-60 shadow-sm"
         />
       </div>
 
@@ -62,7 +62,7 @@ export default function ResearchInput({
           type="button"
           onClick={() => onChange(randomSampleQuestion(value))}
           disabled={isRunning}
-          className="inline-flex items-center gap-1.5 text-sm text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:text-slate-700 dark:hover:text-blue-300 disabled:opacity-50"
         >
           <SparklesIcon className="w-4 h-4" />
           Surprise me
@@ -82,7 +82,7 @@ export default function ResearchInput({
             type="button"
             onClick={submit}
             disabled={disabled}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold shadow-sm transition-colors disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-sm transition-colors disabled:opacity-50"
           >
             <MagnifyingGlassIcon className="w-5 h-5" />
             Research

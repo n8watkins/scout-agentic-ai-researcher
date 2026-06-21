@@ -37,7 +37,7 @@ export default function Modal({ isOpen, onClose, children, title, maxWidth = 'ma
         aria-modal="true"
         aria-label={title}
         tabIndex={-1}
-        className={`bg-white dark:bg-gray-900 rounded-2xl ${maxWidth} w-full border border-violet-200 dark:border-violet-900/60 shadow-2xl shadow-violet-500/20 dark:shadow-violet-500/30 relative max-h-[90vh] flex flex-col outline-none`}
+        className={`bg-white dark:bg-gray-900 rounded-2xl ${maxWidth} w-full border border-slate-200 dark:border-slate-900/60 shadow-2xl shadow-blue-500/20 dark:shadow-blue-500/30 relative max-h-[90vh] flex flex-col outline-none`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-gray-100 dark:border-gray-800">

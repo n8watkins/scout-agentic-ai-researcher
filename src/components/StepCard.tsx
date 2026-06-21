@@ -17,8 +17,8 @@ export default function StepCard({ step }: { step: AgentStep }) {
 
   if (step.type === 'plan') {
     return (
-      <Row icon={<ClipboardDocumentListIcon className="w-5 h-5 text-fuchsia-500" />} tone="plan">
-        <p className="text-sm font-semibold text-fuchsia-700 dark:text-fuchsia-300 mb-1">Plan</p>
+      <Row icon={<ClipboardDocumentListIcon className="w-5 h-5 text-blue-500" />} tone="plan">
+        <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-1">Plan</p>
         <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans">
           {step.content}
         </pre>
@@ -42,14 +42,14 @@ export default function StepCard({ step }: { step: AgentStep }) {
       <Row
         icon={
           isSearch ? (
-            <MagnifyingGlassIcon className="w-5 h-5 text-violet-500" />
+            <MagnifyingGlassIcon className="w-5 h-5 text-blue-500" />
           ) : (
-            <DocumentTextIcon className="w-5 h-5 text-violet-500" />
+            <DocumentTextIcon className="w-5 h-5 text-blue-500" />
           )
         }
         tone="tool"
       >
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 text-sm font-medium">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-900/40 text-slate-700 dark:text-blue-300 text-sm font-medium">
           {isSearch ? '🔍' : '📄'} {step.label}
         </span>
       </Row>
@@ -61,7 +61,7 @@ export default function StepCard({ step }: { step: AgentStep }) {
       <Row icon={<span className="w-5 h-5 flex items-center justify-center text-green-500">✓</span>} tone="obs">
         <button
           onClick={() => setOpen(!open)}
-          className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400"
+          className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
         >
           <ChevronDownIcon className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
           {step.label ?? 'Observation'}
@@ -97,10 +97,10 @@ function Row({
   return (
     <div className="step-in flex gap-3 relative">
       <div className="flex flex-col items-center">
-        <div className="w-8 h-8 rounded-full bg-white dark:bg-gray-900 border border-violet-200 dark:border-violet-800 flex items-center justify-center shadow-sm z-10">
+        <div className="w-8 h-8 rounded-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center shadow-sm z-10">
           {icon}
         </div>
-        <div className="flex-1 w-px bg-violet-200 dark:bg-violet-900/60 my-1" />
+        <div className="flex-1 w-px bg-slate-200 dark:bg-slate-900/60 my-1" />
       </div>
       <div className="flex-1 pb-4 min-w-0">{children}</div>
     </div>

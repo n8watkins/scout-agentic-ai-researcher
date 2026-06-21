@@ -19,17 +19,17 @@ export default function SourcesPanel({
   if (citations.length === 0 && !running) return null;
 
   return (
-    <div className="rounded-2xl border border-violet-200 dark:border-violet-900/50 bg-white/70 dark:bg-gray-900/60 backdrop-blur p-5">
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-900/50 bg-white/70 dark:bg-gray-900/60 backdrop-blur p-5">
       <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
         Sources
-        <span className="text-sm font-semibold text-violet-600 dark:text-violet-300 tabular-nums">
+        <span className="text-sm font-semibold text-blue-600 dark:text-blue-300 tabular-nums">
           ({citations.length})
         </span>
         {running && (
-          <span className="ml-auto inline-flex items-center gap-1.5 text-xs font-medium text-violet-500 dark:text-violet-400">
+          <span className="ml-auto inline-flex items-center gap-1.5 text-xs font-medium text-blue-500 dark:text-blue-400">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
             </span>
             discovering&hellip;
           </span>
@@ -57,10 +57,10 @@ function SourceItem({ citation: c }: { citation: Citation }) {
   return (
     <li
       id={`source-${c.index}`}
-      className="source-in rounded-lg border border-violet-100 dark:border-violet-900/40"
+      className="source-in rounded-lg border border-slate-100 dark:border-slate-900/40"
     >
       <div className="flex gap-3 p-2.5">
-        <span className="flex-shrink-0 w-6 h-6 rounded-md bg-violet-600 text-white text-xs font-bold flex items-center justify-center mt-0.5">
+        <span className="flex-shrink-0 w-5 text-right text-blue-600 dark:text-blue-400 text-sm font-bold mt-0.5 tabular-nums">
           {c.index}
         </span>
         <div className="min-w-0 flex-1">
@@ -68,7 +68,7 @@ function SourceItem({ citation: c }: { citation: Citation }) {
             href={c.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm font-medium text-violet-700 dark:text-violet-300 hover:underline flex items-center gap-1 break-words"
+            className="text-sm font-medium text-slate-700 dark:text-blue-300 hover:underline flex items-center gap-1 break-words"
           >
             {faviconFor(c.url)}
             {c.title || c.url}
@@ -83,7 +83,7 @@ function SourceItem({ citation: c }: { citation: Citation }) {
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             aria-label={open ? 'Hide preview' : 'Show preview'}
-            className="flex-shrink-0 self-start mt-0.5 text-gray-400 hover:text-violet-600 dark:hover:text-violet-300 transition-colors"
+            className="flex-shrink-0 self-start mt-0.5 text-gray-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
           >
             <ChevronDownIcon className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
           </button>

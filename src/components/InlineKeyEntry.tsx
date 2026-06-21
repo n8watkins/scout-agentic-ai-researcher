@@ -54,7 +54,7 @@ export default function InlineKeyEntry({ onSaved, autoFocus = false }: InlineKey
             href="https://aistudio.google.com/apikey"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-violet-600 dark:text-violet-400 hover:underline font-medium"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
           >
             Google AI Studio
           </a>{' '}
@@ -81,7 +81,7 @@ export default function InlineKeyEntry({ onSaved, autoFocus = false }: InlineKey
             }}
             placeholder="AIza... or AQ..."
             autoFocus={autoFocus}
-            className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent font-mono text-sm"
+            className="w-full px-3 py-2 pr-10 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
           />
           <button
             type="button"
@@ -105,7 +105,7 @@ export default function InlineKeyEntry({ onSaved, autoFocus = false }: InlineKey
           type="button"
           onClick={handleSave}
           disabled={!inputValue.trim()}
-          className="px-4 py-2 bg-violet-600 dark:bg-violet-700 text-white text-sm font-medium rounded-lg hover:bg-violet-700 dark:hover:bg-violet-600 transition disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-blue-600 dark:bg-slate-700 text-white text-sm font-medium rounded-lg hover:bg-slate-700 dark:hover:bg-blue-600 transition disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
         >
           {hasApiKey ? 'Update Key' : 'Save Key'}
         </button>

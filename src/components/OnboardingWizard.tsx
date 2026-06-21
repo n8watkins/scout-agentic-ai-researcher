@@ -53,7 +53,7 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
         aria-modal="true"
         aria-label="Welcome to Scout"
         tabIndex={-1}
-        className="bg-white dark:bg-gray-900 rounded-2xl max-w-5xl w-full border border-violet-200 dark:border-violet-900/60 shadow-2xl shadow-violet-500/20 dark:shadow-violet-500/40 relative max-h-[90vh] flex flex-col outline-none"
+        className="bg-white dark:bg-gray-900 rounded-2xl max-w-5xl w-full border border-slate-200 dark:border-slate-900/60 shadow-2xl shadow-blue-500/20 dark:shadow-blue-500/40 relative max-h-[90vh] flex flex-col outline-none"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header: step pills + skip */}
@@ -66,7 +66,7 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
                   <span
                     className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
                       step === i
-                        ? 'bg-violet-600 text-white shadow-sm'
+                        ? 'bg-blue-600 text-white shadow-sm'
                         : step > i
                           ? 'bg-green-500 text-white'
                           : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
@@ -100,8 +100,8 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
           {step === 0 ? (
             <div data-testid="onboarding-step-about">
               {/* Thesis callout */}
-              <div className="mb-5 p-4 rounded-xl bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 flex items-start gap-3">
-                <SparklesIcon className="w-6 h-6 text-violet-600 dark:text-violet-400 flex-shrink-0 mt-0.5" />
+              <div className="mb-5 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800 flex items-start gap-3">
+                <SparklesIcon className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-gray-700 dark:text-gray-200">
                   <span className="font-bold text-gray-900 dark:text-white">
                     Scout doesn&apos;t just answer &mdash; it shows its work.
@@ -125,14 +125,14 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
               </div>
 
               {/* Demo-pool meter */}
-              <div className="p-4 rounded-xl bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800">
+              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800">
                 <PoolMeterBar usage={usage} variant="light" />
               </div>
 
               {/* Surprise me */}
               <button
                 onClick={handleSurprise}
-                className="w-full px-4 py-3 rounded-xl border border-violet-300 dark:border-violet-700 bg-white dark:bg-gray-800 text-violet-700 dark:text-violet-300 font-medium hover:bg-violet-50 dark:hover:bg-violet-900/30 transition-colors flex items-center justify-center gap-2"
+                className="w-full px-4 py-3 rounded-xl border border-blue-300 dark:border-slate-700 bg-white dark:bg-gray-800 text-slate-700 dark:text-blue-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors flex items-center justify-center gap-2"
                 data-testid="onboarding-surprise"
               >
                 <SparklesIcon className="w-5 h-5" />
@@ -186,7 +186,7 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
               </button>
               <button
                 onClick={() => setStep(1)}
-                className="px-8 py-3 bg-violet-600 hover:bg-violet-500 text-white font-semibold rounded-lg shadow-sm transition-colors"
+                className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg shadow-sm transition-colors"
                 data-testid="onboarding-next"
               >
                 Next: Get started &rarr;
@@ -203,7 +203,7 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
               </button>
               <button
                 onClick={onComplete}
-                className="px-8 py-3 bg-violet-600 hover:bg-violet-500 text-white font-semibold rounded-lg shadow-sm transition-colors"
+                className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg shadow-sm transition-colors"
                 data-testid="onboarding-start-researching"
               >
                 Start researching &rarr;

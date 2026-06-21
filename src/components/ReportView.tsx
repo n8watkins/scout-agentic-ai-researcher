@@ -25,7 +25,7 @@ export default function ReportView({ report, citations, stoppedEarly, question, 
   if (!report) return null;
 
   return (
-    <div className="rounded-2xl border border-violet-200 dark:border-violet-900/50 bg-white/70 dark:bg-gray-900/60 backdrop-blur p-6">
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-900/50 bg-white/70 dark:bg-gray-900/60 backdrop-blur p-6">
       <div className="flex items-start justify-between gap-3 mb-3">
         <h2 className="text-lg font-bold text-gray-900 dark:text-white">Report</h2>
         {stoppedEarly && (
@@ -81,8 +81,8 @@ function renderCitations(children: React.ReactNode, valid: Set<number>): React.R
               const el = document.getElementById(`source-${n}`);
               if (el) {
                 el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                el.classList.add('ring-2', 'ring-violet-500');
-                setTimeout(() => el.classList.remove('ring-2', 'ring-violet-500'), 1600);
+                el.classList.add('ring-2', 'ring-blue-500');
+                setTimeout(() => el.classList.remove('ring-2', 'ring-blue-500'), 1600);
               }
             }}
           >

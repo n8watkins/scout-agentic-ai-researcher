@@ -54,7 +54,7 @@ export default function Home() {
     state.steps.length > 0 || state.report || state.status !== 'idle';
 
   return (
-    <div className="relative h-screen overflow-hidden flex bg-violet-50/60 dark:bg-[#0c0a14]">
+    <div className="relative h-screen overflow-hidden flex bg-slate-50 dark:bg-slate-950">
       {/* Ambient glow */}
       <div className="scout-orb scout-orb-1" />
       <div className="scout-orb scout-orb-2" />
@@ -90,11 +90,11 @@ export default function Home() {
       {/* Main workspace */}
       <main className="relative flex-1 flex flex-col min-w-0 z-10">
         {/* Mobile top bar */}
-        <div className="md:hidden flex items-center gap-3 px-4 py-3 border-b border-violet-200 dark:border-violet-900/30">
-          <button onClick={() => setSidebarOpen(true)} className="text-violet-600 dark:text-violet-300">
+        <div className="md:hidden flex items-center gap-3 px-4 py-3 border-b border-slate-200 dark:border-slate-900/30">
+          <button onClick={() => setSidebarOpen(true)} className="text-blue-600 dark:text-blue-300">
             <Bars3Icon className="w-6 h-6" />
           </button>
-          <span className="font-bold text-violet-900 dark:text-white">Scout</span>
+          <span className="font-bold text-slate-900 dark:text-white">Scout</span>
           <button
             onClick={toggleDevView}
             aria-pressed={devView}
@@ -102,8 +102,8 @@ export default function Home() {
             title="Under the hood"
             className={`ml-auto inline-flex items-center justify-center rounded-lg p-2 transition-colors ${
               devView
-                ? 'bg-violet-600 text-white'
-                : 'text-violet-700 hover:bg-violet-100 dark:text-violet-200 dark:hover:bg-violet-800/40'
+                ? 'bg-blue-600 text-white'
+                : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800/40'
             }`}
           >
             <BeakerIcon className="w-4 h-4" />
@@ -116,10 +116,10 @@ export default function Home() {
             {/* Hero (idle) */}
             {!hasContent && (
               <div className="text-center pt-8 pb-2">
-                <h1 className="text-3xl md:text-4xl font-bold text-violet-700 dark:text-violet-300">
+                <h1 className="text-3xl md:text-4xl font-bold text-slate-700 dark:text-blue-300">
                   Watch an AI do research
                 </h1>
-                <p className="text-gray-500 dark:text-violet-200/70 mt-3 max-w-xl mx-auto">
+                <p className="text-gray-500 dark:text-slate-200/70 mt-3 max-w-xl mx-auto">
                   Ask a hard question. Scout will plan, search the web, read sources, and write a
                   cited report &mdash; live, one step at a time.
                 </p>
@@ -178,7 +178,7 @@ export default function Home() {
       {sidebarOpen && (
         <button
           onClick={() => setSidebarOpen(false)}
-          className="fixed top-3 right-3 z-50 md:hidden text-violet-200"
+          className="fixed top-3 right-3 z-50 md:hidden text-slate-200"
           aria-label="Close menu"
         >
           <XMarkIcon className="w-6 h-6" />

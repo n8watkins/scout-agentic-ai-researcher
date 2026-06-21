@@ -1,20 +1,21 @@
 @import "tailwindcss";
 
-/* Tailwind v4 dark mode configuration (same pattern as gemini-chat-app) */
+/* Tailwind v4 dark mode configuration */
 @variant dark (&:where(.dark, .dark *));
 
+/* Slate + a single blue accent. High-contrast in both modes. */
 :root {
-  --background: #faf5ff;
-  --foreground: #3b0764;
-  --accent: #7c3aed;
-  --accent-hover: #6d28d9;
+  --background: #f8fafc; /* slate-50 */
+  --foreground: #0f172a; /* slate-900 */
+  --accent: #2563eb;     /* blue-600 */
+  --accent-hover: #1d4ed8;
 }
 
 .dark {
-  --background: #0c0a14;
-  --foreground: #ede9fe;
-  --accent: #a855f7;
-  --accent-hover: #c084fc;
+  --background: #0f172a; /* slate-900 */
+  --foreground: #e2e8f0; /* slate-200 */
+  --accent: #60a5fa;     /* blue-400 */
+  --accent-hover: #93c5fd;
 }
 
 @theme inline {
@@ -40,65 +41,57 @@ body {
 .markdown-content p { margin-bottom: 0.85rem; }
 .markdown-content ul, .markdown-content ol { margin-left: 1.4rem; margin-bottom: 0.85rem; list-style: revert; }
 .markdown-content li { margin-bottom: 0.25rem; }
-.markdown-content a { color: #a855f7; text-decoration: underline; }
-.markdown-content a:hover { color: #c084fc; }
+.markdown-content a { color: #2563eb; text-decoration: underline; }
+.markdown-content a:hover { color: #1d4ed8; }
+.dark .markdown-content a { color: #60a5fa; }
+.dark .markdown-content a:hover { color: #93c5fd; }
 .markdown-content code {
-  background-color: rgba(168, 85, 247, 0.12);
+  background-color: rgba(100, 116, 139, 0.15);
   padding: 0.1rem 0.35rem;
   border-radius: 0.25rem;
   font-family: 'Courier New', monospace;
   font-size: 0.875em;
 }
 .markdown-content blockquote {
-  border-left: 3px solid #a855f7;
+  border-left: 3px solid #cbd5e1;
   padding-left: 0.9rem;
   margin: 0.85rem 0;
-  color: #9ca3af;
+  color: #64748b;
   font-style: italic;
 }
 
-/* Inline citation chips [n] in the report */
+/* Inline citation chips [n] in the report — a colored number, NOT a box. */
 .citation-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.25rem;
-  height: 1.25rem;
-  padding: 0 0.3rem;
-  margin: 0 0.15rem;
-  font-size: 0.72rem;
+  color: #2563eb;
   font-weight: 700;
-  line-height: 1;
-  border-radius: 0.3rem;
-  color: #fff;
-  /* Solid violet-700 — strong white-on-violet contrast (~6:1), readable. */
-  background: #6d28d9;
+  font-size: 0.8em;
+  vertical-align: super;
+  line-height: 0;
+  padding: 0 1px;
   text-decoration: none;
-  vertical-align: text-top;
   cursor: pointer;
-  transition: background-color 0.15s;
 }
-.citation-link:hover { background: #5b21b6; }
+.dark .citation-link { color: #60a5fa; }
+.citation-link:hover { text-decoration: underline; }
 
-/* Violet ambient glow (dark-first, low opacity) --------------------------- */
+/* Ambient glow — neutralized to a faint blue, very low opacity ------------ */
 .scout-orb {
   position: absolute;
   border-radius: 9999px;
-  filter: blur(110px);
-  opacity: 0.05;
+  filter: blur(120px);
+  opacity: 0.04;
   pointer-events: none;
   will-change: transform;
 }
-.dark .scout-orb { opacity: 0.1; }
+.dark .scout-orb { opacity: 0.08; }
 .scout-orb-1 {
   width: 32rem; height: 32rem; top: -10rem; left: -6rem;
-  background: radial-gradient(circle, #a855f7 0%, transparent 70%);
+  background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
   animation: scout-drift-1 70s ease-in-out infinite alternate;
 }
 .scout-orb-2 {
   width: 26rem; height: 26rem; bottom: -8rem; right: -6rem;
-  /* Desaturated to violet (was fuchsia) for a calmer, less neon glow. */
-  background: radial-gradient(circle, #a855f7 0%, transparent 70%);
+  background: radial-gradient(circle, #38bdf8 0%, transparent 70%);
   animation: scout-drift-2 86s ease-in-out infinite alternate;
 }
 @keyframes scout-drift-1 {
@@ -140,7 +133,7 @@ body {
   height: 1.05rem;
   margin-left: 2px;
   vertical-align: text-bottom;
-  background: #7c3aed;
+  background: #3b82f6;
   border-radius: 1px;
   animation: blink-cursor 1s steps(2, start) infinite;
 }
@@ -149,5 +142,5 @@ body {
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #6b21a8; border-radius: 4px; opacity: 0.4; }
-::-webkit-scrollbar-thumb:hover { background: #7c3aed; }
+::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #64748b; }

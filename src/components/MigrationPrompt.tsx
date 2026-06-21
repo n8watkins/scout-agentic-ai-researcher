@@ -67,15 +67,15 @@ export default function MigrationPrompt({ onDone }: { onDone?: () => void }) {
   };
 
   return (
-    <div className="rounded-lg border border-violet-300 dark:border-violet-700 bg-violet-50 dark:bg-violet-900/20 p-2.5 text-xs">
-      <p className="text-violet-800 dark:text-violet-200 mb-2">
+    <div className="rounded-lg border border-blue-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/20 p-2.5 text-xs">
+      <p className="text-slate-800 dark:text-slate-200 mb-2">
         Import {count} saved run{count === 1 ? '' : 's'} from this device into your account?
       </p>
       <div className="flex gap-2">
         <button
           onClick={() => void importAll()}
           disabled={busy}
-          className="inline-flex items-center gap-1 px-2 py-1 rounded bg-violet-600 hover:bg-violet-500 text-white font-medium transition-colors disabled:opacity-50"
+          className="inline-flex items-center gap-1 px-2 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium transition-colors disabled:opacity-50"
         >
           <ArrowUpTrayIcon className="w-3.5 h-3.5" />
           {busy ? 'Importing…' : 'Import'}
@@ -83,7 +83,7 @@ export default function MigrationPrompt({ onDone }: { onDone?: () => void }) {
         <button
           onClick={dismiss}
           disabled={busy}
-          className="px-2 py-1 rounded text-violet-600 dark:text-violet-300 hover:bg-violet-100 dark:hover:bg-violet-800/40 transition-colors"
+          className="px-2 py-1 rounded text-blue-600 dark:text-blue-300 hover:bg-slate-100 dark:hover:bg-slate-800/40 transition-colors"
         >
           Not now
         </button>

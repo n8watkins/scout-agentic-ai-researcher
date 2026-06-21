@@ -28,12 +28,12 @@ interface DevPanelProps {
 
 const DEFAULT_MAX_STEPS = 8;
 
-/** Phase/kind → bar color. Model phases get violet/fuchsia; tools get a teal. */
+/** Phase/kind → bar color. Model phases get distinct cool blues; tools get teal. */
 const BAR_COLOR: Record<string, string> = {
-  plan: 'bg-fuchsia-500',
-  'react-step': 'bg-violet-500',
-  summarize: 'bg-violet-400',
-  synthesize: 'bg-fuchsia-600',
+  plan: 'bg-blue-600',
+  'react-step': 'bg-blue-500',
+  summarize: 'bg-sky-400',
+  synthesize: 'bg-cyan-500',
   tool: 'bg-teal-500',
 };
 
@@ -82,15 +82,15 @@ export default function DevPanel({ events, maxSteps = DEFAULT_MAX_STEPS, running
 
   return (
     <section
-      className="rounded-2xl border border-violet-300/70 dark:border-violet-800/60 bg-white/70 dark:bg-[#100a1c]/70 backdrop-blur p-5 font-mono text-[12px] text-violet-950 dark:text-violet-100"
+      className="rounded-2xl border border-blue-300/70 dark:border-slate-800/60 bg-white/70 dark:bg-slate-900/70 backdrop-blur p-5 font-mono text-[12px] text-slate-950 dark:text-slate-100"
       aria-label="Under the hood developer panel"
     >
-      <header className="flex items-center gap-2 mb-4 pb-3 border-b border-violet-200 dark:border-violet-900/50">
-        <BeakerIcon className="w-5 h-5 text-fuchsia-500" />
-        <h2 className="text-sm font-bold tracking-tight text-violet-900 dark:text-white font-sans">
+      <header className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200 dark:border-slate-900/50">
+        <BeakerIcon className="w-5 h-5 text-blue-500" />
+        <h2 className="text-sm font-bold tracking-tight text-slate-900 dark:text-white font-sans">
           Under the hood
         </h2>
-        <span className="ml-auto text-[10px] uppercase tracking-wider text-violet-400 dark:text-violet-500 font-sans">
+        <span className="ml-auto text-[10px] uppercase tracking-wider text-blue-400 dark:text-blue-500 font-sans">
           live telemetry
         </span>
       </header>
@@ -111,7 +111,7 @@ export default function DevPanel({ events, maxSteps = DEFAULT_MAX_STEPS, running
 
 function EmptyState({ running }: { running?: boolean }) {
   return (
-    <p className="text-violet-500 dark:text-violet-400/80 font-sans text-sm py-6 text-center">
+    <p className="text-blue-500 dark:text-blue-400/80 font-sans text-sm py-6 text-center">
       {running
         ? 'Capturing model calls, tokens, latency and cost…'
         : 'Run a question to X-ray the agent — every model call, token count, latency, estimated cost, and raw tool result will show up here. An agent is a while-loop with a budget; this panel makes the budget visible.'}
@@ -134,16 +134,16 @@ function Totals({
       <Stat label="model calls" value={String(totals.modelCalls)} />
       <Stat label="tokens (in / out)" value={`${fmt(totals.tokensIn)} / ${fmt(totals.tokensOut)}`} />
       <Stat label="est. cost" value={formatUsd(totals.costUsd)} accent />
-      <div className="rounded-lg bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/50 px-3 py-2">
-        <p className="text-[10px] uppercase tracking-wider text-violet-400 dark:text-violet-500">
+      <div className="rounded-lg bg-slate-50 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800/50 px-3 py-2">
+        <p className="text-[10px] uppercase tracking-wider text-blue-400 dark:text-blue-500">
           steps vs budget
         </p>
-        <p className="text-sm font-bold text-violet-900 dark:text-white">
+        <p className="text-sm font-bold text-slate-900 dark:text-white">
           {reactSteps} / {maxSteps}
         </p>
-        <div className="mt-1 h-1.5 rounded-full bg-violet-200 dark:bg-violet-800/60 overflow-hidden">
+        <div className="mt-1 h-1.5 rounded-full bg-slate-200 dark:bg-slate-800/60 overflow-hidden">
           <div
-            className="h-full bg-violet-500 transition-all"
+            className="h-full bg-blue-500 transition-all"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -154,11 +154,11 @@ function Totals({
 
 function Stat({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className="rounded-lg bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/50 px-3 py-2">
-      <p className="text-[10px] uppercase tracking-wider text-violet-400 dark:text-violet-500">{label}</p>
+    <div className="rounded-lg bg-slate-50 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800/50 px-3 py-2">
+      <p className="text-[10px] uppercase tracking-wider text-blue-400 dark:text-blue-500">{label}</p>
       <p
         className={`text-sm font-bold ${
-          accent ? 'text-fuchsia-600 dark:text-fuchsia-400' : 'text-violet-900 dark:text-white'
+          accent ? 'text-blue-600 dark:text-blue-400' : 'text-slate-900 dark:text-white'
         }`}
       >
         {value}
@@ -178,31 +178,31 @@ function Waterfall({
 }) {
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-wider text-violet-400 dark:text-violet-500 mb-2 font-sans">
+      <p className="text-[10px] uppercase tracking-wider text-blue-400 dark:text-blue-500 mb-2 font-sans">
         call waterfall · {Math.round(span)}ms total
       </p>
       <div className="space-y-1.5">
         {timed.map((e) => {
           const isModel = e.kind === 'model_call';
           const phaseKey = isModel ? e.phase : 'tool';
-          const color = BAR_COLOR[phaseKey] ?? 'bg-violet-500';
+          const color = BAR_COLOR[phaseKey] ?? 'bg-blue-500';
           const left = ((e.startedAt - t0) / span) * 100;
           const width = Math.max(1.5, ((e.endedAt - e.startedAt) / span) * 100);
           const dur = e.endedAt - e.startedAt;
           const label = isModel ? e.phase : e.name;
           return (
             <div key={e.id} className="flex items-center gap-2">
-              <span className="w-24 shrink-0 truncate text-violet-600 dark:text-violet-300/90" title={label}>
+              <span className="w-24 shrink-0 truncate text-blue-600 dark:text-blue-300/90" title={label}>
                 {label}
               </span>
-              <div className="relative flex-1 h-4 rounded bg-violet-100/70 dark:bg-violet-900/30">
+              <div className="relative flex-1 h-4 rounded bg-slate-100/70 dark:bg-slate-900/30">
                 <div
                   className={`absolute top-0 h-4 rounded ${color}`}
                   style={{ left: `${left}%`, width: `${width}%` }}
                   title={`${label} · ${dur}ms`}
                 />
               </div>
-              <span className="w-14 shrink-0 text-right text-violet-400 dark:text-violet-500">{dur}ms</span>
+              <span className="w-14 shrink-0 text-right text-blue-400 dark:text-blue-500">{dur}ms</span>
             </div>
           );
         })}
@@ -221,7 +221,7 @@ function CallList({
   if (modelCalls.length === 0) return null;
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-wider text-violet-400 dark:text-violet-500 mb-2 font-sans inline-flex items-center gap-1">
+      <p className="text-[10px] uppercase tracking-wider text-blue-400 dark:text-blue-500 mb-2 font-sans inline-flex items-center gap-1">
         <CpuChipIcon className="w-3.5 h-3.5" /> model calls
       </p>
       <ul className="space-y-2">
@@ -243,18 +243,18 @@ function ModelCallRow({
   const dur = call.endedAt - call.startedAt;
   const at = call.startedAt - t0;
   return (
-    <li className="rounded-lg border border-violet-200 dark:border-violet-800/50 bg-violet-50/50 dark:bg-violet-900/15 px-3 py-2">
+    <li className="rounded-lg border border-slate-200 dark:border-slate-800/50 bg-slate-50/50 dark:bg-slate-900/15 px-3 py-2">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <span className="px-1.5 py-0.5 rounded bg-violet-200 dark:bg-violet-800/60 text-violet-800 dark:text-violet-200 font-semibold">
+        <span className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800/60 text-slate-800 dark:text-slate-200 font-semibold">
           {call.phase}
         </span>
-        <span className="text-violet-500 dark:text-violet-400">{call.model}</span>
-        <span className="text-violet-400 dark:text-violet-500">+{at}ms</span>
-        <span className="text-violet-400 dark:text-violet-500">{dur}ms</span>
-        <span className="ml-auto text-violet-700 dark:text-violet-200">
+        <span className="text-blue-500 dark:text-blue-400">{call.model}</span>
+        <span className="text-blue-400 dark:text-blue-500">+{at}ms</span>
+        <span className="text-blue-400 dark:text-blue-500">{dur}ms</span>
+        <span className="ml-auto text-slate-700 dark:text-slate-200">
           {fmt(call.tokensIn)} in / {fmt(call.tokensOut)} out
         </span>
-        <span className="text-fuchsia-600 dark:text-fuchsia-400 font-semibold">{formatUsd(call.costUsd)}</span>
+        <span className="text-blue-600 dark:text-blue-400 font-semibold">{formatUsd(call.costUsd)}</span>
       </div>
       {call.toolCall && (
         <p className="mt-1 text-teal-700 dark:text-teal-300">
@@ -275,7 +275,7 @@ function ToolList({
   if (toolExecs.length === 0) return null;
   return (
     <div>
-      <p className="text-[10px] uppercase tracking-wider text-violet-400 dark:text-violet-500 mb-2 font-sans inline-flex items-center gap-1">
+      <p className="text-[10px] uppercase tracking-wider text-blue-400 dark:text-blue-500 mb-2 font-sans inline-flex items-center gap-1">
         <WrenchScrewdriverIcon className="w-3.5 h-3.5" /> tool calls (raw, pre-summarization)
       </p>
       <ul className="space-y-2">
@@ -311,13 +311,13 @@ function Accordion({ label, children }: { label: string; children: string }) {
     <div className="mt-1.5">
       <button
         onClick={() => setOpen(!open)}
-        className="inline-flex items-center gap-1 text-violet-500 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-200"
+        className="inline-flex items-center gap-1 text-blue-500 dark:text-blue-400 hover:text-slate-700 dark:hover:text-slate-200"
       >
         <ChevronDownIcon className={`w-3.5 h-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
         {open ? 'hide' : 'show'} {label}
       </button>
       {open && (
-        <pre className="mt-1 whitespace-pre-wrap break-all max-h-72 overflow-y-auto rounded bg-violet-100/60 dark:bg-black/40 border border-violet-200 dark:border-violet-900/50 p-2 text-[11px] text-violet-800 dark:text-violet-200">
+        <pre className="mt-1 whitespace-pre-wrap break-all max-h-72 overflow-y-auto rounded bg-slate-100/60 dark:bg-black/40 border border-slate-200 dark:border-slate-900/50 p-2 text-[11px] text-slate-800 dark:text-slate-200">
           {children}
         </pre>
       )}

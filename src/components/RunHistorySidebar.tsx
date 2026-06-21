@@ -66,16 +66,16 @@ export default function RunHistorySidebar({
   };
 
   return (
-    <aside className="w-72 flex-shrink-0 h-full flex flex-col bg-violet-50/80 dark:bg-black/40 backdrop-blur border-r border-violet-200 dark:border-violet-900/40 text-violet-900 dark:text-violet-100">
+    <aside className="w-72 flex-shrink-0 h-full flex flex-col bg-slate-50/80 dark:bg-black/40 backdrop-blur border-r border-slate-200 dark:border-slate-900/40 text-slate-900 dark:text-slate-100">
       {/* Brand */}
-      <div className="px-4 py-4 border-b border-violet-200 dark:border-violet-900/40">
+      <div className="px-4 py-4 border-b border-slate-200 dark:border-slate-900/40">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center text-white font-black shadow-sm">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black shadow-sm">
             S
           </div>
           <div>
-            <p className="font-bold text-violet-900 dark:text-white leading-none">Scout</p>
-            <p className="text-[11px] text-violet-500 dark:text-violet-300/80">Agentic research</p>
+            <p className="font-bold text-slate-900 dark:text-white leading-none">Scout</p>
+            <p className="text-[11px] text-blue-500 dark:text-blue-300/80">Agentic research</p>
           </div>
         </div>
       </div>
@@ -83,7 +83,7 @@ export default function RunHistorySidebar({
       <div className="p-3">
         <button
           onClick={onNewRun}
-          className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-500 transition-colors"
+          className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm font-semibold hover:bg-blue-500 transition-colors"
         >
           <PlusIcon className="w-4 h-4" />
           New research
@@ -92,11 +92,11 @@ export default function RunHistorySidebar({
 
       {/* History */}
       <div className="flex-1 overflow-y-auto px-3">
-        <p className="text-[11px] uppercase tracking-wide text-violet-500 dark:text-violet-400/80 font-semibold px-1 mb-2 flex items-center gap-1">
+        <p className="text-[11px] uppercase tracking-wide text-blue-500 dark:text-blue-400/80 font-semibold px-1 mb-2 flex items-center gap-1">
           <ClockIcon className="w-3.5 h-3.5" /> Saved runs
         </p>
         {runs.length === 0 ? (
-          <p className="text-xs text-violet-500/80 dark:text-violet-400/70 px-1">No saved runs yet. Your completed research will appear here.</p>
+          <p className="text-xs text-blue-500/80 dark:text-blue-400/70 px-1">No saved runs yet. Your completed research will appear here.</p>
         ) : (
           <ul className="space-y-1">
             {runs.map((r) => (
@@ -105,8 +105,8 @@ export default function RunHistorySidebar({
                   onClick={() => handleSelect(r.id)}
                   className={`group w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-start gap-2 ${
                     activeRunId === r.id
-                      ? 'bg-violet-200 text-violet-900 dark:bg-violet-700/50 dark:text-white'
-                      : 'text-violet-700 hover:bg-violet-100 dark:text-violet-200 dark:hover:bg-violet-800/40'
+                      ? 'bg-slate-200 text-slate-900 dark:bg-slate-700/50 dark:text-white'
+                      : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800/40'
                   }`}
                 >
                   <span className="flex-1 line-clamp-2 leading-snug">{r.question}</span>
@@ -122,17 +122,17 @@ export default function RunHistorySidebar({
       </div>
 
       {/* Footer: usage + BYOK + about */}
-      <div className="p-3 space-y-2 border-t border-violet-200 dark:border-violet-900/40">
+      <div className="p-3 space-y-2 border-t border-slate-200 dark:border-slate-900/40">
         <AuthControls />
         <MigrationPrompt onDone={load} />
         <SidebarUsageMeter hasOwnKey={hasApiKey} />
 
         <ModelPicker />
 
-        <div className="rounded-lg border border-violet-200 dark:border-violet-800/50">
+        <div className="rounded-lg border border-slate-200 dark:border-slate-800/50">
           <button
             onClick={() => setShowKey(!showKey)}
-            className="w-full px-3 py-2 flex items-center justify-between text-left text-xs text-violet-700 hover:bg-violet-100 dark:text-violet-200 dark:hover:bg-violet-800/30 rounded-lg transition-colors"
+            className="w-full px-3 py-2 flex items-center justify-between text-left text-xs text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800/30 rounded-lg transition-colors"
           >
             <span className="inline-flex items-center gap-1.5">
               <KeyIcon className="w-4 h-4" />
@@ -148,7 +148,7 @@ export default function RunHistorySidebar({
             </svg>
           </button>
           {showKey && (
-            <div className="px-3 pb-3 pt-1 text-violet-900 dark:text-violet-100">
+            <div className="px-3 pb-3 pt-1 text-slate-900 dark:text-slate-100">
               <InlineKeyEntry />
             </div>
           )}
@@ -160,8 +160,8 @@ export default function RunHistorySidebar({
           aria-pressed={devView}
           className={`w-full inline-flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
             devView
-              ? 'bg-violet-600 text-white'
-              : 'text-violet-700 hover:bg-violet-100 dark:text-violet-200 dark:hover:bg-violet-800/30 border border-violet-200 dark:border-violet-800/50'
+              ? 'bg-blue-600 text-white'
+              : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800/30 border border-slate-200 dark:border-slate-800/50'
           }`}
           title="Show the model calls, tokens, latency and cost underneath each run"
         >
@@ -171,7 +171,7 @@ export default function RunHistorySidebar({
           </span>
           <span
             className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${
-              devView ? 'bg-white/30' : 'bg-violet-300 dark:bg-violet-700/60'
+              devView ? 'bg-white/30' : 'bg-blue-300 dark:bg-slate-700/60'
             }`}
           >
             <span
@@ -185,7 +185,7 @@ export default function RunHistorySidebar({
         <div className="flex items-center gap-2">
           <button
             onClick={onOpenAbout}
-            className="flex-1 inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-violet-700 hover:bg-violet-100 dark:text-violet-200 dark:hover:bg-violet-800/30 transition-colors"
+            className="flex-1 inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800/30 transition-colors"
           >
             <InformationCircleIcon className="w-4 h-4" />
             About Scout
