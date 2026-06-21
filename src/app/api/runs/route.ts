@@ -1,38 +1,44 @@
 import { NextRequest } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/authOptions';
 import { listRuns, saveRun } from '@/lib/db';
 import type { SavedRun } from '@/lib/agent/types';
 import { logger } from '@/lib/logger';
 import { allowRunWrite } from '@/lib/usage';
-import { clientIp, sessionId } from '@/lib/request';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// Payload caps — saved runs render in the sidebar of every owning session, so
-// keep them sane and cheap to store.
+// Payload caps — keep saved runs sane and cheap to store.
 const MAX_QUESTION = 500;
 const MAX_REPORT = 100_000;
 const MAX_STEPS = 200;
 const MAX_CITATIONS = 100;
 
-/** GET /api/runs — list this session's saved run summaries (most recent first). */
-export async function GET(req: NextRequest) {
-  const sid = sessionId(req);
-  if (!sid) return Response.json({ runs: [] });
+/** The signed-in user's stable id, or null. Anonymous users persist locally. */
+async function ownerId(): Promise<string | null> {
+  const session = await getServerSession(authOptions);
+  return session?.user?.id ?? null;
+}
+
+/** GET /api/runs — list the signed-in user's saved runs (most recent first). */
+export async function GET() {
+  const owner = await ownerId();
+  if (!owner) return Response.json({ runs: [] });
   try {
-    return Response.json({ runs: await listRuns(sid) });
+    return Response.json({ runs: await listRuns(owner) });
   } catch (err) {
     logger.error('listRuns failed', { err: String(err) });
     return Response.json({ runs: [] });
   }
 }
 
-/** POST /api/runs — save a completed run, scoped to the caller's session. */
+/** POST /api/runs — save a completed run for the signed-in user. */
 export async function POST(req: NextRequest) {
-  const sid = sessionId(req);
-  if (!sid) return Response.json({ error: 'Missing session id' }, { status: 400 });
+  const owner = await ownerId();
+  if (!owner) return Response.json({ error: 'Sign in to sync runs' }, { status: 401 });
 
-  if (!allowRunWrite(sid || clientIp(req))) {
+  if (!allowRunWrite(owner)) {
     return Response.json({ error: 'Too many requests' }, { status: 429 });
   }
 
@@ -67,7 +73,7 @@ export async function POST(req: NextRequest) {
   };
 
   try {
-    await saveRun(run, sid);
+    await saveRun(run, owner);
     return Response.json({ ok: true, id: run.id });
   } catch (err) {
     logger.error('saveRun failed', { err: String(err) });

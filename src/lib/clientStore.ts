@@ -1,7 +1,9 @@
 'use client';
 
 import { get, set, del, entries } from 'idb-keyval';
-import type { SavedRun } from './agent/types';
+import type { SavedRun, ChatMessage } from './agent/types';
+
+export type { ChatMessage };
 
 /**
  * Client-side, on-device persistence (IndexedDB) for anonymous visitors — the
@@ -24,13 +26,6 @@ export interface RunSummary {
   question: string;
   stoppedEarly: boolean;
   createdAt: number;
-}
-
-export interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
-  /** True if the assistant ran a web search to answer this one. */
-  searched?: boolean;
 }
 
 /** Most-recent-first run summaries for the sidebar. */

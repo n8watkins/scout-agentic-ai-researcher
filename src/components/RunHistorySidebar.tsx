@@ -9,7 +9,8 @@ import {
   PlusIcon,
   BeakerIcon,
 } from '@heroicons/react/24/outline';
-import { listLocalRuns, getLocalRun, deleteLocalRun, type RunSummary } from '@/lib/clientStore';
+import { type RunSummary } from '@/lib/clientStore';
+import { usePersistence } from '@/lib/persistence';
 import type { SavedRun } from '@/lib/agent/types';
 import { useApiKey } from '@/hooks/useApiKey';
 import InlineKeyEntry from './InlineKeyEntry';
@@ -17,6 +18,7 @@ import ModelPicker from './ModelPicker';
 import SidebarUsageMeter from './UsageMeter';
 import ThemeToggle from './ThemeToggle';
 import AuthControls from './AuthControls';
+import MigrationPrompt from './MigrationPrompt';
 
 interface RunHistorySidebarProps {
   activeRunId: string | null;
@@ -42,23 +44,24 @@ export default function RunHistorySidebar({
   const [runs, setRuns] = useState<RunSummary[]>([]);
   const [showKey, setShowKey] = useState(false);
   const { hasApiKey } = useApiKey();
+  const store = usePersistence();
 
   const load = useCallback(async () => {
-    setRuns(await listLocalRuns());
-  }, []);
+    setRuns(await store.listRuns());
+  }, [store]);
 
   useEffect(() => {
     void load();
   }, [load, refreshKey]);
 
   const handleSelect = async (id: string) => {
-    const run = await getLocalRun(id);
+    const run = await store.getRun(id);
     if (run) onSelectRun(run);
   };
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    await deleteLocalRun(id);
+    await store.deleteRun(id);
     void load();
   };
 
@@ -121,6 +124,7 @@ export default function RunHistorySidebar({
       {/* Footer: usage + BYOK + about */}
       <div className="p-3 space-y-2 border-t border-violet-200 dark:border-violet-900/40">
         <AuthControls />
+        <MigrationPrompt onDone={load} />
         <SidebarUsageMeter hasOwnKey={hasApiKey} />
 
         <ModelPicker />

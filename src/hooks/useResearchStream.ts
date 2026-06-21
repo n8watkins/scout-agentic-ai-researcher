@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from 'react';
 import type { AgentStep, Citation } from '@/lib/agent/types';
 import type { TraceEvent } from '@/lib/devtrace';
 import { refreshUsage } from './useUsageInfo';
-import { saveLocalRun } from '@/lib/clientStore';
+import { usePersistence } from '@/lib/persistence';
 
 export type RunStatus = 'idle' | 'running' | 'done' | 'error' | 'aborted';
 
@@ -43,6 +43,11 @@ const INITIAL: ResearchState = {
 export function useResearchStream() {
   const [state, setState] = useState<ResearchState>(INITIAL);
   const abortRef = useRef<AbortController | null>(null);
+  // Persistence backend (server when signed in, else on-device). Held in a ref
+  // so the run() callback always saves to the current backend without re-binding.
+  const store = usePersistence();
+  const storeRef = useRef(store);
+  storeRef.current = store;
 
   const stop = useCallback(() => {
     abortRef.current?.abort();
@@ -162,9 +167,9 @@ export function useResearchStream() {
       setState((s) => ({ ...s, status: 'done', statusLabel: '' }));
       void refreshUsage();
 
-      // Persist the completed run to on-device storage (best effort).
+      // Persist the completed run (server if signed in, else on-device).
       if (report) {
-        void saveLocalRun({
+        void storeRef.current.saveRun({
           id: runId,
           question,
           report,

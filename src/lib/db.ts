@@ -1,7 +1,7 @@
 import { createClient, type Client } from '@libsql/client';
 import path from 'node:path';
 import fs from 'node:fs';
-import type { AgentStep, Citation, SavedRun } from './agent/types';
+import type { AgentStep, Citation, ChatMessage, SavedRun } from './agent/types';
 import { logger } from './logger';
 
 /**
@@ -47,12 +47,18 @@ function getClient(): Promise<Client> {
         citations TEXT NOT NULL,
         steps TEXT NOT NULL,
         stopped_early INTEGER NOT NULL DEFAULT 0,
-        created_at INTEGER NOT NULL
+        created_at INTEGER NOT NULL,
+        chat TEXT NOT NULL DEFAULT '[]'
       )
     `);
     await client.execute(
       `CREATE INDEX IF NOT EXISTS idx_runs_session ON runs(session_id, created_at DESC)`
     );
+    // Migrate older tables that predate the chat column.
+    const info = await client.execute(`PRAGMA table_info(runs)`);
+    if (!info.rows.some((r) => String(r.name) === 'chat')) {
+      await client.execute(`ALTER TABLE runs ADD COLUMN chat TEXT NOT NULL DEFAULT '[]'`);
+    }
     return client;
   })();
   return clientPromise;
@@ -130,5 +136,29 @@ export async function deleteRun(id: string, sessionId: string): Promise<void> {
   await client.execute({
     sql: `DELETE FROM runs WHERE id = ? AND session_id = ?`,
     args: [id, sessionId],
+  });
+}
+
+/** Get the saved follow-up chat thread for a run (owner-scoped). */
+export async function getRunChat(id: string, ownerId: string): Promise<ChatMessage[]> {
+  const client = await getClient();
+  const rs = await client.execute({
+    sql: `SELECT chat FROM runs WHERE id = ? AND session_id = ?`,
+    args: [id, ownerId],
+  });
+  if (!rs.rows.length) return [];
+  try {
+    return JSON.parse(String(rs.rows[0].chat ?? '[]')) as ChatMessage[];
+  } catch {
+    return [];
+  }
+}
+
+/** Replace the follow-up chat thread for a run (owner-scoped). */
+export async function setRunChat(id: string, ownerId: string, messages: ChatMessage[]): Promise<void> {
+  const client = await getClient();
+  await client.execute({
+    sql: `UPDATE runs SET chat = ? WHERE id = ? AND session_id = ?`,
+    args: [JSON.stringify(messages ?? []), id, ownerId],
   });
 }

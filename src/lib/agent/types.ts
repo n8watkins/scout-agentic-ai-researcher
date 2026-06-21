@@ -80,3 +80,11 @@ export interface SavedRun {
   stoppedEarly: boolean;
   createdAt: number;
 }
+
+/** One message in a "talk to the report" follow-up chat. */
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  /** True if the assistant ran a web search to answer this one. */
+  searched?: boolean;
+}

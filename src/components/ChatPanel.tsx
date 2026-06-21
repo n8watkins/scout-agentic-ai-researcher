@@ -9,7 +9,8 @@ import {
   GlobeAltIcon,
 } from '@heroicons/react/24/outline';
 import type { Citation } from '@/lib/agent/types';
-import { getLocalChat, saveLocalChat, type ChatMessage } from '@/lib/clientStore';
+import { type ChatMessage } from '@/lib/clientStore';
+import { usePersistence } from '@/lib/persistence';
 
 interface ChatPanelProps {
   report: string;
@@ -33,6 +34,7 @@ export default function ChatPanel({ report, citations, apiKey, model, runId }: C
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
+  const store = usePersistence();
 
   // Load this run's saved chat (or clear) whenever the shown run changes.
   useEffect(() => {
@@ -43,7 +45,7 @@ export default function ChatPanel({ report, citations, apiKey, model, runId }: C
     setStreaming(false);
     let active = true;
     if (runId) {
-      void getLocalChat(runId).then((saved) => {
+      void store.getChat(runId).then((saved) => {
         if (active) setMessages(saved);
       });
     } else {
@@ -52,14 +54,14 @@ export default function ChatPanel({ report, citations, apiKey, model, runId }: C
     return () => {
       active = false;
     };
-  }, [runId]);
+  }, [runId, store]);
 
-  // Persist the thread on-device once a turn finishes streaming.
+  // Persist the thread (server if signed in, else on-device) after each turn.
   useEffect(() => {
     if (runId && !streaming && messages.length > 0) {
-      void saveLocalChat(runId, messages);
+      void store.saveChat(runId, messages);
     }
-  }, [streaming, runId, messages]);
+  }, [streaming, runId, messages, store]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
