@@ -7,6 +7,7 @@ import AboutModal from '@/components/AboutModal';
 import RunHistorySidebar from '@/components/RunHistorySidebar';
 import Header from '@/components/Header';
 import ResearchInput from '@/components/ResearchInput';
+import HeroTypewriter from '@/components/HeroTypewriter';
 import AgentTrace from '@/components/AgentTrace';
 import ReportView from '@/components/ReportView';
 import SourcesPanel from '@/components/SourcesPanel';
@@ -76,7 +77,6 @@ export default function Home() {
           refreshKey={refreshKey}
           onSelectRun={handleSelectRun}
           onNewRun={handleNewRun}
-          onOpenAbout={() => setAboutOpen(true)}
         />
       </div>
       {sidebarOpen && (
@@ -87,62 +87,76 @@ export default function Home() {
       <main className="relative flex-1 flex flex-col min-w-0 z-10">
         <Header
           onOpenSidebar={() => setSidebarOpen(true)}
+          onOpenAbout={() => setAboutOpen(true)}
           devView={devView}
           onToggleDevView={toggleDevView}
         />
 
         <div className="flex-1 flex min-h-0">
           {/* Center column — scrolls independently */}
-          <div className="flex-1 overflow-y-auto px-4 py-6 md:px-8">
-            <div className="max-w-3xl mx-auto w-full space-y-6">
-              {!hasContent && (
-                <div className="text-center pt-6 pb-2">
-                  <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
-                    Watch an AI do research
+          <div className="flex-1 overflow-y-auto">
+            {!hasContent ? (
+              /* Idle: hero + input vertically centered in the viewport */
+              <div className="min-h-full flex flex-col items-center justify-center px-4 py-10">
+                <div className="w-full max-w-2xl text-center">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white leading-tight">
+                    Watch an AI research <HeroTypewriter />
                   </h1>
-                  <p className="text-slate-500 dark:text-slate-400 mt-3 max-w-xl mx-auto">
-                    Ask a hard question. Scout will plan, search the web, read sources, and write a
+                  <p className="text-slate-500 dark:text-slate-400 mt-3 mb-6 max-w-xl mx-auto">
+                    Ask a hard question and watch Scout plan, search the web, read sources, and write a
                     cited report &mdash; live, one step at a time.
                   </p>
+                  <ResearchInput
+                    value={question}
+                    onChange={setQuestion}
+                    onSubmit={handleSubmit}
+                    onStop={stop}
+                    isRunning={isRunning}
+                    disabled={!question.trim()}
+                  />
                 </div>
-              )}
+              </div>
+            ) : (
+              <div className="px-4 py-6 md:px-8">
+                <div className="max-w-3xl mx-auto w-full space-y-6">
+                  <ResearchInput
+                    value={question}
+                    onChange={setQuestion}
+                    onSubmit={handleSubmit}
+                    onStop={stop}
+                    isRunning={isRunning}
+                    disabled={!question.trim()}
+                  />
 
-              <ResearchInput
-                value={question}
-                onChange={setQuestion}
-                onSubmit={handleSubmit}
-                onStop={stop}
-                isRunning={isRunning}
-                disabled={!question.trim()}
-              />
+                  {state.error && (
+                    <div className="rounded-xl border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-300">
+                      {state.error}
+                    </div>
+                  )}
 
-              {state.error && (
-                <div className="rounded-xl border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-300">
-                  {state.error}
+                  <AgentTrace steps={state.steps} status={state.status} statusLabel={state.statusLabel} />
+
+                  {devView && <DevPanel events={state.telemetry} maxSteps={8} running={isRunning} />}
+
+                  {state.report && (
+                    <ReportView
+                      report={state.report}
+                      citations={state.citations}
+                      stoppedEarly={state.stoppedEarly}
+                      question={state.question}
+                      streaming={isRunning}
+                    />
+                  )}
+
+                  {/* Sources inline under the report on small screens */}
+                  {hasSources && (
+                    <div className="lg:hidden">
+                      <SourcesPanel citations={state.citations} running={isRunning} />
+                    </div>
+                  )}
                 </div>
-              )}
-
-              <AgentTrace steps={state.steps} status={state.status} statusLabel={state.statusLabel} />
-
-              {devView && <DevPanel events={state.telemetry} maxSteps={8} running={isRunning} />}
-
-              {state.report && (
-                <ReportView
-                  report={state.report}
-                  citations={state.citations}
-                  stoppedEarly={state.stoppedEarly}
-                  question={state.question}
-                  streaming={isRunning}
-                />
-              )}
-
-              {/* Sources inline under the report on small screens */}
-              {hasSources && (
-                <div className="lg:hidden">
-                  <SourcesPanel citations={state.citations} running={isRunning} />
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Sources as a right-side column on large screens */}

@@ -82,7 +82,7 @@ export default function DevPanel({ events, maxSteps = DEFAULT_MAX_STEPS, running
 
   return (
     <section
-      className="rounded-2xl border border-blue-300/70 dark:border-slate-800/60 bg-white/70 dark:bg-slate-900/70 backdrop-blur p-5 font-mono text-[12px] text-slate-950 dark:text-slate-100"
+      className="rounded-2xl border border-blue-300/70 dark:border-slate-800/60 bg-white dark:bg-slate-900/70 backdrop-blur p-5 font-mono text-[12px] text-slate-950 dark:text-slate-100"
       aria-label="Under the hood developer panel"
     >
       <header className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200 dark:border-slate-900/50">

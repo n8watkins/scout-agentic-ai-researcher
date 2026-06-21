@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   ClockIcon,
   TrashIcon,
-  InformationCircleIcon,
   KeyIcon,
   PlusIcon,
 } from '@heroicons/react/24/outline';
@@ -14,7 +13,6 @@ import type { SavedRun } from '@/lib/agent/types';
 import { useApiKey } from '@/hooks/useApiKey';
 import InlineKeyEntry from './InlineKeyEntry';
 import ModelPicker from './ModelPicker';
-import SidebarUsageMeter from './UsageMeter';
 import MigrationPrompt from './MigrationPrompt';
 
 interface RunHistorySidebarProps {
@@ -23,7 +21,6 @@ interface RunHistorySidebarProps {
   refreshKey: number;
   onSelectRun: (run: SavedRun) => void;
   onNewRun: () => void;
-  onOpenAbout: () => void;
 }
 
 export default function RunHistorySidebar({
@@ -31,7 +28,6 @@ export default function RunHistorySidebar({
   refreshKey,
   onSelectRun,
   onNewRun,
-  onOpenAbout,
 }: RunHistorySidebarProps) {
   const [runs, setRuns] = useState<RunSummary[]>([]);
   const [showKey, setShowKey] = useState(false);
@@ -67,7 +63,7 @@ export default function RunHistorySidebar({
           </div>
           <div>
             <p className="font-bold text-slate-900 dark:text-white leading-none">Scout</p>
-            <p className="text-[11px] text-blue-500 dark:text-blue-300/80">Agentic research</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">Agentic research</p>
           </div>
         </div>
       </div>
@@ -84,11 +80,11 @@ export default function RunHistorySidebar({
 
       {/* History */}
       <div className="flex-1 overflow-y-auto px-3">
-        <p className="text-[11px] uppercase tracking-wide text-blue-500 dark:text-blue-400/80 font-semibold px-1 mb-2 flex items-center gap-1">
+        <p className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400 font-semibold px-1 mb-2 flex items-center gap-1">
           <ClockIcon className="w-3.5 h-3.5" /> Saved runs
         </p>
         {runs.length === 0 ? (
-          <p className="text-xs text-blue-500/80 dark:text-blue-400/70 px-1">No saved runs yet. Your completed research will appear here.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 px-1">No saved runs yet. Your completed research will appear here.</p>
         ) : (
           <ul className="space-y-1">
             {runs.map((r) => (
@@ -116,7 +112,6 @@ export default function RunHistorySidebar({
       {/* Footer: usage + BYOK + about */}
       <div className="p-3 space-y-2 border-t border-slate-200 dark:border-slate-900/40">
         <MigrationPrompt onDone={load} />
-        <SidebarUsageMeter hasOwnKey={hasApiKey} />
 
         <ModelPicker />
 
@@ -144,14 +139,6 @@ export default function RunHistorySidebar({
             </div>
           )}
         </div>
-
-        <button
-          onClick={onOpenAbout}
-          className="w-full inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800/30 transition-colors"
-        >
-          <InformationCircleIcon className="w-4 h-4" />
-          About Scout
-        </button>
       </div>
     </aside>
   );

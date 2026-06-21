@@ -19,7 +19,7 @@ export default function SourcesPanel({
   if (citations.length === 0 && !running) return null;
 
   return (
-    <div className="rounded-2xl border border-slate-200 dark:border-slate-900/50 bg-white/70 dark:bg-gray-900/60 backdrop-blur p-5">
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-900/50 bg-white dark:bg-gray-900/60 backdrop-blur p-5">
       <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
         Sources
         <span className="text-sm font-semibold text-blue-600 dark:text-blue-300 tabular-nums">

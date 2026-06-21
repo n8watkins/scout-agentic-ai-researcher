@@ -24,7 +24,7 @@ export function PoolMeterBar({ usage, variant = 'light' }: PoolMeterBarProps) {
     : 'text-slate-800 dark:text-slate-200';
   const subClass = light
     ? 'text-gray-500 dark:text-gray-400'
-    : 'text-blue-600 dark:text-blue-300/80';
+    : 'text-slate-500 dark:text-slate-400';
   const trackClass = light
     ? 'bg-gray-200 dark:bg-gray-700'
     : 'bg-slate-200 dark:bg-slate-950/60';
@@ -98,7 +98,7 @@ export default function SidebarUsageMeter({ hasOwnKey }: SidebarUsageMeterProps)
               active
             </span>
           </div>
-          <p className="text-xs text-blue-600 dark:text-blue-300/80">Unlimited research on your own key</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Unlimited research on your own key</p>
         </div>
       ) : (
         <PoolMeterBar usage={usage} variant="dark" />

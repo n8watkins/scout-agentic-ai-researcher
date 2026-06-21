@@ -27,7 +27,7 @@ export default function AgentTrace({ steps, status, statusLabel }: AgentTracePro
   if (visible.length === 0 && !running) return null;
 
   return (
-    <div className="rounded-2xl border border-slate-200 dark:border-slate-900/50 bg-white/60 dark:bg-gray-900/50 backdrop-blur p-5">
+    <div className="rounded-2xl border border-slate-200 dark:border-slate-900/50 bg-white dark:bg-gray-900/50 backdrop-blur p-5">
       {/* Cycling status line — the anti-spinner */}
       {running && (
         <div className="flex items-center gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-900/40">
