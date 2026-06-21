@@ -16,6 +16,7 @@ import InlineKeyEntry from './InlineKeyEntry';
 import ModelPicker from './ModelPicker';
 import SidebarUsageMeter from './UsageMeter';
 import ThemeToggle from './ThemeToggle';
+import AuthControls from './AuthControls';
 
 interface RunHistorySidebarProps {
   activeRunId: string | null;
@@ -119,6 +120,7 @@ export default function RunHistorySidebar({
 
       {/* Footer: usage + BYOK + about */}
       <div className="p-3 space-y-2 border-t border-violet-200 dark:border-violet-900/40">
+        <AuthControls />
         <SidebarUsageMeter hasOwnKey={hasApiKey} />
 
         <ModelPicker />
