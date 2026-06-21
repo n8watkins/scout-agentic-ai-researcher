@@ -27,6 +27,11 @@ services:
       # of a 500/day key shared with the voice agent).
       - key: SCOUT_DEMO_CALL_BUDGET
         value: "250"
+      # Optional rate-limit tuning (code defaults: 8 runs/IP, 60 saved runs).
+      - key: SCOUT_PER_IP_RUN_LIMIT
+        value: "8"
+      - key: SCOUT_RUN_WRITE_LIMIT
+        value: "60"
       # Web search keys (optional — falls back to keyless Wikipedia). Dashboard.
       - key: TAVILY_API_KEY
         sync: false
