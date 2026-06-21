@@ -180,18 +180,17 @@ export default function ChatPanel({ report, citations, apiKey, model, runId }: C
   }, [input, streaming, messages, apiKey, report, citations, model]);
 
   return (
-    <div className="rounded-2xl border border-slate-200 dark:border-slate-900/50 bg-white/70 dark:bg-gray-900/60 backdrop-blur p-5">
-      <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
-        <ChatBubbleLeftRightIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-        Ask about this report
-      </h2>
-      <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-        Answers come from the report and its sources first &mdash; Scout only searches the web if they
-        don&apos;t cover your question.
-      </p>
+    <div className="px-4 md:px-6 py-3">
+      <div className="flex items-center gap-2 mb-2">
+        <ChatBubbleLeftRightIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+        <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">Ask about this report</span>
+        <span className="hidden sm:inline text-[11px] text-slate-400 dark:text-slate-500">
+          &mdash; answers from the report first; searches only if needed
+        </span>
+      </div>
 
       {messages.length > 0 && (
-        <div className="space-y-3 mb-4">
+        <div className="space-y-3 mb-3 max-h-56 overflow-y-auto pr-1">
           {messages.map((m, i) =>
             m.role === 'user' ? (
               <div key={i} className="flex justify-end">

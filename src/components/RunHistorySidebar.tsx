@@ -7,7 +7,6 @@ import {
   InformationCircleIcon,
   KeyIcon,
   PlusIcon,
-  BeakerIcon,
 } from '@heroicons/react/24/outline';
 import { type RunSummary } from '@/lib/clientStore';
 import { usePersistence } from '@/lib/persistence';
@@ -16,8 +15,6 @@ import { useApiKey } from '@/hooks/useApiKey';
 import InlineKeyEntry from './InlineKeyEntry';
 import ModelPicker from './ModelPicker';
 import SidebarUsageMeter from './UsageMeter';
-import ThemeToggle from './ThemeToggle';
-import AuthControls from './AuthControls';
 import MigrationPrompt from './MigrationPrompt';
 
 interface RunHistorySidebarProps {
@@ -27,9 +24,6 @@ interface RunHistorySidebarProps {
   onSelectRun: (run: SavedRun) => void;
   onNewRun: () => void;
   onOpenAbout: () => void;
-  /** "Under the hood" dev-view state + toggle (lives in page.tsx). */
-  devView: boolean;
-  onToggleDevView: () => void;
 }
 
 export default function RunHistorySidebar({
@@ -38,8 +32,6 @@ export default function RunHistorySidebar({
   onSelectRun,
   onNewRun,
   onOpenAbout,
-  devView,
-  onToggleDevView,
 }: RunHistorySidebarProps) {
   const [runs, setRuns] = useState<RunSummary[]>([]);
   const [showKey, setShowKey] = useState(false);
@@ -123,7 +115,6 @@ export default function RunHistorySidebar({
 
       {/* Footer: usage + BYOK + about */}
       <div className="p-3 space-y-2 border-t border-slate-200 dark:border-slate-900/40">
-        <AuthControls />
         <MigrationPrompt onDone={load} />
         <SidebarUsageMeter hasOwnKey={hasApiKey} />
 
@@ -154,44 +145,13 @@ export default function RunHistorySidebar({
           )}
         </div>
 
-        {/* "Under the hood" dev-view toggle — off by default, persisted. */}
         <button
-          onClick={onToggleDevView}
-          aria-pressed={devView}
-          className={`w-full inline-flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-            devView
-              ? 'bg-blue-600 text-white'
-              : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800/30 border border-slate-200 dark:border-slate-800/50'
-          }`}
-          title="Show the model calls, tokens, latency and cost underneath each run"
+          onClick={onOpenAbout}
+          className="w-full inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800/30 transition-colors"
         >
-          <span className="inline-flex items-center gap-1.5">
-            <BeakerIcon className="w-4 h-4" />
-            Under the hood
-          </span>
-          <span
-            className={`relative inline-flex h-4 w-7 items-center rounded-full transition-colors ${
-              devView ? 'bg-white/30' : 'bg-blue-300 dark:bg-slate-700/60'
-            }`}
-          >
-            <span
-              className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
-                devView ? 'translate-x-3.5' : 'translate-x-0.5'
-              }`}
-            />
-          </span>
+          <InformationCircleIcon className="w-4 h-4" />
+          About Scout
         </button>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={onOpenAbout}
-            className="flex-1 inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800/30 transition-colors"
-          >
-            <InformationCircleIcon className="w-4 h-4" />
-            About Scout
-          </button>
-          <ThemeToggle />
-        </div>
       </div>
     </aside>
   );
