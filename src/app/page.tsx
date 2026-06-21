@@ -155,7 +155,9 @@ export default function Home() {
               />
             )}
 
-            {state.citations.length > 0 && <SourcesPanel citations={state.citations} />}
+            {(state.citations.length > 0 || isRunning) && (
+              <SourcesPanel citations={state.citations} running={isRunning} />
+            )}
           </div>
         </div>
       </main>
