@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef } from 'react';
-import { PaperAirplaneIcon } from '@heroicons/react/24/outline';
+import { PaperAirplaneIcon, PlusIcon } from '@heroicons/react/24/outline';
 
 interface ChatComposerProps {
   value: string;
@@ -9,10 +9,12 @@ interface ChatComposerProps {
   onSend: () => void;
   streaming: boolean;
   error?: string | null;
+  /** Start a fresh research run (shown as a "+" in the composer). */
+  onNewResearch?: () => void;
 }
 
 /** Docked follow-up composer for "talk to the report". Enter sends. */
-export default function ChatComposer({ value, onChange, onSend, streaming, error }: ChatComposerProps) {
+export default function ChatComposer({ value, onChange, onSend, streaming, error, onNewResearch }: ChatComposerProps) {
   const taRef = useRef<HTMLTextAreaElement>(null);
   const autosize = useCallback(() => {
     const el = taRef.current;
@@ -32,6 +34,17 @@ export default function ChatComposer({ value, onChange, onSend, streaming, error
         </div>
       )}
       <div className="flex items-end gap-2">
+        {onNewResearch && (
+          <button
+            type="button"
+            onClick={onNewResearch}
+            aria-label="New research"
+            title="Start a new research"
+            className="flex-none inline-flex items-center justify-center w-10 h-10 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-500 hover:bg-slate-100 hover:text-blue-600 dark:text-slate-300 dark:hover:bg-slate-800/40 transition-colors"
+          >
+            <PlusIcon className="w-5 h-5" />
+          </button>
+        )}
         <textarea
           ref={taRef}
           value={value}

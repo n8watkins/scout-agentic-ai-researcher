@@ -195,6 +195,7 @@ export default function Home() {
                       onSend={chat.send}
                       streaming={chat.streaming}
                       error={chat.error}
+                      onNewResearch={handleNewRun}
                     />
                   ) : (
                     <div className="px-3 py-2.5">{composer}</div>
