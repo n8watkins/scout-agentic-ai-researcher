@@ -19,7 +19,7 @@ export default function SourcesPanel({ citations }: { citations: Citation[] }) {
             id={`source-${c.index}`}
             className="flex gap-3 rounded-lg p-2 -mx-2 transition-shadow"
           >
-            <span className="flex-shrink-0 w-6 h-6 rounded-md bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-xs font-bold flex items-center justify-center mt-0.5">
+            <span className="flex-shrink-0 w-6 h-6 rounded-md bg-violet-600 text-white text-xs font-bold flex items-center justify-center mt-0.5">
               {c.index}
             </span>
             <div className="min-w-0">

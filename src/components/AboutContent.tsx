@@ -23,7 +23,7 @@ const AboutContent: React.FC = () => {
       </div>
 
       {/* Introduction with portrait + bio + socials */}
-      <div className="bg-gradient-to-br from-violet-50 to-fuchsia-50 dark:from-violet-900/20 dark:to-fuchsia-900/20 p-5 rounded-xl border border-violet-200 dark:border-violet-800 mb-5">
+      <div className="bg-violet-50 dark:bg-violet-900/20 p-5 rounded-xl border border-violet-200 dark:border-violet-800 mb-5">
         <div className="flex flex-col items-center gap-4 mb-4">
           <Image
             src="/images/portrait-medium.jpg"
@@ -118,7 +118,7 @@ const AboutContent: React.FC = () => {
               href="https://n8sportfolio.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-3 py-1.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-xs font-semibold rounded-full shadow-sm hover:shadow-md transition-all duration-200"
+              className="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold rounded-full shadow-sm transition-colors"
             >
               Portfolio
             </a>
@@ -173,7 +173,7 @@ const AboutContent: React.FC = () => {
         </div>
 
         {/* Under the hood */}
-        <div className="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-800 dark:to-slate-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+        <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
           <h3 className="text-gray-900 dark:text-white text-base font-bold mb-3 text-center">
             ⚡ Under the hood
           </h3>
@@ -197,7 +197,7 @@ const AboutContent: React.FC = () => {
         </div>
 
         {/* Tech Stack */}
-        <div className="bg-gradient-to-br from-violet-50 to-fuchsia-50 dark:from-violet-900/20 dark:to-fuchsia-900/20 p-3 rounded-xl">
+        <div className="bg-violet-50 dark:bg-violet-900/20 p-3 rounded-xl">
           <h3 className="text-gray-900 dark:text-white text-sm font-bold mb-2 text-center">
             🛠️ Tech Stack
           </h3>
@@ -233,10 +233,8 @@ const TONES: Record<string, string> = {
   violet: 'bg-violet-50 dark:bg-violet-900/20 border-violet-200 dark:border-violet-800',
   fuchsia: 'bg-fuchsia-50 dark:bg-fuchsia-900/20 border-fuchsia-200 dark:border-fuchsia-800',
   amber: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800',
-  green:
-    'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-200 dark:border-green-800',
-  gray:
-    'bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-800 dark:to-slate-800 border-gray-200 dark:border-gray-700',
+  green: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
+  gray: 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700',
   teal: 'bg-teal-50 dark:bg-teal-900/20 border-teal-200 dark:border-teal-800',
 };
 

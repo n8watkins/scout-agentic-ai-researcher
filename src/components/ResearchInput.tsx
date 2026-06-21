@@ -82,7 +82,7 @@ export default function ResearchInput({
             type="button"
             onClick={submit}
             disabled={disabled}
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white font-semibold shadow-lg shadow-violet-500/30 transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold shadow-sm transition-colors disabled:opacity-50"
           >
             <MagnifyingGlassIcon className="w-5 h-5" />
             Research

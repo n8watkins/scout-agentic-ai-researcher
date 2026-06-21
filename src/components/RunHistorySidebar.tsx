@@ -80,7 +80,7 @@ export default function RunHistorySidebar({
       {/* Brand */}
       <div className="px-4 py-4 border-b border-violet-200 dark:border-violet-900/40">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-black shadow-lg shadow-violet-500/30">
+          <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center text-white font-black shadow-sm">
             S
           </div>
           <div>
@@ -93,7 +93,7 @@ export default function RunHistorySidebar({
       <div className="p-3">
         <button
           onClick={onNewRun}
-          className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-sm font-semibold hover:from-violet-500 hover:to-fuchsia-500 transition-colors"
+          className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-500 transition-colors"
         >
           <PlusIcon className="w-4 h-4" />
           New research
@@ -168,7 +168,7 @@ export default function RunHistorySidebar({
           aria-pressed={devView}
           className={`w-full inline-flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
             devView
-              ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white'
+              ? 'bg-violet-600 text-white'
               : 'text-violet-700 hover:bg-violet-100 dark:text-violet-200 dark:hover:bg-violet-800/30 border border-violet-200 dark:border-violet-800/50'
           }`}
           title="Show the model calls, tokens, latency and cost underneath each run"

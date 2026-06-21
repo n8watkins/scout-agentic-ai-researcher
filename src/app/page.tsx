@@ -53,7 +53,7 @@ export default function Home() {
     state.steps.length > 0 || state.report || state.status !== 'idle';
 
   return (
-    <div className="relative h-screen overflow-hidden flex bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 dark:from-[#0c0a14] dark:via-[#0c0a14] dark:to-[#140c1f]">
+    <div className="relative h-screen overflow-hidden flex bg-violet-50/60 dark:bg-[#0c0a14]">
       {/* Ambient glow */}
       <div className="scout-orb scout-orb-1" />
       <div className="scout-orb scout-orb-2" />
@@ -115,7 +115,7 @@ export default function Home() {
             {/* Hero (idle) */}
             {!hasContent && (
               <div className="text-center pt-8 pb-2">
-                <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent">
+                <h1 className="text-3xl md:text-4xl font-bold text-violet-700 dark:text-violet-300">
                   Watch an AI do research
                 </h1>
                 <p className="text-gray-500 dark:text-violet-200/70 mt-3 max-w-xl mx-auto">

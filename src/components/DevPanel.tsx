@@ -143,7 +143,7 @@ function Totals({
         </p>
         <div className="mt-1 h-1.5 rounded-full bg-violet-200 dark:bg-violet-800/60 overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 transition-all"
+            className="h-full bg-violet-500 transition-all"
             style={{ width: `${pct}%` }}
           />
         </div>

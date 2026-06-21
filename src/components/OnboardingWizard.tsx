@@ -66,7 +66,7 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
                   <span
                     className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
                       step === i
-                        ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-md'
+                        ? 'bg-violet-600 text-white shadow-sm'
                         : step > i
                           ? 'bg-green-500 text-white'
                           : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
@@ -100,7 +100,7 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
           {step === 0 ? (
             <div data-testid="onboarding-step-about">
               {/* Thesis callout */}
-              <div className="mb-5 p-4 rounded-xl bg-gradient-to-r from-violet-50 to-fuchsia-50 dark:from-violet-900/20 dark:to-fuchsia-900/20 border border-violet-200 dark:border-violet-800 flex items-start gap-3">
+              <div className="mb-5 p-4 rounded-xl bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 flex items-start gap-3">
                 <SparklesIcon className="w-6 h-6 text-violet-600 dark:text-violet-400 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-gray-700 dark:text-gray-200">
                   <span className="font-bold text-gray-900 dark:text-white">
@@ -125,7 +125,7 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
               </div>
 
               {/* Demo-pool meter */}
-              <div className="p-4 rounded-xl bg-gradient-to-br from-violet-50 to-fuchsia-50 dark:from-violet-900/20 dark:to-fuchsia-900/20 border border-violet-200 dark:border-violet-800">
+              <div className="p-4 rounded-xl bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800">
                 <PoolMeterBar usage={usage} variant="light" />
               </div>
 
@@ -186,7 +186,7 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
               </button>
               <button
                 onClick={() => setStep(1)}
-                className="px-8 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-700 dark:to-fuchsia-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                className="px-8 py-3 bg-violet-600 hover:bg-violet-500 text-white font-semibold rounded-lg shadow-sm transition-colors"
                 data-testid="onboarding-next"
               >
                 Next: Get started &rarr;
@@ -203,7 +203,7 @@ export default function OnboardingWizard({ isOpen, onComplete, onPickSample }: O
               </button>
               <button
                 onClick={onComplete}
-                className="px-8 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 dark:from-violet-700 dark:to-fuchsia-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                className="px-8 py-3 bg-violet-600 hover:bg-violet-500 text-white font-semibold rounded-lg shadow-sm transition-colors"
                 data-testid="onboarding-start-researching"
               >
                 Start researching &rarr;

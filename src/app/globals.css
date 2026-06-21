@@ -62,31 +62,34 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 1.15rem;
-  padding: 0 0.25rem;
-  margin: 0 0.1rem;
-  font-size: 0.7rem;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.3rem;
+  margin: 0 0.15rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  line-height: 1.15rem;
+  line-height: 1;
   border-radius: 0.3rem;
   color: #fff;
-  background: linear-gradient(to right, #7c3aed, #c026d3);
+  /* Solid violet-700 — strong white-on-violet contrast (~6:1), readable. */
+  background: #6d28d9;
   text-decoration: none;
-  vertical-align: super;
+  vertical-align: text-top;
   cursor: pointer;
+  transition: background-color 0.15s;
 }
-.citation-link:hover { filter: brightness(1.1); }
+.citation-link:hover { background: #5b21b6; }
 
 /* Violet ambient glow (dark-first, low opacity) --------------------------- */
 .scout-orb {
   position: absolute;
   border-radius: 9999px;
-  filter: blur(100px);
-  opacity: 0.18;
+  filter: blur(110px);
+  opacity: 0.05;
   pointer-events: none;
   will-change: transform;
 }
-.dark .scout-orb { opacity: 0.22; }
+.dark .scout-orb { opacity: 0.1; }
 .scout-orb-1 {
   width: 32rem; height: 32rem; top: -10rem; left: -6rem;
   background: radial-gradient(circle, #a855f7 0%, transparent 70%);
@@ -94,7 +97,8 @@ body {
 }
 .scout-orb-2 {
   width: 26rem; height: 26rem; bottom: -8rem; right: -6rem;
-  background: radial-gradient(circle, #d946ef 0%, transparent 70%);
+  /* Desaturated to violet (was fuchsia) for a calmer, less neon glow. */
+  background: radial-gradient(circle, #a855f7 0%, transparent 70%);
   animation: scout-drift-2 86s ease-in-out infinite alternate;
 }
 @keyframes scout-drift-1 {
