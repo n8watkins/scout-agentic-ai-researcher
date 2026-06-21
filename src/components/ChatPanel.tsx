@@ -9,13 +9,7 @@ import {
   GlobeAltIcon,
 } from '@heroicons/react/24/outline';
 import type { Citation } from '@/lib/agent/types';
-
-interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
-  /** True if the assistant ran a web search to answer this one. */
-  searched?: boolean;
-}
+import { getLocalChat, saveLocalChat, type ChatMessage } from '@/lib/clientStore';
 
 interface ChatPanelProps {
   report: string;
@@ -40,15 +34,32 @@ export default function ChatPanel({ report, citations, apiKey, model, runId }: C
   const abortRef = useRef<AbortController | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
-  // Reset the conversation whenever the underlying report changes.
+  // Load this run's saved chat (or clear) whenever the shown run changes.
   useEffect(() => {
     abortRef.current?.abort();
-    setMessages([]);
     setInput('');
     setError(null);
     setStatus('');
     setStreaming(false);
+    let active = true;
+    if (runId) {
+      void getLocalChat(runId).then((saved) => {
+        if (active) setMessages(saved);
+      });
+    } else {
+      setMessages([]);
+    }
+    return () => {
+      active = false;
+    };
   }, [runId]);
+
+  // Persist the thread on-device once a turn finishes streaming.
+  useEffect(() => {
+    if (runId && !streaming && messages.length > 0) {
+      void saveLocalChat(runId, messages);
+    }
+  }, [streaming, runId, messages]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });

@@ -9,14 +9,13 @@ import {
   PlusIcon,
   BeakerIcon,
 } from '@heroicons/react/24/outline';
-import type { RunSummary } from '@/lib/db';
+import { listLocalRuns, getLocalRun, deleteLocalRun, type RunSummary } from '@/lib/clientStore';
 import type { SavedRun } from '@/lib/agent/types';
 import { useApiKey } from '@/hooks/useApiKey';
 import InlineKeyEntry from './InlineKeyEntry';
 import ModelPicker from './ModelPicker';
 import SidebarUsageMeter from './UsageMeter';
 import ThemeToggle from './ThemeToggle';
-import { sessionHeader } from '@/lib/session';
 
 interface RunHistorySidebarProps {
   activeRunId: string | null;
@@ -44,14 +43,7 @@ export default function RunHistorySidebar({
   const { hasApiKey } = useApiKey();
 
   const load = useCallback(async () => {
-    try {
-      const res = await fetch('/api/runs', { headers: sessionHeader() });
-      if (!res.ok) return;
-      const data = (await res.json()) as { runs: RunSummary[] };
-      setRuns(data.runs ?? []);
-    } catch {
-      /* ignore */
-    }
+    setRuns(await listLocalRuns());
   }, []);
 
   useEffect(() => {
@@ -59,19 +51,13 @@ export default function RunHistorySidebar({
   }, [load, refreshKey]);
 
   const handleSelect = async (id: string) => {
-    try {
-      const res = await fetch(`/api/runs/${id}`, { headers: sessionHeader() });
-      if (!res.ok) return;
-      const data = (await res.json()) as { run: SavedRun };
-      onSelectRun(data.run);
-    } catch {
-      /* ignore */
-    }
+    const run = await getLocalRun(id);
+    if (run) onSelectRun(run);
   };
 
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    await fetch(`/api/runs/${id}`, { method: 'DELETE', headers: sessionHeader() });
+    await deleteLocalRun(id);
     void load();
   };
 

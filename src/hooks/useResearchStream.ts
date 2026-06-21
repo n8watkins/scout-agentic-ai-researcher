@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from 'react';
 import type { AgentStep, Citation } from '@/lib/agent/types';
 import type { TraceEvent } from '@/lib/devtrace';
 import { refreshUsage } from './useUsageInfo';
-import { sessionHeader } from '@/lib/session';
+import { saveLocalRun } from '@/lib/clientStore';
 
 export type RunStatus = 'idle' | 'running' | 'done' | 'error' | 'aborted';
 
@@ -162,21 +162,17 @@ export function useResearchStream() {
       setState((s) => ({ ...s, status: 'done', statusLabel: '' }));
       void refreshUsage();
 
-      // Persist the completed run (best effort).
+      // Persist the completed run to on-device storage (best effort).
       if (report) {
-        void fetch('/api/runs', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...sessionHeader() },
-          body: JSON.stringify({
-            id: runId,
-            question,
-            report,
-            citations,
-            steps: collected,
-            stoppedEarly,
-            createdAt: Date.now(),
-          }),
-        }).catch(() => {});
+        void saveLocalRun({
+          id: runId,
+          question,
+          report,
+          citations,
+          steps: collected,
+          stoppedEarly,
+          createdAt: Date.now(),
+        });
       }
     } catch (err) {
       if (ac.signal.aborted) {
