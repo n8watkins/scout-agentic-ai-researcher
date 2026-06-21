@@ -11,13 +11,15 @@ import HeroTypewriter from '@/components/HeroTypewriter';
 import AgentTrace from '@/components/AgentTrace';
 import ReportView from '@/components/ReportView';
 import SourcesPanel from '@/components/SourcesPanel';
-import ChatPanel from '@/components/ChatPanel';
+import ChatThread from '@/components/ChatThread';
+import ChatComposer from '@/components/ChatComposer';
 import DevPanel from '@/components/DevPanel';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useApiKey } from '@/hooks/useApiKey';
 import { useModel } from '@/hooks/useModel';
 import { useDevView } from '@/hooks/useDevView';
 import { useResearchStream } from '@/hooks/useResearchStream';
+import { useChat } from '@/hooks/useChat';
 import type { SavedRun } from '@/lib/agent/types';
 
 export default function Home() {
@@ -36,6 +38,14 @@ export default function Home() {
   const hasSources = state.citations.length > 0 || isRunning;
   const hasContent = state.steps.length > 0 || state.report || state.status !== 'idle';
   const reportReady = Boolean(state.report) && !isRunning;
+
+  const chat = useChat({
+    report: state.report,
+    citations: state.citations,
+    apiKey,
+    model,
+    runId: state.runId,
+  });
 
   const handleSubmit = async (q: string) => {
     await run(q, apiKey, model);
@@ -152,6 +162,15 @@ export default function Home() {
                     />
                   )}
 
+                  {/* Follow-up conversation, inline directly below the report */}
+                  {reportReady && (
+                    <ChatThread
+                      messages={chat.messages}
+                      streaming={chat.streaming}
+                      status={chat.status}
+                    />
+                  )}
+
                   {/* Sources inline under the report on small screens */}
                   {hasSources && (
                     <div className="lg:hidden">
@@ -176,12 +195,12 @@ export default function Home() {
           <div className="flex-none border-t border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/70 backdrop-blur">
             <div className="max-w-3xl mx-auto w-full">
               {reportReady ? (
-                <ChatPanel
-                  report={state.report}
-                  citations={state.citations}
-                  apiKey={apiKey}
-                  model={model}
-                  runId={state.runId}
+                <ChatComposer
+                  value={chat.input}
+                  onChange={chat.setInput}
+                  onSend={chat.send}
+                  streaming={chat.streaming}
+                  error={chat.error}
                 />
               ) : (
                 <div className="px-3 py-2.5">{composer}</div>
