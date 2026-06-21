@@ -16,7 +16,6 @@ describe('ReportView citation rendering', () => {
         report="EVs are improving [1]."
         citations={citations}
         stoppedEarly={false}
-        question="q"
       />
     );
     const link = screen.getByRole('link', { name: '1' });
@@ -31,7 +30,6 @@ describe('ReportView citation rendering', () => {
         report="This cites a missing source [9]."
         citations={citations}
         stoppedEarly={false}
-        question="q"
       />
     );
     expect(screen.queryByRole('link', { name: '9' })).toBeNull();

@@ -35,6 +35,7 @@ export default function Home() {
   const isRunning = state.status === 'running';
   const hasSources = state.citations.length > 0 || isRunning;
   const hasContent = state.steps.length > 0 || state.report || state.status !== 'idle';
+  const reportReady = Boolean(state.report) && !isRunning;
 
   const handleSubmit = async (q: string) => {
     await run(q, apiKey, model);
@@ -52,6 +53,18 @@ export default function Home() {
     setQuestion(saved.question);
     setSidebarOpen(false);
   };
+
+  const composer = (
+    <ResearchInput
+      value={question}
+      onChange={setQuestion}
+      onSubmit={handleSubmit}
+      onStop={stop}
+      isRunning={isRunning}
+      disabled={!question.trim()}
+      showSuggestions={!hasContent}
+    />
+  );
 
   return (
     <div className="relative h-screen overflow-hidden flex bg-slate-50 dark:bg-slate-950">
@@ -83,7 +96,7 @@ export default function Home() {
         <div className="fixed inset-0 bg-black/50 z-30 md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Main workspace — app shell: header / scrolling body (+ right sources) / chat dock */}
+      {/* Main — app shell: header / scrolling transcript (+ right sources) / bottom composer */}
       <main className="relative flex-1 flex flex-col min-w-0 z-10">
         <Header
           onOpenSidebar={() => setSidebarOpen(true)}
@@ -93,10 +106,9 @@ export default function Home() {
         />
 
         <div className="flex-1 flex min-h-0">
-          {/* Center column — scrolls independently */}
           <div className="flex-1 overflow-y-auto">
             {!hasContent ? (
-              /* Idle: hero + input vertically centered in the viewport */
+              /* Idle: hero + composer vertically centered */
               <div className="min-h-full flex flex-col items-center justify-center px-4 py-10">
                 <div className="w-full max-w-3xl text-center">
                   <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
@@ -108,29 +120,18 @@ export default function Home() {
                   <p className="text-slate-500 dark:text-slate-400 mt-4 mb-6">
                     Ask a hard question &mdash; watch it plan, search, read, and cite, live.
                   </p>
-                  <ResearchInput
-                    value={question}
-                    onChange={setQuestion}
-                    onSubmit={handleSubmit}
-                    onStop={stop}
-                    isRunning={isRunning}
-                    disabled={!question.trim()}
-                    showSuggestions={!hasContent}
-                  />
+                  {composer}
                 </div>
               </div>
             ) : (
+              /* Active: question at top, process + answer below; composer is docked */
               <div className="px-4 py-6 md:px-8">
-                <div className="max-w-3xl mx-auto w-full space-y-6">
-                  <ResearchInput
-                    value={question}
-                    onChange={setQuestion}
-                    onSubmit={handleSubmit}
-                    onStop={stop}
-                    isRunning={isRunning}
-                    disabled={!question.trim()}
-                    showSuggestions={!hasContent}
-                  />
+                <div className="max-w-3xl mx-auto w-full space-y-5">
+                  {state.question && (
+                    <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white break-words">
+                      {state.question}
+                    </h2>
+                  )}
 
                   {state.error && (
                     <div className="rounded-xl border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-300">
@@ -147,7 +148,6 @@ export default function Home() {
                       report={state.report}
                       citations={state.citations}
                       stoppedEarly={state.stoppedEarly}
-                      question={state.question}
                       streaming={isRunning}
                     />
                   )}
@@ -163,25 +163,29 @@ export default function Home() {
             )}
           </div>
 
-          {/* Sources as a right-side column on large screens */}
+          {/* Sources as a wider right-side column on large screens */}
           {hasSources && (
-            <aside className="hidden lg:block w-80 flex-shrink-0 border-l border-slate-200 dark:border-slate-800 overflow-y-auto p-4">
+            <aside className="hidden lg:block w-96 xl:w-[28rem] flex-shrink-0 border-l border-slate-200 dark:border-slate-800 overflow-y-auto p-4">
               <SourcesPanel citations={state.citations} running={isRunning} />
             </aside>
           )}
         </div>
 
-        {/* Sticky chat dock — always reachable once there's a report */}
-        {state.report && !isRunning && (
-          <div className="flex-none border-t border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 backdrop-blur">
+        {/* Bottom composer dock: chat once a report is ready, else the research box */}
+        {hasContent && (
+          <div className="flex-none border-t border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/70 backdrop-blur">
             <div className="max-w-3xl mx-auto w-full">
-              <ChatPanel
-                report={state.report}
-                citations={state.citations}
-                apiKey={apiKey}
-                model={model}
-                runId={state.runId}
-              />
+              {reportReady ? (
+                <ChatPanel
+                  report={state.report}
+                  citations={state.citations}
+                  apiKey={apiKey}
+                  model={model}
+                  runId={state.runId}
+                />
+              ) : (
+                <div className="px-3 py-2.5">{composer}</div>
+              )}
             </div>
           </div>
         )}

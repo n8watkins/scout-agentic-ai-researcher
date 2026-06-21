@@ -10,39 +10,31 @@ interface ReportViewProps {
   report: string;
   citations: Citation[];
   stoppedEarly: boolean;
-  question: string;
   /** True while the report is still streaming in — shows a typewriter cursor. */
   streaming?: boolean;
 }
 
 /**
- * Final report with inline numbered citations [n] rendered as clickable chips
- * that scroll to the matching entry in SourcesPanel.
+ * The answer, rendered plainly (no card chrome). Inline [n] markers become
+ * clickable chips that scroll to — and open — the matching source.
  */
-export default function ReportView({ report, citations, stoppedEarly, question, streaming }: ReportViewProps) {
+export default function ReportView({ report, citations, stoppedEarly, streaming }: ReportViewProps) {
   const validIndexes = useMemo(() => new Set(citations.map((c) => c.index)), [citations]);
 
   if (!report) return null;
 
   return (
-    <div className="rounded-2xl border border-slate-200 dark:border-slate-900/50 bg-white dark:bg-gray-900/60 backdrop-blur p-6">
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-white">Report</h2>
-        {stoppedEarly && (
-          <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
-            <ExclamationTriangleIcon className="w-3.5 h-3.5" />
-            Stopped early (step budget reached)
-          </span>
-        )}
-      </div>
-
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 italic">&ldquo;{question}&rdquo;</p>
-
-      <div className="markdown-content text-gray-800 dark:text-gray-200">
+    <div>
+      {stoppedEarly && (
+        <span className="inline-flex items-center gap-1 text-xs px-2 py-1 mb-3 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
+          <ExclamationTriangleIcon className="w-3.5 h-3.5" />
+          Stopped early (step budget reached)
+        </span>
+      )}
+      <div className="markdown-content text-slate-800 dark:text-slate-200">
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           components={{
-            // Render text nodes, converting [n] markers into citation chips.
             p: ({ children }) => <p>{renderCitations(children, validIndexes)}</p>,
             li: ({ children }) => <li>{renderCitations(children, validIndexes)}</li>,
           }}
@@ -56,8 +48,8 @@ export default function ReportView({ report, citations, stoppedEarly, question, 
 }
 
 /**
- * Walk React children and replace [n] / [n][m] markers in text with anchor
- * chips that jump to #source-n.
+ * Walk React children and replace [n] markers in text with anchor chips that
+ * scroll to, highlight, and open the matching source (#source-n).
  */
 function renderCitations(children: React.ReactNode, valid: Set<number>): React.ReactNode {
   return React.Children.map(children, (child) => {
@@ -78,19 +70,15 @@ function renderCitations(children: React.ReactNode, valid: Set<number>): React.R
             className="citation-link"
             onClick={(e) => {
               e.preventDefault();
-              const el = document.getElementById(`source-${n}`);
-              if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                el.classList.add('ring-2', 'ring-blue-500');
-                setTimeout(() => el.classList.remove('ring-2', 'ring-blue-500'), 1600);
-              }
+              // The matching source opens, scrolls itself into view, and
+              // highlights (handles the independently-scrolling sources column).
+              window.dispatchEvent(new CustomEvent('scout:open-source', { detail: n }));
             }}
           >
             {n}
           </a>
         );
       } else {
-        // Citation number with no registered source — keep the literal text.
         parts.push(m[0]);
       }
       last = regex.lastIndex;

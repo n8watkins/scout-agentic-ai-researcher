@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { LinkIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import type { Citation } from '@/lib/agent/types';
 
@@ -52,12 +52,33 @@ export default function SourcesPanel({
 /** One source row: always-visible title/host, snippet tucked into an accordion. */
 function SourceItem({ citation: c }: { citation: Citation }) {
   const [open, setOpen] = useState(false);
+  const liRef = useRef<HTMLLIElement>(null);
   const hasSnippet = Boolean(c.snippet);
+
+  // Clicking a [n] citation opens this source's accordion AND scrolls it into
+  // view in its (independently-scrolling) column, with a brief highlight. Using
+  // a ref — not getElementById — so the visible copy scrolls (the hidden mobile
+  // copy is a display:none no-op).
+  useEffect(() => {
+    const handler = (e: Event) => {
+      if ((e as CustomEvent<number>).detail !== c.index) return;
+      if (c.snippet) setOpen(true);
+      const el = liRef.current;
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('ring-2', 'ring-blue-500');
+        setTimeout(() => el.classList.remove('ring-2', 'ring-blue-500'), 1600);
+      }
+    };
+    window.addEventListener('scout:open-source', handler);
+    return () => window.removeEventListener('scout:open-source', handler);
+  }, [c.index, c.snippet]);
 
   return (
     <li
+      ref={liRef}
       id={`source-${c.index}`}
-      className="source-in rounded-lg border border-slate-100 dark:border-slate-900/40 hover:border-blue-300 dark:hover:border-blue-700/60 transition-colors"
+      className="source-in rounded-lg border border-slate-100 dark:border-slate-900/40 hover:border-blue-300 dark:hover:border-blue-700/60 transition-colors scroll-mt-4"
     >
       <div className="flex gap-3 p-2.5">
         <span className="flex-shrink-0 w-5 text-right text-blue-600 dark:text-blue-400 text-sm font-bold mt-0.5 tabular-nums">
