@@ -57,7 +57,7 @@ function SourceItem({ citation: c }: { citation: Citation }) {
   return (
     <li
       id={`source-${c.index}`}
-      className="source-in rounded-lg border border-slate-100 dark:border-slate-900/40"
+      className="source-in rounded-lg border border-slate-100 dark:border-slate-900/40 hover:border-blue-300 dark:hover:border-blue-700/60 transition-colors"
     >
       <div className="flex gap-3 p-2.5">
         <span className="flex-shrink-0 w-5 text-right text-blue-600 dark:text-blue-400 text-sm font-bold mt-0.5 tabular-nums">
@@ -89,10 +89,18 @@ function SourceItem({ citation: c }: { citation: Citation }) {
           </button>
         )}
       </div>
-      {open && hasSnippet && (
-        <p className="px-2.5 pb-2.5 -mt-1 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-          {c.snippet}
-        </p>
+      {hasSnippet && (
+        <div
+          className={`grid transition-all duration-200 ease-out ${
+            open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+          }`}
+        >
+          <div className="overflow-hidden">
+            <p className="px-2.5 pb-2.5 text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+              {c.snippet}
+            </p>
+          </div>
+        </div>
       )}
     </li>
   );

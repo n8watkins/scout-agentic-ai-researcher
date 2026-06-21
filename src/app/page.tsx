@@ -99,10 +99,13 @@ export default function Home() {
               /* Idle: hero + input vertically centered in the viewport */
               <div className="min-h-full flex flex-col items-center justify-center px-4 py-10">
                 <div className="w-full max-w-2xl text-center">
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white leading-tight">
-                    Watch an AI research <HeroTypewriter />
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
+                    Watch an AI do research
                   </h1>
-                  <p className="text-slate-500 dark:text-slate-400 mt-3 mb-6 max-w-xl mx-auto">
+                  <p className="mt-2 h-7 truncate text-base sm:text-lg font-medium text-slate-600 dark:text-slate-300">
+                    on <HeroTypewriter />
+                  </p>
+                  <p className="text-slate-500 dark:text-slate-400 mt-4 mb-6 max-w-xl mx-auto">
                     Ask a hard question and watch Scout plan, search the web, read sources, and write a
                     cited report &mdash; live, one step at a time.
                   </p>

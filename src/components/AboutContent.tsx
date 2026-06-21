@@ -7,12 +7,36 @@ import {
   KeyIcon,
   CodeBracketIcon,
   ShieldCheckIcon,
+  ChatBubbleLeftRightIcon,
+  MicrophoneIcon,
+  CloudArrowUpIcon,
+  BoltIcon,
+  LockClosedIcon,
 } from '@heroicons/react/24/outline';
+import {
+  SiTypescript,
+  SiNextdotjs,
+  SiReact,
+  SiTailwindcss,
+  SiGooglegemini,
+  SiSqlite,
+} from 'react-icons/si';
+
+/** Tech-stack chips with brand icons. */
+const TECH: { name: string; icon: React.ReactNode }[] = [
+  { name: 'TypeScript', icon: <SiTypescript className="w-3.5 h-3.5 text-[#3178C6]" /> },
+  { name: 'Next.js 16', icon: <SiNextdotjs className="w-3.5 h-3.5 text-slate-900 dark:text-white" /> },
+  { name: 'React 19', icon: <SiReact className="w-3.5 h-3.5 text-[#61DAFB]" /> },
+  { name: 'Tailwind CSS', icon: <SiTailwindcss className="w-3.5 h-3.5 text-[#38BDF8]" /> },
+  { name: 'Gemini', icon: <SiGooglegemini className="w-3.5 h-3.5 text-[#1C69FF]" /> },
+  { name: 'libSQL / Turso', icon: <SiSqlite className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" /> },
+  { name: 'Auth.js', icon: <LockClosedIcon className="w-3.5 h-3.5 text-slate-500" /> },
+  { name: 'SSE', icon: <BoltIcon className="w-3.5 h-3.5 text-amber-500" /> },
+];
 
 /**
  * The "what is this project" content, shared between the first-run onboarding
- * wizard (step 1) and the About modal in the sidebar. Mirrors gemini-chat-app's
- * structure, reskinned violet/fuchsia for Scout.
+ * wizard (step 1) and the About modal in the sidebar.
  */
 const AboutContent: React.FC = () => {
   return (
@@ -169,6 +193,24 @@ const AboutContent: React.FC = () => {
               title="Guardrails"
               desc="Step caps, source-grounded answers, and SSRF-safe sanitized fetches."
             />
+            <FeatureCard
+              tone="violet"
+              icon={<ChatBubbleLeftRightIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />}
+              title="Talk to your report"
+              desc="Ask follow-ups — Scout answers from the report and its sources, searching only if needed."
+            />
+            <FeatureCard
+              tone="fuchsia"
+              icon={<MicrophoneIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />}
+              title="Voice input"
+              desc="Dictate your question by voice, where your browser supports it."
+            />
+            <FeatureCard
+              tone="green"
+              icon={<CloudArrowUpIcon className="w-6 h-6 text-green-600 dark:text-green-400" />}
+              title="Saved & synced"
+              desc="Runs and chats save on your device; sign in with GitHub to sync across devices."
+            />
           </div>
         </div>
 
@@ -181,7 +223,7 @@ const AboutContent: React.FC = () => {
             <UnderHood
               tone="text-blue-600 dark:text-blue-400"
               title="Performance"
-              items={['SSE streaming (not WebSockets)', 'Per-observation summarization', 'SQLite run history']}
+              items={['SSE streaming (not WebSockets)', 'Per-observation summarization', 'libSQL / Turso storage']}
             />
             <UnderHood
               tone="text-blue-600 dark:text-blue-400"
@@ -202,16 +244,15 @@ const AboutContent: React.FC = () => {
             🛠️ Tech Stack
           </h3>
           <div className="flex flex-wrap justify-center gap-2">
-            {['TypeScript', 'Next.js 16', 'React 19', 'Tailwind CSS', 'Gemini AI', 'SQLite', 'SSE'].map(
-              (t) => (
-                <span
-                  key={t}
-                  className="px-3 py-1 bg-white dark:bg-gray-800 rounded-full text-xs font-semibold text-gray-700 dark:text-gray-300 shadow-sm"
-                >
-                  {t}
-                </span>
-              )
-            )}
+            {TECH.map((t) => (
+              <span
+                key={t.name}
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-white dark:bg-gray-800 rounded-full text-xs font-semibold text-gray-700 dark:text-gray-200 border border-slate-200 dark:border-slate-700 shadow-sm"
+              >
+                {t.icon}
+                {t.name}
+              </span>
+            ))}
           </div>
         </div>
 

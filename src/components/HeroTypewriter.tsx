@@ -48,7 +48,10 @@ export default function HeroTypewriter() {
   return (
     <span className="text-blue-600 dark:text-blue-400">
       {text}
-      <span className="typing-cursor" aria-hidden="true" />
+      <span
+        className="inline-block w-0.5 h-[1em] bg-blue-500 dark:bg-blue-400 align-[-0.1em] ml-0.5 animate-pulse"
+        aria-hidden="true"
+      />
     </span>
   );
 }

@@ -25,8 +25,8 @@ export default function ModelPicker() {
   }, [hasApiKey, model]);
 
   return (
-    <div className="rounded-lg border border-slate-200 dark:border-slate-800/50">
-      <label className="block px-3 pt-2 text-[11px] uppercase tracking-wide font-semibold text-blue-500 dark:text-blue-400/80 flex items-center gap-1.5">
+    <div className="rounded-lg border border-slate-200 dark:border-slate-800/50 bg-blue-50/40 dark:bg-blue-950/10 hover:border-blue-300 dark:hover:border-blue-700/60 transition-colors">
+      <label className="px-3 pt-2 text-[11px] uppercase tracking-wide font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
         <CpuChipIcon className="w-3.5 h-3.5" />
         Model
       </label>
@@ -35,7 +35,7 @@ export default function ModelPicker() {
           value={model}
           onChange={(e) => setModel(e.target.value)}
           aria-label="Gemini model"
-          className="w-full px-2.5 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+          className="w-full px-2.5 py-2 rounded-lg text-sm bg-white dark:bg-gray-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors cursor-pointer"
         >
           {MODELS.map((m) => {
             const locked = m.tier === 'byok' && !hasApiKey;
@@ -48,7 +48,7 @@ export default function ModelPicker() {
           })}
         </select>
         {!hasApiKey && (
-          <p className="mt-1.5 text-[11px] text-blue-500/80 dark:text-blue-400/70 leading-snug">
+          <p className="mt-1.5 text-[11px] text-slate-500 dark:text-slate-400 leading-snug">
             Add your own key to unlock more capable models.
           </p>
         )}

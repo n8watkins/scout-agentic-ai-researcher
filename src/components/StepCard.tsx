@@ -11,17 +11,39 @@ import {
 } from '@heroicons/react/24/outline';
 import type { AgentStep } from '@/lib/agent/types';
 
-/** One step in the live timeline. Each step type gets distinct treatment. */
+/** Smoothly-animated collapsible region (grid-rows trick — no height measuring). */
+function Collapse({ open, children }: { open: boolean; children: React.ReactNode }) {
+  return (
+    <div
+      className={`grid transition-all duration-200 ease-out ${
+        open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+      }`}
+    >
+      <div className="overflow-hidden">{children}</div>
+    </div>
+  );
+}
+
+/** One step in the live timeline. Compact by default; click to expand details. */
 export default function StepCard({ step }: { step: AgentStep }) {
-  const [open, setOpen] = useState(false);
+  // Plan opens by default; thinking + observations start compact.
+  const [open, setOpen] = useState(step.type === 'plan');
 
   if (step.type === 'plan') {
     return (
       <Row icon={<ClipboardDocumentListIcon className="w-5 h-5 text-blue-500" />} tone="plan">
-        <p className="text-sm font-semibold text-blue-700 dark:text-blue-300 mb-1">Plan</p>
-        <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans">
-          {step.content}
-        </pre>
+        <button
+          onClick={() => setOpen(!open)}
+          className="flex items-center gap-1.5 text-sm font-semibold text-blue-700 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-200 transition-colors"
+        >
+          <ChevronDownIcon className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
+          Plan
+        </button>
+        <Collapse open={open}>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300 whitespace-pre-wrap">
+            {step.content}
+          </p>
+        </Collapse>
       </Row>
     );
   }
@@ -29,9 +51,15 @@ export default function StepCard({ step }: { step: AgentStep }) {
   if (step.type === 'thought') {
     return (
       <Row icon={<LightBulbIcon className="w-5 h-5 text-amber-400" />} tone="thought">
-        <p className="text-sm italic text-gray-500 dark:text-gray-400 whitespace-pre-wrap">
-          {step.content}
-        </p>
+        <button
+          onClick={() => setOpen(!open)}
+          className="flex items-start gap-1.5 w-full text-left text-sm italic text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
+        >
+          <ChevronDownIcon
+            className={`w-4 h-4 mt-0.5 flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
+          />
+          <span className={open ? 'whitespace-pre-wrap' : 'truncate'}>{step.content}</span>
+        </button>
       </Row>
     );
   }
@@ -49,7 +77,7 @@ export default function StepCard({ step }: { step: AgentStep }) {
         }
         tone="tool"
       >
-        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-900/40 text-slate-700 dark:text-blue-300 text-sm font-medium">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-medium">
           {isSearch ? '🔍' : '📄'} {step.label}
         </span>
       </Row>
@@ -61,16 +89,16 @@ export default function StepCard({ step }: { step: AgentStep }) {
       <Row icon={<span className="w-5 h-5 flex items-center justify-center text-green-500">✓</span>} tone="obs">
         <button
           onClick={() => setOpen(!open)}
-          className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
+          className="flex items-center gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
         >
           <ChevronDownIcon className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
           {step.label ?? 'Observation'}
         </button>
-        {open && (
-          <pre className="mt-2 text-xs text-gray-500 dark:text-gray-400 whitespace-pre-wrap font-sans bg-gray-50 dark:bg-gray-800/60 rounded-lg p-3 border border-gray-100 dark:border-gray-800 max-h-72 overflow-y-auto">
+        <Collapse open={open}>
+          <pre className="mt-2 text-xs text-slate-500 dark:text-slate-400 whitespace-pre-wrap font-sans bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3 border border-slate-100 dark:border-slate-800 max-h-72 overflow-y-auto">
             {step.content}
           </pre>
-        )}
+        </Collapse>
       </Row>
     );
   }

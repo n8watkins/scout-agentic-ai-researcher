@@ -115,14 +115,14 @@ export default function RunHistorySidebar({
 
         <ModelPicker />
 
-        <div className="rounded-lg border border-slate-200 dark:border-slate-800/50">
+        <div className="rounded-lg border border-slate-200 dark:border-slate-800/50 hover:border-blue-300 dark:hover:border-blue-700/60 transition-colors">
           <button
             onClick={() => setShowKey(!showKey)}
             className="w-full px-3 py-2 flex items-center justify-between text-left text-xs text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800/30 rounded-lg transition-colors"
           >
             <span className="inline-flex items-center gap-1.5">
               <KeyIcon className="w-4 h-4" />
-              {hasApiKey ? 'Your key is active' : 'Bring your own key'}
+              {hasApiKey ? 'BYOK · active' : 'BYOK'}
             </span>
             <svg
               className={`w-3.5 h-3.5 transition-transform ${showKey ? 'rotate-180' : ''}`}
@@ -135,6 +135,9 @@ export default function RunHistorySidebar({
           </button>
           {showKey && (
             <div className="px-3 pb-3 pt-1 text-slate-900 dark:text-slate-100">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-2">
+                Bring your own key — use a free Gemini key for unlimited runs.
+              </p>
               <InlineKeyEntry />
             </div>
           )}
