@@ -1,72 +1,131 @@
 # Scout — session handoff
 
-> Zero-context handoff for **Scout**, an agentic research assistant. Read this in full before working. Don't re-ask decisions recorded here. Build plan: `AGENTIC_RESEARCHER_PLAN.md` (this folder).
+> Zero-context handoff for **Scout**, an agentic research assistant. Read this in
+> full before working. Don't re-ask decisions recorded here. Original build plan:
+> `AGENTIC_RESEARCHER_PLAN.md`; embeddings design: `SCOUT_EMBEDDINGS_PLAN.md`;
+> manual QA: `QA_TESTING.md` (all this folder).
 
-## ✅ Current truth
-**Audit 2026-06-20:** verified the claims below against the live repo and reconciled the stale session-#1 sections (see "Historical state" footnote at the bottom). The session-#2 header SHA was one commit behind HEAD; corrected here.
+## ✅ Current truth (audit 2026-06-20)
 
-- **SHIPPED PUBLIC** at `github.com/n8watkins/scout-agentic-ai-researcher`. Remote `origin` is set; **`master` tracks `origin/master`**, working tree clean apart from these doc changes. (Ignore any older "not pushed / no remote / branch `hardening-pass`" notes — those describe session #1 and are obsolete.)
-- **Current HEAD: `06046d9`** ("docs: refresh handoff SHA + note README/blog sync"). Predecessors of note: `a178a5f` (README + lessons-blog sync), `5a0bdf5` (dev panel), `f6c0c3c` (model picker), `40e1264` (favicon + OG cards), `798d8e7` (loop hardening), `64d9d70` (theme toggle).
-- **`hardening-pass` is a stale local branch** (last at `189a7ba`, never pushed, superseded by master). Safe to delete; not the working branch.
-- Local dir is now **`scout/`** (was `agentic-researcher/`).
-- Shipped since session #1: **light/dark theme toggle** (`src/components/ThemeToggle.tsx` + FOUC-safe init script in `layout.tsx` — NOT a hardcoded `className="dark"`), **loop hardening** (duplicate-action + no-progress short-circuit in `loop.ts`: `noProgress` counter + per-query/per-URL dedup), **favicon + OG cards**, a **Gemini model picker** (`MODELS` allowlist + server `pickModel(requested, byok)` gate in `src/lib/gemini.ts`; `SHARED_MODEL = gemini-3.1-flash-lite` is the only model on the shared key, rest BYOK-only), and an **"Under the hood" dev panel** (Beaker toggle → `src/components/DevPanel.tsx`, telemetry in `src/lib/devtrace.ts`), plus README + lessons-blog sync.
-- **Tests: 33 passing across 7 files** (`tests/*.test.{ts,tsx}`, Vitest) — verified `vitest run` 2026-06-20. (Earlier notes saying "18/18" or "25" are stale.)
-- **Not yet deployed:** README live-demo URL is still a `TODO` (Render free tier; the user handles the deploy). `render.yaml` deploys from `branch: master`.
-- Next Scout work: **decide + build embeddings** per `SCOUT_EMBEDDINGS_PLAN.md` (this folder; design only so far — 8 open decisions for the user; Phase 1a = source dedup is the smallest valuable slice).
+- **SHIPPED + DEPLOYED LIVE** at **https://scout-agentic-researcher.onrender.com**
+  (Render free tier, service `srv-d8rjiu6gvqtc73f52prg`). `/api/healthz` → 200 and
+  `/api/auth/providers` returns `github` — both verified post-deploy this session.
+- Repo **`github.com/n8watkins/scout-agentic-ai-researcher`**, public. **`master`
+  tracks `origin/master`, clean, HEAD `fe39e68`.** Render `autoDeploy` on `master`.
+- **Stack:** Next.js 16 / React 19 / TS / Tailwind v4 · `@google/genai`
+  (`gemini-3.1-flash-lite`, `SCOUT_MODEL`) · **libSQL/Turso** saved runs ·
+  **NextAuth v4** (GitHub, JWT) · SSE · `isomorphic-dompurify`.
 
 ## What this is
-A Next.js app that does **visible, cited web research**: type a question → it plans, runs a ReAct loop (search → read → repeat), and streams a cited report — you watch every step. The thesis (and blog): *an agent is a `while` loop with a budget and a stop condition.*
 
-- **Stack:** Next.js 16 / React 19 / TS / Tailwind v4; `@google/genai` (`gemini-3.1-flash-lite`, configurable `SCOUT_MODEL`); `better-sqlite3` run history; `isomorphic-dompurify`.
-- **Transport:** SSE (one-directional agent trace), `src/app/api/research/route.ts`.
-- **Tools:** `web_search` (Tavily → Google CSE → keyless Wikipedia fallback), `fetch_url` (SSRF-guarded), `finish`.
-- **Port 3100.** `npm run dev` / `npm run build` / `npm test` / `npm run lint`.
+Type a question → Scout plans, runs a ReAct loop (search → read → repeat) and
+streams a **cited report token-by-token**; you can then **chat with the report**
+(grounded-first), and runs+chats **persist** (on-device by default, synced to the
+cloud if you sign in). Thesis: *an agent is a `while` loop with a budget and a
+stop condition.*
 
-## State (verified 2026-06-20)
-- Branch **`master`** @ **`06046d9`**, tracking `origin/master`, up to date. Working tree clean apart from this doc reorg. **Pushed to origin** (public). *(The old "branch `hardening-pass` @ `e958587`, no remote, not pushed" line was session-#1 state and is now wrong — corrected.)*
-- `npm test` ✅ **33/33** (Vitest, 7 files). `npm run build` / `npm run lint` were green at session #2.
-- Demo pool **250 model-calls/day** (counted per call in `loop.ts`, BYOK bypasses) — `src/lib/usage.ts`.
-- Run history **scoped per client session** (`x-scout-session` header) + payload caps + write rate limit — `src/app/api/runs/*`, `src/lib/session.ts`, `src/lib/db.ts`.
-- **SSRF closed:** `fetch_url` follows redirects manually and re-validates every hop against `isBlockedIp` (blocks private/loopback/link-local incl. `169.254.169.254`, CGNAT, IPv6 ULA/mapped) — `src/lib/agent/fetchUrl.ts`.
-- Vitest suite, `render.yaml`, a11y (Esc + focus-trap on `Modal`/`OnboardingWizard` via `useDialogA11y`), dead code removed.
+## Persistence model (DECIDED — don't re-litigate)
 
-## Gotchas (hard-won)
-- **Gemini 3 tool round-trips:** preserve the `thoughtSignature` on `functionCall` parts (collect model parts verbatim from the stream) or the follow-up 400s.
-- **Wikipedia, not DuckDuckGo,** is the keyless search fallback — DDG's Instant Answer API returns empty for normal queries.
-- The 250 cap is **per-process/in-memory** (resets on Render cold start). Durable = Upstash. Noted in code + README.
-- `render.yaml` has `branch: master` — change it if deploying from a different branch.
-- `better-sqlite3` is a native module; `next.config.ts` externalizes it. The Render build (`npm ci`) compiles it.
+- **Signed out (default):** runs **and** chats saved **on-device** via IndexedDB
+  (`src/lib/clientStore.ts`). Private, survives redeploys, no account.
+- **Signed in (GitHub, optional):** runs + chats sync to **Turso**, keyed by the
+  GitHub user id (`src/lib/apiStore.ts` → auth-scoped `/api/runs*`). On first
+  sign-in, `MigrationPrompt` offers to import on-device runs into the account.
+- `src/lib/persistence.ts` `usePersistence()` routes local↔server by auth status.
+- Auth provider is **GitHub** (user ruled out Google). Auth is **optional**: with
+  no `AUTH_GITHUB_*` set, the sign-in UI hides itself and the app stays local-first.
+
+## What shipped this session (commits, newest first)
+
+- `fe39e68` review fixes (7): chat-persist cross-run/store race; `/api/chat`
+  demo-budget gate; `saveRun` UPSERT preserving `chat`; cache-rejected-DB-init
+  reset; report-less run → status `error`; empty chat bubble on error; chat
+  search-failure/empty-query handling.
+- `3f01a96` auth env-var docs · `d18b254` cross-device sync + migrate-on-sign-in ·
+  `01222ad` GitHub auth scaffolding (Auth.js v4, graceful).
+- `00dc8a4` local-first IndexedDB persistence (runs + chats).
+- `08649a3` durable saved-run storage via **libSQL/Turso** (replaced
+  `better-sqlite3`; `db.ts` is now async; no native compile on Render).
+- `ff00efa` don't persist report-less runs on synthesis failure.
+- `5e3f601` chat-with-report (grounded-first hybrid, `/api/chat`).
+- `17e2491` report streams token-by-token (typewriter) · `b38addf` sources
+  accordion + one-at-a-time reveal · `6082b10` subtle/professional restyle +
+  citation-contrast fix.
+- `050b12a` / `de4ba13` env-doc tweaks.
+
+## Verified this session
+
+- `npm run type-check`, `npm run lint`, `npm test` (**33/33**, vitest),
+  `npm run build` — all green at `fe39e68`.
+- libSQL live connection + `saveRun` UPSERT chat-preservation smoke-tested.
+- Prod `/api/healthz` 200; prod `/api/auth/providers` lists `github`.
+
+## Env / config
+
+All set both locally (`.env.local`, gitignored) **and** in the Render dashboard
+(via the Render API this session):
+`GEMINI_API_KEY`, `SCOUT_MODEL`, `SCOUT_DEMO_CALL_BUDGET`, `TAVILY_API_KEY`,
+`TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`, `AUTH_GITHUB_ID`, `AUTH_GITHUB_SECRET`,
+`AUTH_SECRET`, `NEXTAUTH_URL` (= prod URL). Google CSE keys optional (search
+fallback). `.env.example` documents them all.
+- `RENDER_API_KEY` is in `~/.zshenv` (account-wide; lets the CLI/curl manage
+  Render — **rotate/delete when done**).
 
 ## Next steps (ordered)
-1. **Deploy to Render** via `render.yaml` (free tier; the user handles the actual deploy); replace the `TODO` live-demo URL in `README.md`. Wire the subpath `portfolio.n8builds.dev/scout` (per portfolio decisions — `basePath` + rewrites; SSE may need a subdomain fallback).
-2. **Decide + build embeddings** per `SCOUT_EMBEDDINGS_PLAN.md` (resolve its 8 open decisions first; Phase 1a = semantic source-dedup is the smallest valuable slice; uses `gemini-embedding-001`).
-3. **Optional:** Upstash KV for a durable demo cap (current 250/day cap is in-memory/per-process; resets on Render cold start).
-4. **Optional — dev-panel polish (was "Phase 4" of the cross-app dev-panel spec; panel itself shipped at `5a0bdf5`):** persist the panel's open/closed state across reloads, tidy the **mobile layout** of the waterfall, and refine the readouts. Pure polish — the telemetry (`src/lib/devtrace.ts`) and rendering (`src/components/DevPanel.tsx`) are complete.
 
-> **Pending manual QA:** `docs/QA_TESTING.md` lists the can't-be-headless checks (model-picker BYOK gating, dev panel, theme FOUC, onboarding, favicon/OG). All features are built; the QA pass is owed once the app is deployed.
+1. **[USER — needs a browser]** Test the **GitHub sign-in round-trip on prod**:
+   sign in, run a question, confirm the run + a follow-up chat appear after a
+   reload and on a second device; confirm the "import N on-device runs" prompt
+   works on first sign-in. This is the only thing not verifiable headlessly.
+2. **Manual QA pass** — `docs/QA_TESTING.md` (now deployable; covers model
+   picker, dev panel, theme/FOUC, onboarding, OG cards, + new auth/chat items).
+3. **Security hygiene** — rotate the secrets that passed through chat if the
+   transcript is shared: Render API key, GitHub client secret, Turso token.
+4. **Embeddings** — `SCOUT_EMBEDDINGS_PLAN.md` (semantic source-dedup, Phase 1a);
+   design-only so far; would use `gemini-embedding-001`.
+5. **Optional:** Upstash KV for a durable cross-instance demo call cap (current
+   250/day cap is in-memory/per-process, resets on cold start).
 
-> **Audit 2026-06-20 — completed items removed from this list (were stale):** merging `hardening-pass` + adding a remote/push (done — `master` is public on `origin`); the light/dark theme toggle (done — `ThemeToggle.tsx`, no dead dark-only CSS); ReAct loop hardening / duplicate-URL + no-progress detection (done — `798d8e7`, in `loop.ts`).
+## Conventions & gotchas (hard-won)
 
-## File map
-- `src/lib/agent/loop.ts` — the ReAct loop (plan → think/act/observe → finish → synthesize); metered model calls.
-- `src/lib/agent/{tools,prompts,types}.ts` — tool decls/dispatch, prompts, step types.
-- `src/lib/agent/fetchUrl.ts` — SSRF-guarded fetch (per-hop revalidation).
-- `src/lib/usage.ts` — 250/day demo-call cap + per-IP guard.
-- `src/lib/{db,session,request}.ts` — SQLite, per-session id, ip/session helpers.
-- `src/app/api/research/route.ts` — SSE stream. `src/app/api/runs/*` — per-session history.
-- `src/hooks/useResearchStream.ts` — client SSE consumer.
-- `src/components/{AgentTrace,StepCard,ReportView,SourcesPanel,RunHistorySidebar,ThemeToggle,DevPanel}.tsx` — UI (incl. theme toggle + "Under the hood" dev panel).
-- `src/lib/gemini.ts` — `MODELS` allowlist + `SHARED_MODEL` + `pickModel(requested, byok)` gate · `src/lib/devtrace.ts` — dev-panel telemetry (`TraceEvent`).
-- `docs/blog/agents-are-a-while-loop.md` (build log) · `docs/blog/lessons-and-where-agents-are-going.md` (reflection) · `docs/blog/the-state-of-ai-agents.md` (analysis post).
-- `tests/*.test.{ts,tsx}` (Vitest, 33 tests) · `render.yaml` (deploys `branch: master`) · `vitest.config.ts`.
-- Plan docs (this folder): `AGENTIC_RESEARCHER_PLAN.md` (original build plan) · `SCOUT_EMBEDDINGS_PLAN.md` (embeddings design).
+- **Commands:** port **3100**. `npm run dev` / `npm run build` / `npm test` /
+  `npm run type-check` / `npm run lint`. Commit per change; Co-Authored-By trailer.
+- **Gemini 3 tool round-trips 400** unless `thoughtSignature` is preserved on
+  `functionCall` parts → `/api/chat` answers from **fresh contents** rather than
+  replaying the function call (no round-trip). The agent loop preserves parts.
+- **Report streaming:** synthesis uses `generateContentStream` → emits
+  `answer_delta` SSE steps; the client **appends** deltas, the final `answer`
+  **replaces** with the full text. A report-less hard-fail emits `error` (no
+  `answer`) so it isn't persisted.
+- **ChatPanel persist** is gated on a `loadedFor` ref keyed to (backend, runId)
+  so a run switch / auth flip can't save the wrong thread (see `fe39e68`).
+- **`db.saveRun` is an UPSERT** (`ON CONFLICT(id) DO UPDATE`) that **excludes the
+  `chat` column** — `INSERT OR REPLACE` wiped it.
+- **libSQL:** `@libsql/client`, async. Falls back to `file:data/scout.db` when
+  `TURSO_*` unset (ephemeral on Render free tier). `next.config.ts` externalizes
+  `@libsql/client` + `libsql`. **No `better-sqlite3`, no native compile.**
+- **NextAuth v4:** `getServerSession(authOptions)` server-side; `SessionProvider`
+  in `layout.tsx`; provider list gated by `AUTH_GITHUB_*`. JWT sessions (no DB
+  adapter); only user *data* needs Turso.
+- **Render via API:** set env vars `PUT /v1/services/{id}/env-vars/{key}`
+  (per-key merge); deploy `POST /v1/services/{id}/deploys`. Service id
+  `srv-d8rjiu6gvqtc73f52prg`. Render free tier: cold start 30–60s, ephemeral disk
+  (durability comes from Turso).
 
-## Shared portfolio decisions (Scout-relevant)
-- **Model picker tiers:** `gemini-3.1-flash-lite` is the only model allowed on the **shared** demo key; the rest (`gemini-2.5-flash`, `gemini-2.5-flash-lite`, `gemini-3-flash-preview`, `gemini-3.5-flash`) are **BYOK-only** (~20/day each on the free tier). All support function calling. Same `pickModel` gate pattern as Echo.
-- **LLM standard:** all generation is `gemini-3.1-flash-lite` via the current `@google/genai` SDK. No Gemini 2.0/2.5 in use for generation. Embeddings would use `gemini-embedding-001`.
-- **Domain DECIDED:** `n8builds.dev`; apps attach as subpaths — `portfolio.n8builds.dev/scout`. Deploy = Render free tier (the user runs the deploy).
-- **House style:** Scout accent = violet/fuchsia; rounded-2xl modals; required first-run onboarding; light + dark.
-- **Git:** Scout → its own `n8watkins` remote (`scout-agentic-ai-researcher`); `master` tracks `origin`. **Never cross-push** to the other portfolio repos. Branch off default before committing. Secrets only in gitignored `.env.local`.
+## File map (key files for the next steps)
 
-## Historical state (session #1 — kept for provenance, superseded above)
-The pre-ship state was: branch `hardening-pass` @ `e958587`, no remote, not pushed, 18 tests, dark-mode-only with dead light CSS, loop guarded only by `maxSteps=8`. All of that has since been resolved (public on `master`, theme toggle shipped, loop hardened, 33 tests) — see "Current truth" at the top. Listed here only so older references in chat/commits resolve to something.
+- `src/lib/persistence.ts` — `usePersistence()` local↔server router.
+- `src/lib/clientStore.ts` — IndexedDB store (anon runs + chats).
+- `src/lib/apiStore.ts` — server persistence client (signed-in).
+- `src/lib/db.ts` — libSQL store; runs + `chat` column; `getRunChat`/`setRunChat`.
+- `src/lib/authOptions.ts` + `src/app/api/auth/[...nextauth]/route.ts` — NextAuth.
+- `src/types/next-auth.d.ts` — `session.user.id` augmentation.
+- `src/components/AuthControls.tsx` — sign in/out (self-hides if unconfigured).
+- `src/components/MigrationPrompt.tsx` — import on-device runs on first sign-in.
+- `src/components/ChatPanel.tsx` + `src/app/api/chat/route.ts` — talk-to-report.
+- `src/lib/agent/loop.ts` — ReAct loop + streamed synthesis (`answer_delta`).
+- `src/components/SourcesPanel.tsx` — accordion + reveal · `ReportView.tsx` —
+  typewriter cursor · `src/hooks/useResearchStream.ts` — SSE consumer + save.
+- `src/app/api/runs/route.ts` + `[id]/route.ts` + `[id]/chat/route.ts` —
+  auth-scoped run/chat persistence.
+- `render.yaml` — blueprint (all env vars declared) · `.env.example` — env docs.

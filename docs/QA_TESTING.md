@@ -6,8 +6,9 @@
 > Run with `npm run dev` (→ http://localhost:3100). Use **Chrome** for the most
 > reliable behavior.
 >
-> Status: all features below are built and on `master`. Manual QA is **still
-> pending** (the app is not yet deployed — the README live-demo URL is a `TODO`).
+> Status: **deployed live** at https://scout-agentic-researcher.onrender.com —
+> run this pass against prod (or `npm run dev` locally). All features are on
+> `master` @ `fe39e68`.
 
 ## Model picker
 - [ ] On the **shared key** (no BYOK): only **Gemini 3.1 Flash Lite** is
@@ -44,9 +45,28 @@
 
 ## Core research loop (spot-check)
 - [ ] Ask a question → it **plans**, streams **search → read → observe** steps
-      over SSE, then a **cited report**; each `[n]` links to the Sources panel.
-- [ ] A run **saved** to history reappears after a page reload (per-session
-      SQLite); reopening it restores the report + sources.
+      over SSE, then the **report types out token-by-token** (typewriter cursor);
+      each `[n]` chip is **legible** and links to the Sources panel.
+- [ ] **Sources** reveal one-at-a-time as discovered (count ticks up), and each
+      source's description is an **accordion** (collapsed by default).
+- [ ] A run **saved** to history reappears after reload; reopening restores the
+      report + sources. (Signed out → on-device IndexedDB.)
+
+## Talk to the report (chat)
+- [ ] After a report, the **"Ask about this report"** panel answers from the
+      report/sources first (no "searched the web" badge for covered questions).
+- [ ] Ask something beyond the sources → shows **"searched the web"** and answers
+      from fresh results; the reply **streams** in.
+- [ ] The chat thread **persists** across reload and when reopening the saved run.
+
+## Sign-in & cross-device sync (GitHub)
+- [ ] **Sign in with GitHub** (sidebar) succeeds → shows avatar/name +
+      "Synced across devices".
+- [ ] First sign-in with existing on-device runs → **"Import N runs"** prompt;
+      Import moves them into the account.
+- [ ] A run/chat made while signed in appears on a **second device/browser**
+      after signing in there (Turso sync).
+- [ ] Sign out → back to local-first (on-device runs).
 
 ## Findings (fill in during QA)
 - …

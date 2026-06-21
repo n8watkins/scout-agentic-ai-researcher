@@ -17,15 +17,14 @@ tool use / function calling, RAG-adjacent live web retrieval, citations &
 grounding, hallucination defense, SSRF hardening, Server-Sent Events, Next.js,
 TypeScript, Gemini.
 
-**Live demo:** _TODO — set to the Render URL once deployed (Render free tier)._
+**Live demo:** **https://scout-agentic-researcher.onrender.com** (Render free tier).
 
 Heads up before you click: it's on Render's free tier, so if nobody has visited
 in 15 minutes the server spins down and the first load takes 30 to 60 seconds
-while it wakes up. By default the free tier also has an **ephemeral disk**, so
-saved research runs (a local SQLite file) reset whenever the server restarts —
-unless you point `TURSO_DATABASE_URL` at a free Turso/libSQL database, which
-makes them durable. I knew both going in and decided the cold start was fine for
-a demo.
+while it wakes up. Your research runs + chats are saved **on your device**
+(IndexedDB) by default, so they survive that restart; **sign in with GitHub** to
+sync them across devices (Turso). I decided the cold start was a fair trade for a
+free-tier demo.
 
 ---
 
