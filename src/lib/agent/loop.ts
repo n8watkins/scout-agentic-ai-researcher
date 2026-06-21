@@ -393,12 +393,15 @@ export async function* runAgent(
       yield* drain();
     } catch (err) {
       if (isAbort(err)) return;
-      // Only surface an error if nothing streamed yet — otherwise keep the
-      // partial report (re-sending it as a delta would duplicate it client-side).
+      // Hard failure with nothing streamed yet: surface an error and do NOT
+      // emit an answer, so the client won't persist a report-less run (this is
+      // what made a failed/503 run save as a plan with no usable report).
       if (!report) {
-        report = `I ran into an error writing the report: ${(err as Error).message}`;
-        yield makeStep('answer_delta', { content: report });
+        yield makeStep('error', { content: `Couldn't write the report: ${(err as Error).message}` });
+        yield makeStep('done', { stoppedEarly, citations: snapshot(citations) });
+        return;
       }
+      // Otherwise keep the partial report that already streamed in.
     }
   }
   if (!report) report = 'No report could be generated.';
