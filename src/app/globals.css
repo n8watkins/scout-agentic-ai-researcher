@@ -150,3 +150,15 @@ body {
 ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 .dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+/* Respect the OS "reduce motion" preference site-wide. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
