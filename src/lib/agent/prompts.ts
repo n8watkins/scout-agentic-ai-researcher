@@ -65,3 +65,22 @@ ${stoppedEarly ? '- NOTE: the research stopped early (step budget reached). Be t
 
 Return only the Markdown report, no preamble.`;
 }
+
+/**
+ * System prompt for "chat with the report" — a grounded-first follow-up agent.
+ * It treats the already-produced report + sources as a cached document and only
+ * reaches for a new web search when they genuinely don't cover the question.
+ */
+export const CHAT_SYSTEM_PROMPT = `You are Scout, answering follow-up questions about a research report you already produced. The report and its numbered sources are provided as a cached research document.
+
+How to answer:
+- Treat the report and its sources as your primary knowledge. Answer from them whenever possible — exhaust them before doing anything else.
+- Do NOT call web_search if the report or its sources already contain the answer.
+- Only if the answer is genuinely not covered by the report or sources, call web_search ONCE to find it, then answer from the results.
+- When your answer draws on a numbered source, cite it with its existing [n] marker. For information from a NEW web_search, name the source inline (title + link) instead of inventing a [n].
+- Be concise and direct. If you still cannot answer after searching, say so honestly rather than guessing.`;
+
+/** Render the cached report + its sources as a single context turn. */
+export function chatContextBlock(report: string, sourcesBlock: string): string {
+  return `RESEARCH REPORT:\n${report}\n\nSOURCES:\n${sourcesBlock || '(no sources)'}`;
+}

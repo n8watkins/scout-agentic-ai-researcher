@@ -10,6 +10,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 import AgentTrace from '@/components/AgentTrace';
 import ReportView from '@/components/ReportView';
 import SourcesPanel from '@/components/SourcesPanel';
+import ChatPanel from '@/components/ChatPanel';
 import DevPanel from '@/components/DevPanel';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useApiKey } from '@/hooks/useApiKey';
@@ -158,6 +159,16 @@ export default function Home() {
 
             {(state.citations.length > 0 || isRunning) && (
               <SourcesPanel citations={state.citations} running={isRunning} />
+            )}
+
+            {state.report && !isRunning && (
+              <ChatPanel
+                report={state.report}
+                citations={state.citations}
+                apiKey={apiKey}
+                model={model}
+                runId={state.runId}
+              />
             )}
           </div>
         </div>
