@@ -27,7 +27,8 @@ services:
       # of a 500/day key shared with the voice agent).
       - key: SCOUT_DEMO_CALL_BUDGET
         value: "250"
-      # Optional rate-limit tuning (code defaults: 8 runs/IP, 60 saved runs).
+      # Optional abuse-guard tuning (defaults: 8 runs/IP per hour, 60 run-
+      # history writes/min). See src/lib/usage.ts.
       - key: SCOUT_PER_IP_RUN_LIMIT
         value: "8"
       - key: SCOUT_RUN_WRITE_LIMIT
