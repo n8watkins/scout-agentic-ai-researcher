@@ -21,10 +21,11 @@ TypeScript, Gemini.
 
 Heads up before you click: it's on Render's free tier, so if nobody has visited
 in 15 minutes the server spins down and the first load takes 30 to 60 seconds
-while it wakes up. The free tier also has an **ephemeral disk**, which means
-saved research runs (stored in SQLite) reset whenever the server restarts. I
-knew both going in and decided they were fine for a demo — runs survive a page
-reload, not a redeploy.
+while it wakes up. By default the free tier also has an **ephemeral disk**, so
+saved research runs (a local SQLite file) reset whenever the server restarts —
+unless you point `TURSO_DATABASE_URL` at a free Turso/libSQL database, which
+makes them durable. I knew both going in and decided the cold start was fine for
+a demo.
 
 ---
 
@@ -138,9 +139,10 @@ sequenceDiagram
 - **`src/app/api/research/route.ts`** — POST starts a run and streams steps as
   SSE. The stream is one-directional (server → UI), which is exactly why SSE is
   the honest choice here rather than a WebSocket.
-- **`src/lib/db.ts` / `src/app/api/runs/*`** — `better-sqlite3` run history,
-  scoped per client session (`x-scout-session`) with payload caps and a write
-  rate limit.
+- **`src/lib/db.ts` / `src/app/api/runs/*`** — libSQL (`@libsql/client`) run
+  history — a local SQLite file by default, or a durable Turso DB when
+  `TURSO_DATABASE_URL` is set — scoped per client session (`x-scout-session`)
+  with payload caps and a write rate limit.
 - **`src/lib/gemini.ts`** — model + key resolution: the `MODELS` allowlist and a
   server-side `pickModel(requested, byok)` gate that only honors a requested
   model if it's shared-tier *or* the run carries a BYOK key (never trust the
@@ -159,9 +161,9 @@ sequenceDiagram
   portfolio apps use). Model default **`gemini-3.1-flash-lite`**, configurable
   via `SCOUT_MODEL` or per-run from the sidebar model picker (heavier models
   BYOK-gated).
-- **better-sqlite3** for saved runs · **isomorphic-dompurify** for sanitizing
-  fetched pages · **react-markdown** + **remark-gfm** for rendering reports ·
-  **Heroicons** + **lucide-react** for icons.
+- **libSQL / Turso** (`@libsql/client`) for saved runs · **isomorphic-dompurify**
+  for sanitizing fetched pages · **react-markdown** + **remark-gfm** for rendering
+  reports · **Heroicons** + **lucide-react** for icons.
 - **Server-Sent Events** for the agent trace · **Vitest** for tests · **Render**
   (free tier) for deploy.
 
@@ -186,6 +188,11 @@ GOOGLE_SEARCH_API_KEY=   # fallback search
 GOOGLE_SEARCH_ENGINE_ID=
 NEXT_PUBLIC_APP_URL=http://localhost:3100
 PORT=3100
+
+# Optional: durable saved-run storage. Without these, runs use a local SQLite
+# file (ephemeral on Render's free tier). A free Turso DB (turso.tech) persists.
+TURSO_DATABASE_URL=
+TURSO_AUTH_TOKEN=
 ```
 
 With **no search key**, Scout falls back to Wikipedia's keyless search API, so
@@ -257,10 +264,11 @@ blog posts below are where they live.
 ## Deploying to Render
 
 A [`render.yaml`](render.yaml) blueprint is included: a free Node web service
-that runs `npm ci && npm run build` (which compiles better-sqlite3's native
-addon) and starts Next on Render's injected `$PORT`. Set `GEMINI_API_KEY` and the
-optional search keys as dashboard secrets (`sync: false`). The free tier's disk
-is ephemeral, so saved runs reset on redeploy — see the note up top.
+that runs `npm ci && npm run build` (libSQL ships prebuilt binaries — no native
+compile) and starts Next on Render's injected `$PORT`. Set `GEMINI_API_KEY` and
+the optional search keys as dashboard secrets (`sync: false`). The free tier's
+disk is ephemeral, so saved runs reset on redeploy unless you set
+`TURSO_DATABASE_URL` for durable storage — see the note up top.
 
 ## Writing about it
 

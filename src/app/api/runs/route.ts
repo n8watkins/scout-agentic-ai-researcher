@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
   const sid = sessionId(req);
   if (!sid) return Response.json({ runs: [] });
   try {
-    return Response.json({ runs: listRuns(sid) });
+    return Response.json({ runs: await listRuns(sid) });
   } catch (err) {
     logger.error('listRuns failed', { err: String(err) });
     return Response.json({ runs: [] });
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
   };
 
   try {
-    saveRun(run, sid);
+    await saveRun(run, sid);
     return Response.json({ ok: true, id: run.id });
   } catch (err) {
     logger.error('saveRun failed', { err: String(err) });

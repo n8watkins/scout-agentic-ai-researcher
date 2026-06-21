@@ -1,89 +1,93 @@
-import Database from 'better-sqlite3';
+import { createClient, type Client } from '@libsql/client';
 import path from 'node:path';
 import fs from 'node:fs';
 import type { AgentStep, Citation, SavedRun } from './agent/types';
 import { logger } from './logger';
 
 /**
- * better-sqlite3 store for saved research runs. On Render's free tier the disk
- * is ephemeral (see README), so this is convenience persistence, not a system
- * of record — runs survive a page reload, not a redeploy.
+ * libSQL store for saved research runs.
+ *
+ * Durable when TURSO_DATABASE_URL (+ TURSO_AUTH_TOKEN) point at a Turso/libSQL
+ * database — runs then survive redeploys and cold starts. With no Turso config
+ * it falls back to a local SQLite file (file:data/scout.db), which on Render's
+ * free tier lives on the ephemeral disk (resets on redeploy — see README).
  *
  * Runs are scoped to a client-generated `session_id` (localStorage) so visitors
  * only ever see and mutate their own history on the shared instance.
  */
 
-let db: Database.Database | null = null;
+let clientPromise: Promise<Client> | null = null;
 
-function getDb(): Database.Database {
-  if (db) return db;
-  const dataDir = path.join(process.cwd(), 'data');
+/** Resolve the DB URL: Turso if configured, else a local SQLite file. */
+function resolveDbUrl(): string {
+  const turso = process.env.TURSO_DATABASE_URL?.trim();
+  if (turso) return turso;
+  const dir = path.join(process.cwd(), 'data');
   try {
-    fs.mkdirSync(dataDir, { recursive: true });
+    fs.mkdirSync(dir, { recursive: true });
   } catch (err) {
     logger.warn('Could not create data dir', { err: String(err) });
   }
-  const file = path.join(dataDir, 'scout.db');
-  db = new Database(file);
-  db.pragma('journal_mode = WAL');
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS runs (
-      id TEXT PRIMARY KEY,
-      session_id TEXT NOT NULL DEFAULT '',
-      question TEXT NOT NULL,
-      report TEXT NOT NULL,
-      citations TEXT NOT NULL,
-      steps TEXT NOT NULL,
-      stopped_early INTEGER NOT NULL DEFAULT 0,
-      created_at INTEGER NOT NULL
+  return `file:${path.join(dir, 'scout.db')}`;
+}
+
+/** Lazily create the client and ensure the schema exists (once). */
+function getClient(): Promise<Client> {
+  if (clientPromise) return clientPromise;
+  clientPromise = (async () => {
+    const url = resolveDbUrl();
+    const authToken = process.env.TURSO_AUTH_TOKEN?.trim();
+    const client = createClient(authToken ? { url, authToken } : { url });
+    await client.execute(`
+      CREATE TABLE IF NOT EXISTS runs (
+        id TEXT PRIMARY KEY,
+        session_id TEXT NOT NULL DEFAULT '',
+        question TEXT NOT NULL,
+        report TEXT NOT NULL,
+        citations TEXT NOT NULL,
+        steps TEXT NOT NULL,
+        stopped_early INTEGER NOT NULL DEFAULT 0,
+        created_at INTEGER NOT NULL
+      )
+    `);
+    await client.execute(
+      `CREATE INDEX IF NOT EXISTS idx_runs_session ON runs(session_id, created_at DESC)`
     );
-  `);
-  // Migrate older DBs that predate session scoping.
-  const cols = db.prepare(`PRAGMA table_info(runs)`).all() as Array<{ name: string }>;
-  if (!cols.some((c) => c.name === 'session_id')) {
-    db.exec(`ALTER TABLE runs ADD COLUMN session_id TEXT NOT NULL DEFAULT ''`);
-  }
-  db.exec(`CREATE INDEX IF NOT EXISTS idx_runs_session ON runs(session_id, created_at DESC)`);
-  return db;
+    return client;
+  })();
+  return clientPromise;
 }
 
-interface RunRow {
-  id: string;
-  session_id: string;
-  question: string;
-  report: string;
-  citations: string;
-  steps: string;
-  stopped_early: number;
-  created_at: number;
-}
+type DbRow = Record<string, unknown>;
 
-function rowToRun(row: RunRow): SavedRun {
+function rowToRun(row: DbRow): SavedRun {
   return {
-    id: row.id,
-    question: row.question,
-    report: row.report,
-    citations: JSON.parse(row.citations) as Citation[],
-    steps: JSON.parse(row.steps) as AgentStep[],
-    stoppedEarly: row.stopped_early === 1,
-    createdAt: row.created_at,
+    id: String(row.id),
+    question: String(row.question),
+    report: String(row.report),
+    citations: JSON.parse(String(row.citations)) as Citation[],
+    steps: JSON.parse(String(row.steps)) as AgentStep[],
+    stoppedEarly: Number(row.stopped_early) === 1,
+    createdAt: Number(row.created_at),
   };
 }
 
-export function saveRun(run: SavedRun, sessionId: string): void {
-  const stmt = getDb().prepare(
-    `INSERT OR REPLACE INTO runs (id, session_id, question, report, citations, steps, stopped_early, created_at)
-     VALUES (@id, @session_id, @question, @report, @citations, @steps, @stopped_early, @created_at)`
-  );
-  stmt.run({
-    id: run.id,
-    session_id: sessionId,
-    question: run.question,
-    report: run.report,
-    citations: JSON.stringify(run.citations),
-    steps: JSON.stringify(run.steps),
-    stopped_early: run.stoppedEarly ? 1 : 0,
-    created_at: run.createdAt,
+export async function saveRun(run: SavedRun, sessionId: string): Promise<void> {
+  const client = await getClient();
+  await client.execute({
+    sql: `INSERT OR REPLACE INTO runs
+            (id, session_id, question, report, citations, steps, stopped_early, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    args: [
+      run.id,
+      sessionId,
+      run.question,
+      run.report,
+      JSON.stringify(run.citations),
+      JSON.stringify(run.steps),
+      run.stoppedEarly ? 1 : 0,
+      run.createdAt,
+    ],
   });
 }
 
@@ -95,30 +99,36 @@ export interface RunSummary {
 }
 
 /** List run summaries for one session only (most recent first). */
-export function listRuns(sessionId: string, limit = 50): RunSummary[] {
-  const rows = getDb()
-    .prepare(
-      `SELECT id, question, stopped_early, created_at FROM runs
-       WHERE session_id = ? ORDER BY created_at DESC LIMIT ?`
-    )
-    .all(sessionId, limit) as Array<Pick<RunRow, 'id' | 'question' | 'stopped_early' | 'created_at'>>;
-  return rows.map((r) => ({
-    id: r.id,
-    question: r.question,
-    stoppedEarly: r.stopped_early === 1,
-    createdAt: r.created_at,
+export async function listRuns(sessionId: string, limit = 50): Promise<RunSummary[]> {
+  const client = await getClient();
+  const rs = await client.execute({
+    sql: `SELECT id, question, stopped_early, created_at FROM runs
+          WHERE session_id = ? ORDER BY created_at DESC LIMIT ?`,
+    args: [sessionId, limit],
+  });
+  return rs.rows.map((r) => ({
+    id: String(r.id),
+    question: String(r.question),
+    stoppedEarly: Number(r.stopped_early) === 1,
+    createdAt: Number(r.created_at),
   }));
 }
 
 /** Fetch one run, but only if it belongs to the given session. */
-export function getRun(id: string, sessionId: string): SavedRun | null {
-  const row = getDb()
-    .prepare(`SELECT * FROM runs WHERE id = ? AND session_id = ?`)
-    .get(id, sessionId) as RunRow | undefined;
-  return row ? rowToRun(row) : null;
+export async function getRun(id: string, sessionId: string): Promise<SavedRun | null> {
+  const client = await getClient();
+  const rs = await client.execute({
+    sql: `SELECT * FROM runs WHERE id = ? AND session_id = ?`,
+    args: [id, sessionId],
+  });
+  return rs.rows.length ? rowToRun(rs.rows[0] as DbRow) : null;
 }
 
 /** Delete one run, scoped to the owning session. */
-export function deleteRun(id: string, sessionId: string): void {
-  getDb().prepare(`DELETE FROM runs WHERE id = ? AND session_id = ?`).run(id, sessionId);
+export async function deleteRun(id: string, sessionId: string): Promise<void> {
+  const client = await getClient();
+  await client.execute({
+    sql: `DELETE FROM runs WHERE id = ? AND session_id = ?`,
+    args: [id, sessionId],
+  });
 }

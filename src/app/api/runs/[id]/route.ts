@@ -11,7 +11,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string 
   const sid = sessionId(req);
   if (!sid) return Response.json({ error: 'Run not found' }, { status: 404 });
   const { id } = await ctx.params;
-  const run = getRun(id, sid);
+  const run = await getRun(id, sid);
   if (!run) return Response.json({ error: 'Run not found' }, { status: 404 });
   return Response.json({ run });
 }
@@ -24,6 +24,6 @@ export async function DELETE(req: NextRequest, ctx: { params: Promise<{ id: stri
     return Response.json({ error: 'Too many requests' }, { status: 429 });
   }
   const { id } = await ctx.params;
-  deleteRun(id, sid);
+  await deleteRun(id, sid);
   return Response.json({ ok: true });
 }
