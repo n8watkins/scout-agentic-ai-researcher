@@ -13,6 +13,7 @@ import type { SavedRun } from '@/lib/agent/types';
 import { useApiKey } from '@/hooks/useApiKey';
 import InlineKeyEntry from './InlineKeyEntry';
 import ModelPicker from './ModelPicker';
+import SidebarUsageMeter from './UsageMeter';
 import MigrationPrompt from './MigrationPrompt';
 
 interface RunHistorySidebarProps {
@@ -112,6 +113,8 @@ export default function RunHistorySidebar({
       {/* Footer: usage + BYOK + about */}
       <div className="p-3 space-y-2 border-t border-slate-200 dark:border-slate-900/40">
         <MigrationPrompt onDone={load} />
+
+        <SidebarUsageMeter hasOwnKey={hasApiKey} />
 
         <ModelPicker />
 

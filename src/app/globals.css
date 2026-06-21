@@ -139,8 +139,11 @@ body {
 }
 @keyframes blink-cursor { to { opacity: 0; } }
 
-/* Custom scrollbar */
-::-webkit-scrollbar { width: 8px; height: 8px; }
+/* Custom scrollbar — thin + slate, never purple */
+* { scrollbar-width: thin; scrollbar-color: #94a3b8 transparent; }
+.dark * { scrollbar-color: #475569 transparent; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+.dark ::-webkit-scrollbar-thumb { background: #475569; }
