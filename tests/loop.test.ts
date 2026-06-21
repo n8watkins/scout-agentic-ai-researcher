@@ -29,9 +29,10 @@ type Scripted =
   | { call: { name: string; args?: Record<string, unknown> } };
 
 const generateContent: Mock = vi.fn();
+const generateContentStream: Mock = vi.fn();
 
 vi.mock('@/lib/gemini', () => ({
-  makeClient: () => ({ models: { generateContent } }),
+  makeClient: () => ({ models: { generateContent, generateContentStream } }),
 }));
 
 function script(responses: Scripted[]): void {
@@ -74,6 +75,16 @@ beforeEach(() => {
   vi.clearAllMocks();
   // Default: plan returns prose, so the loop continues to the ACT phase.
   generateContent.mockResolvedValue({ text: 'plan', functionCalls: [] });
+  // Default: synthesis streams one chunk (with usage metadata for telemetry).
+  generateContentStream.mockImplementation(async () => {
+    async function* gen() {
+      yield {
+        text: 'final report [1]',
+        usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 },
+      };
+    }
+    return gen();
+  });
 });
 
 describe('duplicate web_search short-circuit', () => {

@@ -10,6 +10,8 @@ export type StepType =
   | 'tool_call'
   | 'observation'
   | 'answer'
+  /** Incremental report chunk streamed during synthesis (typewriter effect). */
+  | 'answer_delta'
   | 'status'
   | 'error'
   | 'done'

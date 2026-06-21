@@ -133,6 +133,19 @@ body {
 }
 .pulse-dot { animation: pulse-dot 1.2s ease-in-out infinite; }
 
+/* Streaming report typewriter cursor */
+.typing-cursor {
+  display: inline-block;
+  width: 0.5rem;
+  height: 1.05rem;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: #7c3aed;
+  border-radius: 1px;
+  animation: blink-cursor 1s steps(2, start) infinite;
+}
+@keyframes blink-cursor { to { opacity: 0; } }
+
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }

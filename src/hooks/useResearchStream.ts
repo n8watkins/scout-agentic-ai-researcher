@@ -131,8 +131,15 @@ export function useResearchStream() {
           if (step.label) setState((s) => ({ ...s, statusLabel: step.label! }));
           return;
         }
+        if (step.type === 'answer_delta') {
+          // Streamed report chunk — append so the report types out live.
+          report += step.content ?? '';
+          setState((s) => ({ ...s, report }));
+          return;
+        }
         if (step.type === 'answer') {
-          report = step.content ?? '';
+          // Final canonical report (matches the accumulated deltas).
+          report = step.content ?? report;
           citations = step.citations ?? citations;
           stoppedEarly = !!step.stoppedEarly;
           setState((s) => ({ ...s, report, citations, stoppedEarly }));

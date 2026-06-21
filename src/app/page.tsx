@@ -152,6 +152,7 @@ export default function Home() {
                 citations={state.citations}
                 stoppedEarly={state.stoppedEarly}
                 question={state.question}
+                streaming={isRunning}
               />
             )}
 

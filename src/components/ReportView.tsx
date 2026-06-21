@@ -11,13 +11,15 @@ interface ReportViewProps {
   citations: Citation[];
   stoppedEarly: boolean;
   question: string;
+  /** True while the report is still streaming in — shows a typewriter cursor. */
+  streaming?: boolean;
 }
 
 /**
  * Final report with inline numbered citations [n] rendered as clickable chips
  * that scroll to the matching entry in SourcesPanel.
  */
-export default function ReportView({ report, citations, stoppedEarly, question }: ReportViewProps) {
+export default function ReportView({ report, citations, stoppedEarly, question, streaming }: ReportViewProps) {
   const validIndexes = useMemo(() => new Set(citations.map((c) => c.index)), [citations]);
 
   if (!report) return null;
@@ -47,6 +49,7 @@ export default function ReportView({ report, citations, stoppedEarly, question }
         >
           {report}
         </ReactMarkdown>
+        {streaming && <span className="typing-cursor" aria-hidden="true" />}
       </div>
     </div>
   );

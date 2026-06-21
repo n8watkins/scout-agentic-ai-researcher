@@ -345,16 +345,63 @@ export async function* runAgent(
     }
   }
 
-  // --- SYNTHESIZE -------------------------------------------------------
+  // --- SYNTHESIZE (streamed token-by-token so the report types out) ------
   yield makeStep('status', { label: 'Writing' });
-  let report: string;
-  try {
-    report = await synthesize(generate, model, question, citations, stoppedEarly, signal);
-  } catch (err) {
-    if (isAbort(err)) return;
-    report = `I ran into an error writing the report: ${(err as Error).message}`;
+  let report = '';
+  if (citations.length === 0) {
+    report = `I couldn't find any sources to ground an answer to **"${question}"**. The web searches returned nothing usable, so rather than guess, I'm stopping here. Try rephrasing the question or adding a search API key.`;
+    yield makeStep('answer_delta', { content: report });
+  } else {
+    const sourcesBlock = citations
+      .map((c) => `[${c.index}] ${c.title} (${c.url})\n${c.snippet}`)
+      .join('\n\n');
+    const params = {
+      model,
+      contents: synthesisPrompt(question, sourcesBlock, stoppedEarly),
+      config: { abortSignal: signal },
+    };
+    try {
+      if (!byok) recordDemoModelCall();
+      const startedAt = Date.now();
+      const streamRes = await ai.models.generateContentStream(params);
+      let usage: GenerateContentResponse['usageMetadata'];
+      for await (const chunk of streamRes) {
+        if (signal?.aborted) return;
+        usage = chunk.usageMetadata ?? usage;
+        const delta = chunk.text ?? '';
+        if (delta) {
+          report += delta;
+          yield makeStep('answer_delta', { content: delta });
+        }
+      }
+      // Capture the synthesis model call for the dev panel. Built by hand: the
+      // streamed text is accumulated above, not present on any single chunk.
+      telemetry.push({
+        kind: 'model_call',
+        id: nextTraceId('call'),
+        phase: 'synthesize',
+        model,
+        startedAt,
+        endedAt: Date.now(),
+        tokensIn: usage?.promptTokenCount ?? 0,
+        tokensOut: usage?.candidatesTokenCount ?? 0,
+        costUsd: estimateCostUsd(model, usage?.promptTokenCount ?? 0, usage?.candidatesTokenCount ?? 0),
+        prompt: serializeContents(params.contents),
+        rawResponse: report,
+        toolCall: null,
+      });
+      yield* drain();
+    } catch (err) {
+      if (isAbort(err)) return;
+      // Only surface an error if nothing streamed yet — otherwise keep the
+      // partial report (re-sending it as a delta would duplicate it client-side).
+      if (!report) {
+        report = `I ran into an error writing the report: ${(err as Error).message}`;
+        yield makeStep('answer_delta', { content: report });
+      }
+    }
   }
-  yield* drain();
+  if (!report) report = 'No report could be generated.';
 
   yield makeStep('answer', {
     content: report,
@@ -423,31 +470,6 @@ async function summarize(
     // Fall back to a hard truncation if summarization fails.
     return rawText.slice(0, 800);
   }
-}
-
-async function synthesize(
-  generate: MeteredGenerate,
-  model: string,
-  question: string,
-  citations: Citation[],
-  stoppedEarly: boolean,
-  signal?: AbortSignal
-): Promise<string> {
-  if (citations.length === 0) {
-    return `I couldn't find any sources to ground an answer to **"${question}"**. The web searches returned nothing usable, so rather than guess, I'm stopping here. Try rephrasing the question or adding a search API key.`;
-  }
-  const sourcesBlock = citations
-    .map((c) => `[${c.index}] ${c.title} (${c.url})\n${c.snippet}`)
-    .join('\n\n');
-  const res = await generate(
-    {
-      model,
-      contents: synthesisPrompt(question, sourcesBlock, stoppedEarly),
-      config: { abortSignal: signal },
-    },
-    'synthesize'
-  );
-  return textOf(res) || 'No report could be generated.';
 }
 
 /**
