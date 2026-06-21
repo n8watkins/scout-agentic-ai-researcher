@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { Type, type Content, type FunctionDeclaration } from '@google/genai';
 import { makeClient, resolveApiKey, pickModel } from '@/lib/gemini';
 import { webSearch } from '@/lib/search';
-import { recordDemoModelCall } from '@/lib/usage';
+import { recordDemoModelCall, isDemoCallBudgetExhausted } from '@/lib/usage';
 import { CHAT_SYSTEM_PROMPT, chatContextBlock } from '@/lib/agent/prompts';
 import { encodeComment, SSE_HEADERS } from '@/lib/sse';
 import { logger } from '@/lib/logger';
@@ -65,6 +65,14 @@ export async function POST(req: NextRequest) {
     return Response.json(
       { error: 'No API key available. Add your own free Gemini key to chat.' },
       { status: 401 }
+    );
+  }
+
+  // Demo-key chats draw from the shared model-call pool (BYOK is unlimited).
+  if (!resolved.byok && isDemoCallBudgetExhausted()) {
+    return Response.json(
+      { error: 'The shared demo pool is used up for now. Add your own free Gemini key to keep chatting.' },
+      { status: 429 }
     );
   }
 
@@ -145,7 +153,7 @@ export async function POST(req: NextRequest) {
         }
 
         // --- One web-search round (the report/sources fell short) ---
-        const query = String(call.args?.query ?? question).trim();
+        const query = (String(call.args?.query ?? '').trim() || question).slice(0, 300);
         send({ type: 'status', label: `Searching the web: ${query}` });
         let resultsBlock: string;
         try {
@@ -154,8 +162,12 @@ export async function POST(req: NextRequest) {
             ? results.map((r, i) => `(${i + 1}) ${r.title} — ${r.url}\n${r.snippet}`).join('\n\n')
             : 'No results found.';
         } catch (err) {
-          resultsBlock = `Search failed: ${String(err)}`;
+          if (ac.signal.aborted) return;
+          logger.warn('Chat web search failed', { err: String(err) });
+          // Don't feed the raw error to the model as if it were results.
+          resultsBlock = 'No additional web results were available.';
         }
+        if (ac.signal.aborted) return;
 
         // --- Answer with the new results (fresh contents, no tool round-trip:
         //     avoids the Gemini-3 thoughtSignature 400). Streamed. ---

@@ -35,30 +35,43 @@ export default function ChatPanel({ report, citations, apiKey, model, runId }: C
   const abortRef = useRef<AbortController | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const store = usePersistence();
+  // Keys the in-memory messages to (backend, runId) so the persist effect can't
+  // write a stale thread into a different run/backend after a switch.
+  const loadedFor = useRef<string | null>(null);
 
-  // Load this run's saved chat (or clear) whenever the shown run changes.
+  // Load this run's saved chat (or clear) whenever the shown run / backend
+  // changes. `loadedFor` is reset up-front so the persist effect below can't
+  // save the previous run's messages into the newly-selected run.
   useEffect(() => {
     abortRef.current?.abort();
     setInput('');
     setError(null);
     setStatus('');
     setStreaming(false);
+    const key = `${store.authed ? 'srv' : 'loc'}:${runId ?? ''}`;
+    loadedFor.current = null;
     let active = true;
     if (runId) {
       void store.getChat(runId).then((saved) => {
-        if (active) setMessages(saved);
+        if (!active) return;
+        setMessages(saved);
+        loadedFor.current = key;
       });
     } else {
       setMessages([]);
+      loadedFor.current = key;
     }
     return () => {
       active = false;
     };
   }, [runId, store]);
 
-  // Persist the thread (server if signed in, else on-device) after each turn.
+  // Persist the thread (server if signed in, else on-device) after each turn —
+  // but only once it's been loaded for the current run/backend, so a run switch
+  // or auth flip can't clobber another thread with stale in-memory messages.
   useEffect(() => {
-    if (runId && !streaming && messages.length > 0) {
+    const key = `${store.authed ? 'srv' : 'loc'}:${runId ?? ''}`;
+    if (runId && !streaming && messages.length > 0 && loadedFor.current === key) {
       void store.saveChat(runId, messages);
     }
   }, [streaming, runId, messages, store]);
@@ -150,6 +163,11 @@ export default function ChatPanel({ report, citations, apiKey, model, runId }: C
             });
           } else if (ev.type === 'error') {
             setError(ev.content ?? 'Chat failed');
+            // Drop an empty assistant placeholder so no blank bubble lingers.
+            setMessages((m) => {
+              const last = m[m.length - 1];
+              return last?.role === 'assistant' && !last.content ? m.slice(0, -1) : m;
+            });
           }
         }
       }

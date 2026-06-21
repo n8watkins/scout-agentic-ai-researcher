@@ -164,7 +164,9 @@ export function useResearchStream() {
         setState((s) => ({ ...s, steps: [...collected], citations }));
       }
 
-      setState((s) => ({ ...s, status: 'done', statusLabel: '' }));
+      // A run that produced no report (hard synthesis failure) is an error, not
+      // a completed run, even though the stream closed cleanly.
+      setState((s) => ({ ...s, status: report ? 'done' : 'error', statusLabel: '' }));
       void refreshUsage();
 
       // Persist the completed run (server if signed in, else on-device).

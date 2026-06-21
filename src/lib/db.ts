@@ -61,6 +61,11 @@ function getClient(): Promise<Client> {
     }
     return client;
   })();
+  // If init fails (e.g. a transient Turso outage at cold start), don't cache the
+  // rejection forever — clear it so the next call retries.
+  clientPromise.catch(() => {
+    clientPromise = null;
+  });
   return clientPromise;
 }
 
@@ -80,10 +85,20 @@ function rowToRun(row: DbRow): SavedRun {
 
 export async function saveRun(run: SavedRun, sessionId: string): Promise<void> {
   const client = await getClient();
+  // UPSERT that preserves an existing chat thread — INSERT OR REPLACE would
+  // delete the row and reset its chat column to the default.
   await client.execute({
-    sql: `INSERT OR REPLACE INTO runs
-            (id, session_id, question, report, citations, steps, stopped_early, created_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    sql: `INSERT INTO runs
+            (id, session_id, question, report, citations, steps, stopped_early, created_at, chat)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, '[]')
+          ON CONFLICT(id) DO UPDATE SET
+            session_id = excluded.session_id,
+            question = excluded.question,
+            report = excluded.report,
+            citations = excluded.citations,
+            steps = excluded.steps,
+            stopped_early = excluded.stopped_early,
+            created_at = excluded.created_at`,
     args: [
       run.id,
       sessionId,
