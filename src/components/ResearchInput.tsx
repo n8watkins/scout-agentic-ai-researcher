@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SparklesIcon, MagnifyingGlassIcon, StopIcon, MicrophoneIcon } from '@heroicons/react/24/outline';
-import { SUGGESTIONS, randomSampleQuestion } from '@/lib/sampleQuestions';
+import { SUGGESTIONS, randomSampleQuestion, sampleN } from '@/lib/sampleQuestions';
 import { useSpeechToText } from '@/hooks/useSpeechToText';
 
 interface ResearchInputProps {
@@ -44,6 +44,12 @@ export default function ResearchInput({
   useEffect(() => {
     autosize();
   }, [value, autosize]);
+
+  // A random subset of suggestion chips, reshuffled each mount (i.e., per reload).
+  const [picks, setPicks] = useState(() => SUGGESTIONS.slice(0, 6));
+  useEffect(() => {
+    setPicks(sampleN(SUGGESTIONS, 6));
+  }, []);
 
   const { supported: micSupported, listening, start, stop } = useSpeechToText((t) => {
     onChange((baseRef.current ? baseRef.current + ' ' : '') + t);
@@ -133,7 +139,7 @@ export default function ResearchInput({
       {/* Suggestions — stay visible until the first search; clicking runs it */}
       {showSuggestions && !isRunning && (
         <div className="flex flex-wrap justify-center gap-2 mt-3">
-          {SUGGESTIONS.map((s) => (
+          {picks.map((s) => (
             <button
               key={s.label}
               type="button"
@@ -149,7 +155,7 @@ export default function ResearchInput({
           <button
             type="button"
             onClick={() => {
-              const q = randomSampleQuestion(value);
+              const q = randomSampleQuestion();
               onChange(q);
               onSubmit(q);
             }}
