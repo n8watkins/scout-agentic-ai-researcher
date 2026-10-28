@@ -52,8 +52,8 @@ from.
 - **Free to try, BYOK optional.** Runs go on a shared demo key while it has
   capacity; bring your own free Gemini key (stored only in your browser) for
   unlimited runs. (See [the demo-key model](#the-demo-key--byok-model) below.)
-- **Pick your model.** A sidebar picker offers `gemini-3.1-flash-lite` on the
-  shared key; the more capable models (2.5-flash, 2.5-flash-lite,
+- **Pick your model.** A sidebar picker offers `gemini-3.5-flash-lite` on the
+  shared key; the other models (3.1-flash-lite, 2.5-flash, 2.5-flash-lite,
   3-flash-preview, 3.5-flash) unlock once you add your own key. Free-tier quotas
   are tight, so a server-side allowlist gates the heavier models to BYOK runs.
 - **"Under the hood" dev panel.** A Beaker toggle X-rays the loop: per-call
@@ -157,7 +157,7 @@ sequenceDiagram
 - **Next.js 16** (App Router) + **React 19** + **TypeScript** + **Tailwind v4**
 - **`@google/genai`** (the current Gemini SDK - better streaming and
   function-calling ergonomics than the legacy `@google/generative-ai` the older
-  portfolio apps use). Model default **`gemini-3.1-flash-lite`**, configurable
+  portfolio apps use). Model default **`gemini-3.5-flash-lite`**, configurable
   via `SCOUT_MODEL` or per-run from the sidebar model picker (heavier models
   BYOK-gated).
 - **libSQL / Turso** (`@libsql/client`) for saved runs · **isomorphic-dompurify**
@@ -181,7 +181,7 @@ Port **3100** is chosen so this runs alongside the other portfolio apps
 
 ```
 GEMINI_API_KEY=          # shared demo-key fallback (optional; BYOK preferred)
-SCOUT_MODEL=gemini-3.1-flash-lite
+SCOUT_MODEL=gemini-3.5-flash-lite
 TAVILY_API_KEY=          # primary web search (recommended)
 GOOGLE_SEARCH_API_KEY=   # fallback search
 GOOGLE_SEARCH_ENGINE_ID=

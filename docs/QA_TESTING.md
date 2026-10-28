@@ -11,8 +11,8 @@
 > `master` @ `fe39e68`.
 
 ## Model picker
-- [ ] On the **shared key** (no BYOK): only **Gemini 3.1 Flash Lite** is
-      selectable; the heavier models (2.5 Flash, 2.5 Flash Lite, 3 Flash Preview,
+- [ ] On the **shared key** (no BYOK): only **Gemini 3.5 Flash Lite** is
+      selectable; the other models (3.1 Flash Lite, 2.5 Flash, 2.5 Flash Lite, 3 Flash Preview,
       3.5 Flash) show "needs your own key" and are disabled.
 - [ ] Paste your **own Gemini key** (sidebar BYOK) → the other models **unlock**.
 - [ ] Pick a different model with BYOK → responses noticeably differ; verify via

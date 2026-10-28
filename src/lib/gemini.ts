@@ -6,7 +6,7 @@ import { GoogleGenAI } from '@google/genai';
  * lives only in the environment and is never returned to the client.
  */
 
-export const SHARED_MODEL = 'gemini-3.1-flash-lite';
+export const SHARED_MODEL = 'gemini-3.5-flash-lite';
 
 export const DEFAULT_MODEL = process.env.SCOUT_MODEL || SHARED_MODEL;
 
@@ -27,10 +27,16 @@ export interface ModelOption {
  */
 export const MODELS: ModelOption[] = [
   {
-    id: 'gemini-3.1-flash-lite',
-    label: 'Gemini 3.1 Flash Lite',
+    id: 'gemini-3.5-flash-lite',
+    label: 'Gemini 3.5 Flash Lite',
     tier: 'shared',
     blurb: 'Fast & free',
+  },
+  {
+    id: 'gemini-3.1-flash-lite',
+    label: 'Gemini 3.1 Flash Lite',
+    tier: 'byok',
+    blurb: 'Previous Flash Lite',
   },
   {
     id: 'gemini-2.5-flash-lite',
