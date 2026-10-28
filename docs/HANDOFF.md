@@ -5,6 +5,73 @@
 > `AGENTIC_RESEARCHER_PLAN.md`; embeddings design: `SCOUT_EMBEDDINGS_PLAN.md`;
 > manual QA: `QA_TESTING.md` (all this folder).
 
+## Current state and open work (2026-10-27): start here
+
+This section is the entry point.
+The older sections below are history from June 2026; where they disagree with this section, this section wins.
+
+### What it is and where it lives
+
+Scout is an agentic research assistant: it plans, runs a ReAct loop (web search, read, repeat) and streams a cited report, which you can then chat with.
+Live demo: https://scout-agentic-researcher.onrender.com (Render free plan, service `scout-agentic-researcher`, `srv-d8rjiu6gvqtc73f52prg`, Blueprint `Scout-ai-researcher` from `render.yaml`).
+It is listed on the owner's portfolio, https://portfolio.n8builds.dev, which shows OpenPing's live status next to it.
+Repo: `n8watkins/scout-agentic-ai-researcher` (default branch `master`), MIT license as of 2026-10-27.
+
+### Status as of 2026-10-27
+
+- `/api/healthz` returns 200.
+- The live deploy is still `98de417` (2026-06-21).
+  Merged to `master` since then but **not live**: the MIT license (`b171652`) and the em dash fix (PR #2), so the live page title still reads "Scout" + em dash + "Agentic Research Assistant" until the next deploy.
+  Render's auto-deploy has not fired since June (see open problem 2).
+- Render free plan: the service sleeps after about 15 minutes idle and a cold start takes about a minute.
+  OpenPing measures 90-day uptime at 96.7%.
+  Render's event log shows every free service in the workspace suspended for "Free Tier Usage Exceeded" from 2026-07-24 to 2026-08-01, so keeping several free services warm burns the shared 750 instance-hours.
+- The service runs Render's native Node runtime with `NODE_VERSION=22` (supported).
+- Checks run locally today: lint and type-check clean, `vitest` 33/33 pass.
+
+### Model plan (open PR, do not merge before the key step)
+
+The owner decided on 2026-10-27 to move every Gemini text model to Gemini 3.5 Flash Lite.
+The exact ID `gemini-3.5-flash-lite` was confirmed on https://ai.google.dev/gemini-api/docs/models (listed as Stable, on the free tier).
+Scout uses one Gemini text model for plan, decide, synthesize and report chat, so Flash Lite is a direct swap.
+**PR #3** (https://github.com/n8watkins/scout-agentic-ai-researcher/pull/3) moves `SHARED_MODEL` in `src/lib/gemini.ts` to `gemini-3.5-flash-lite`, keeps 3.1 Flash Lite as a BYOK option in the picker, sets `SCOUT_MODEL=gemini-3.5-flash-lite` in `render.yaml` (the service currently has `SCOUT_MODEL=gemini-3.1-flash-lite`, which overrides the code default), adds the price to the dev panel, and updates README, `.env.example` and `docs/QA_TESTING.md`.
+It is intentionally left open, because it can't be verified end to end until the owner's new Gemini key is on Render.
+Order: owner sets the new `GEMINI_API_KEY` on `scout-agentic-researcher`, then merge PR #3 (squash), confirm `SCOUT_MODEL` on the service now reads `gemini-3.5-flash-lite` and that a deploy of the new commit happened (open problem 2), then a live check: one research run end to end, with the dev panel showing `gemini-3.5-flash-lite` on every call, tool calls happening, and a cited report.
+Also check the new key's free-tier daily quota for 3.5 Flash Lite in Google AI Studio: `SCOUT_DEMO_CALL_BUDGET=250` assumes half of a 500-requests-a-day key shared with Echo.
+Embeddings are design-only (`docs/SCOUT_EMBEDDINGS_PLAN.md`, `gemini-embedding-001`, not deprecated) and unaffected.
+
+### Open problems
+
+1. **Security, HIGH (live public site): Next.js has known critical advisories.**
+   `package-lock.json` locks `next` 16.2.9.
+   GitHub's advisory database (checked 2026-10-27) lists 5 critical, 6 high, 8 moderate and 1 low advisories for it, including unauthenticated remote code execution in `use cache`, Image Optimization and `next/og` (Scout uses `next/og` for `src/app/opengraph-image.tsx`).
+   All are fixed in `next` >= 16.4.1.
+   Fix: upgrade `next` (and `eslint-config-next` to match) to the latest 16.x (>= 16.4.1), run `npm run lint`, `npm run type-check`, `npm run build` and `npm test`, deploy (needs open problem 2 fixed), then a live check (page, OG image, a research run, sign-in).
+2. **Render auto-deploy is not firing.**
+   The service has auto-deploy on (trigger: commit), yet every deploy in its history was triggered through the API by hand in June, and the pushes of 2026-10-27 did not deploy.
+   Echo's service in the same workspace did auto-deploy today, so the likely cause is the Render GitHub app's access to this repo or a broken webhook.
+   Reproduce: compare `git log origin/master` with the Deploys tab of `scout-agentic-researcher`.
+3. **Manual QA still owed**: the GitHub sign-in round trip on prod and the `docs/QA_TESTING.md` pass (see "Next steps" below).
+4. **Status display on the portfolio.**
+   OpenPing currently shows off-hours (weekend) monitors as "operational"; the fix is tracked in the open-ping repo, not here.
+5. **Small doc drift.**
+   README's closing note calls Scout's accent "violet", but the June UI overhaul moved it to slate and blue (see "Design decisions" below).
+
+### Blocked on the owner
+
+- Create the new Gemini API key and set it as `GEMINI_API_KEY` on `scout-agentic-researcher`.
+- Fix Render auto-deploy for this repo (check the Render GitHub app has access to `n8watkins/scout-agentic-ai-researcher`), then trigger one deploy of `master` so the merged commits go live.
+- Rotate or delete the account-wide `RENDER_API_KEY` noted in the June "Env / config" section once it is no longer needed; it is still present on the dev machine.
+- No subdomain is planned for Scout yet (only `echo.n8builds.dev` is planned, for Echo).
+
+### Next steps, in order
+
+1. Owner: new key and auto-deploy fix (above), then one deploy so the em dash fix goes live.
+2. Upgrade `next` to the latest 16.x (open problem 1) in its own PR, verify, deploy, check live.
+3. Merge PR #3, then run the live check described in "Model plan".
+4. Manual QA: GitHub sign-in round trip on prod, then `docs/QA_TESTING.md`.
+5. Later: embeddings (`docs/SCOUT_EMBEDDINGS_PLAN.md`) and a durable demo cap (Upstash), as listed under "Next steps" below.
+
 ## ✅ Current truth (audit 2026-06-21)
 
 - **SHIPPED + DEPLOYED LIVE** at **https://scout-agentic-researcher.onrender.com**
