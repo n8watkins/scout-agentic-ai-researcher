@@ -59,7 +59,7 @@ export type TraceEvent =
     };
 
 /**
- * Per-1M-token paid rates (§6, verified 2026-06-14). Used only for the
+ * Per-1M-token paid rates (§6, verified 2026-06-14; 3.5 Flash Lite added 2026-10-27). Used only for the
  * illustrative "what this would cost at scale" readout - the demo runs on the
  * free tier. Unknown models fall back to a conservative flash-lite-ish rate.
  */
@@ -69,6 +69,7 @@ export interface ModelRate {
 }
 
 export const PRICING: Record<string, ModelRate> = {
+  'gemini-3.5-flash-lite': { in: 0.3, out: 2.5 },
   'gemini-3.1-flash-lite': { in: 0.25, out: 1.5 },
   'gemini-2.5-flash-lite': { in: 0.1, out: 0.4 },
   'gemini-2.5-flash': { in: 0.3, out: 2.5 },
