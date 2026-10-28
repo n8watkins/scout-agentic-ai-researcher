@@ -4,7 +4,7 @@
  * Client session id used to scope saved run history to this browser. Persisted
  * in localStorage under `scout_session`; sent as the `x-scout-session` header
  * on every /api/runs request so visitors only see/affect their own runs on the
- * shared instance. Not auth — just a per-browser partition key.
+ * shared instance. Not auth - just a per-browser partition key.
  */
 const SESSION_KEY = 'scout_session';
 
@@ -32,7 +32,7 @@ export function getSessionId(): string {
     cached = fresh;
     return fresh;
   } catch {
-    // localStorage unavailable — fall back to an ephemeral per-tab id.
+    // localStorage unavailable - fall back to an ephemeral per-tab id.
     cached = cached ?? generate();
     return cached;
   }

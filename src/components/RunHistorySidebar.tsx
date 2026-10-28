@@ -139,7 +139,7 @@ export default function RunHistorySidebar({
           {showKey && (
             <div className="px-3 pb-3 pt-1 text-slate-900 dark:text-slate-100">
               <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-2">
-                Bring your own key — use a free Gemini key for unlimited runs.
+                Bring your own key - use a free Gemini key for unlimited runs.
               </p>
               <InlineKeyEntry />
             </div>

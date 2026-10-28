@@ -10,13 +10,13 @@ interface ReportViewProps {
   report: string;
   citations: Citation[];
   stoppedEarly: boolean;
-  /** True while the report is still streaming in — shows a typewriter cursor. */
+  /** True while the report is still streaming in - shows a typewriter cursor. */
   streaming?: boolean;
 }
 
 /**
  * The answer, rendered plainly (no card chrome). Inline [n] markers become
- * clickable chips that scroll to — and open — the matching source.
+ * clickable chips that scroll to - and open - the matching source.
  */
 export default function ReportView({ report, citations, stoppedEarly, streaming }: ReportViewProps) {
   const validIndexes = useMemo(() => new Set(citations.map((c) => c.index)), [citations]);

@@ -65,7 +65,7 @@ export function getUsageSnapshot(): UsageSnapshot {
 /**
  * Record one demo-key Gemini call. Called from the agent loop on EVERY model
  * call (plan, each decide, each summarize, synthesis). BYOK calls must NOT call
- * this. No-op once over budget — a run already in progress is allowed to finish.
+ * this. No-op once over budget - a run already in progress is allowed to finish.
  */
 export function recordDemoModelCall(): void {
   rollCallPool();

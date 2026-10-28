@@ -1,4 +1,4 @@
-# Scout — Agentic Research Assistant · One-Shot Build Plan
+# Scout - Agentic Research Assistant · One-Shot Build Plan
 
 > **Display name:** Scout
 > **Folder:** `scout/`
@@ -9,7 +9,7 @@
 
 ## 1. The pitch (one sentence)
 
-Ask a hard question, and watch an AI **plan, search the web, read sources, and write a cited report — live, step by step.** Scout doesn't hand you an answer; it shows you the reasoning loop that produced it.
+Ask a hard question, and watch an AI **plan, search the web, read sources, and write a cited report - live, step by step.** Scout doesn't hand you an answer; it shows you the reasoning loop that produced it.
 
 ## 2. The thesis the project exists to prove (this is the blog post)
 
@@ -21,14 +21,14 @@ Blog beats to design the build around (see §10):
 - ReAct loop: think → act (tool) → observe → repeat → answer.
 - Why it loops forever or quits too early, and how a **step cap + explicit stop condition** tame it.
 - **Hallucination defense:** the report may only assert what a fetched source supports; every claim carries a citation.
-- Why **Server-Sent Events (SSE)**, not WebSockets — the stream is one-directional (server → UI), so SSE is the honest choice (and a nice contrast to gemini-chat-app's WebSockets).
+- Why **Server-Sent Events (SSE)**, not WebSockets - the stream is one-directional (server → UI), so SSE is the honest choice (and a nice contrast to gemini-chat-app's WebSockets).
 
 ## 3. Stack (match the house stack exactly)
 
 - **Next.js 16** (App Router) + **React 19** + **TypeScript** + **Tailwind v4** (`@import "tailwindcss"` + `@variant dark` like gemini-chat-app's `globals.css`).
 - **@google/generative-ai** SDK, model `gemini-3.1-flash-lite` (same as gemini-chat-app), function calling for tools.
-- **Heroicons** (`@heroicons/react/24/outline`) + **lucide-react** — same icon libraries the other apps use.
-- **better-sqlite3** for saved research runs (same persistence choice as gemini-chat-app; keeps the "production-feel" consistent). Ephemeral disk on free tier is fine — call it out in the README like gemini did.
+- **Heroicons** (`@heroicons/react/24/outline`) + **lucide-react** - same icon libraries the other apps use.
+- **better-sqlite3** for saved research runs (same persistence choice as gemini-chat-app; keeps the "production-feel" consistent). Ephemeral disk on free tier is fine - call it out in the README like gemini did.
 - **Web search tool:** Tavily API (`/search`, generous free tier, returns clean text) as primary; fall back to Google Programmable Search (`GOOGLE_SEARCH_API_KEY` + `GOOGLE_SEARCH_ENGINE_ID`) so it reuses the same env vars gemini-chat-app already documents.
 - **dompurify / isomorphic-dompurify** to sanitize fetched page text before it ever reaches the model or the DOM.
 - Deploy target: **Render** free tier (matches gemini-chat-app, so the "spins down after 15 min / ephemeral disk" README section is reusable). Use a long-running `node server.js`-style entry only if needed; pure Next.js `next start` is fine since SSE works over a normal route handler.
@@ -36,7 +36,7 @@ Blog beats to design the build around (see §10):
 ## 4. BYOK + demo-key pattern (copy gemini-chat-app's UX)
 
 - Visitor can run immediately on a **shared server demo key** with a **usage meter** (port the `UsageMeter` / `PoolMeterBar` idea).
-- "Bring your own free Gemini key" expander in the sidebar and in onboarding step 2 — paste a key, stored client-side, used for unlimited runs.
+- "Bring your own free Gemini key" expander in the sidebar and in onboarding step 2 - paste a key, stored client-side, used for unlimited runs.
 - Web-search keys stay **server-side only**.
 
 ## 5. Directory layout
@@ -89,7 +89,7 @@ scout/
   README.md
 ```
 
-## 6. The agent loop (core spec — make it explicit, not a black box)
+## 6. The agent loop (core spec - make it explicit, not a black box)
 
 `lib/agent/loop.ts`, server-side, called from `api/research/route.ts`. Pseudocode:
 
@@ -120,14 +120,14 @@ async function* runAgent(question, { model, maxSteps = 8, signal }) {
 ```
 
 Hard rules to bake in (these *are* the lessons):
-- **`maxSteps` cap** (default 8) — the loop cannot run forever. When hit, synthesize from whatever was gathered and label the report "stopped early (step budget reached)."
-- **Explicit `finish` tool** — the model signals done by calling `finish`, not by vibes. This is the "deciding when you're done" mechanic the blog is about.
+- **`maxSteps` cap** (default 8) - the loop cannot run forever. When hit, synthesize from whatever was gathered and label the report "stopped early (step budget reached)."
+- **Explicit `finish` tool** - the model signals done by calling `finish`, not by vibes. This is the "deciding when you're done" mechanic the blog is about.
 - **Every step is streamed** as it happens (SSE), so latency feels like progress, not a spinner.
-- **Abort support** — client can cancel; pass `AbortSignal` through to fetch/model calls.
+- **Abort support** - client can cancel; pass `AbortSignal` through to fetch/model calls.
 
 ## 7. Tools (function-calling schema)
 
-`lib/agent/tools.ts` — Gemini function declarations + a `dispatchTool` switch:
+`lib/agent/tools.ts` - Gemini function declarations + a `dispatchTool` switch:
 
 | Tool | Args | Behavior |
 |---|---|---|
@@ -135,31 +135,31 @@ Hard rules to bake in (these *are* the lessons):
 | `fetch_url` | `{ url }` | Fetch, strip to readable text (sanitize via `lib/sanitize.ts`), truncate to ~6k tokens. Register as a citable source. |
 | `finish` | `{}` | No-op; signals the loop to synthesize. |
 
-Keep the toolset *small and legible* — the point is to show the loop, not build a kitchen sink. (Optional 4th: `calculator` for a quick "agent uses a deterministic tool" demo.)
+Keep the toolset *small and legible* - the point is to show the loop, not build a kitchen sink. (Optional 4th: `calculator` for a quick "agent uses a deterministic tool" demo.)
 
-## 8. The intro modal — REQUIRED, must match house style
+## 8. The intro modal - REQUIRED, must match house style
 
 Both existing apps gate first-run behind a wizard that **explains what the project is**; gemini-chat-app's `OnboardingWizard.tsx` + `AboutContent.tsx` and net-trailers' `TutorialModal.tsx` are the templates. Scout must have the same.
 
-**`OnboardingWizard.tsx`** — two steps, exact structural match to gemini's:
+**`OnboardingWizard.tsx`** - two steps, exact structural match to gemini's:
 - Backdrop: `fixed inset-0 bg-black/40 backdrop-blur-md z-[50000] flex items-center justify-center p-4`.
 - Panel: `bg-white dark:bg-gray-900 rounded-2xl max-w-5xl w-full border shadow-2xl max-h-[90vh] flex flex-col`, but swap blue shadow for **violet** (`shadow-violet-500/20`).
 - Header: numbered step pills (`About` → `Get started`) using the gradient-active / green-check-done pattern, plus an `XMarkIcon` skip.
-- **Step 1 (About):** a violet "thesis" callout box with `SparklesIcon` — *"Scout doesn't just answer — it shows its work. Watch it plan, search, read, and cite, one step at a time. That visible agent loop is the heart of this project."* — followed by `<AboutContent />`.
+- **Step 1 (About):** a violet "thesis" callout box with `SparklesIcon` - *"Scout doesn't just answer - it shows its work. Watch it plan, search, read, and cite, one step at a time. That visible agent loop is the heart of this project."* - followed by `<AboutContent />`.
 - **Step 2 (Get started):** "You can run a research question right now" + demo-pool `UsageMeter` + collapsible BYOK `InlineKeyEntry` + a "Surprise me" sample question button.
 - Footer: Skip / `Next: Get started →` / `Back` + `Start researching →` gradient buttons (violet/fuchsia).
 
-**`AboutContent.tsx`** — mirror gemini's structure precisely:
+**`AboutContent.tsx`** - mirror gemini's structure precisely:
 - Centered `Welcome to Scout` title.
 - Violet gradient intro card with the **same portrait + bio block** ("I'm Nathan, and this is a portfolio project…") and the **same social links row** (GitHub / LinkedIn / X / Portfolio).
 - **🌟 Key Features** grid (1→2 col), colored icon cards. Suggested cards:
-  - `MagnifyingGlassIcon` — **Live web research** ("searches and reads real sources, not its training data").
-  - `ArrowPathIcon` — **Visible agent loop** ("see every think → search → read → write step stream in").
-  - `DocumentTextIcon` — **Cited reports** ("every claim links to the source it came from").
-  - `KeyIcon` — **Free to try, BYOK optional** (shared demo key / your own Gemini key).
-  - `CodeBracketIcon` — **Open source on GitHub**.
-  - `ShieldCheckIcon` — **Guardrails** ("step caps, source-grounded answers, sanitized fetches").
-- **⚡ Under the hood** 3-col block (Performance / Agent design / Safety) with `✓` bullets — e.g. "ReAct loop w/ step budget", "SSE streaming", "Source-grounded synthesis", "DOMPurify on fetched pages".
+  - `MagnifyingGlassIcon` - **Live web research** ("searches and reads real sources, not its training data").
+  - `ArrowPathIcon` - **Visible agent loop** ("see every think → search → read → write step stream in").
+  - `DocumentTextIcon` - **Cited reports** ("every claim links to the source it came from").
+  - `KeyIcon` - **Free to try, BYOK optional** (shared demo key / your own Gemini key).
+  - `CodeBracketIcon` - **Open source on GitHub**.
+  - `ShieldCheckIcon` - **Guardrails** ("step caps, source-grounded answers, sanitized fetches").
+- **⚡ Under the hood** 3-col block (Performance / Agent design / Safety) with `✓` bullets - e.g. "ReAct loop w/ step budget", "SSE streaming", "Source-grounded synthesis", "DOMPurify on fetched pages".
 - **🛠️ Tech Stack** pill row reusing gemini's exact pill styling: TypeScript · Next.js 16 · React 19 · Tailwind CSS · Gemini AI · SQLite · SSE.
 - Reuse the **"Portfolio project showcasing:"** footer line idiom from net-trailers' TutorialModal.
 
@@ -169,11 +169,11 @@ Wire `useOnboarding.ts` (localStorage `scout_onboarding_complete`) exactly like 
 
 Three-region workspace, dark-mode first (Scout leans dark like net-trailers, with violet glow):
 - **Left sidebar:** `RunHistorySidebar` (saved runs) + BYOK + About re-open button.
-- **Center (the show):** `ResearchInput` at top; below it `AgentTrace` — a vertical timeline of `StepCard`s that **animate in as SSE events arrive**. Step types get distinct visual treatment:
-  - *Thought* — muted, italic, lightbulb icon.
-  - *Tool call* — violet chip: "🔍 Searching: …" / "📄 Reading: example.com".
-  - *Observation* — collapsible source excerpt.
-  - *Answer* — promoted into `ReportView`.
+- **Center (the show):** `ResearchInput` at top; below it `AgentTrace` - a vertical timeline of `StepCard`s that **animate in as SSE events arrive**. Step types get distinct visual treatment:
+  - *Thought* - muted, italic, lightbulb icon.
+  - *Tool call* - violet chip: "🔍 Searching: …" / "📄 Reading: example.com".
+  - *Observation* - collapsible source excerpt.
+  - *Answer* - promoted into `ReportView`.
   A status line up top cycles: *Planning… → Searching… → Reading… → Writing…* (perceived-progress, the anti-spinner).
 - **Right (or below on mobile):** `ReportView` with inline numbered citations `[1]` that scroll to `SourcesPanel`.
 
@@ -187,7 +187,7 @@ Match gemini-chat-app's blog voice exactly: first-person, self-deprecating, a me
 3. **It worked, then it looped 40 times:** runaway loops; the step cap; *"deciding when you're done"* is a real design problem, not a freebie.
 4. **It quit too early:** the opposite failure; tuning the `finish` signal and the planner.
 5. **It confidently made things up:** the citation contract; source-grounded synthesis; "Couldn't verify."
-6. **Why SSE, not WebSockets:** the stream only flows one way — contrast with the WebSocket app, show I know when *not* to reach for the fancier tool.
+6. **Why SSE, not WebSockets:** the stream only flows one way - contrast with the WebSocket app, show I know when *not* to reach for the fancier tool.
 7. **What I'd do next / what it taught me about trusting AI output.**
 
 ## 11. Env (`.env.example`)
@@ -217,21 +217,21 @@ Port `3100` chosen so all four portfolio apps run simultaneously. See the shared
 
 These override anything above where they conflict.
 
-- **Stream at step granularity, not token-level "thoughts."** Gemini returns *either* text *or* a function call per `generateContent` turn — not both reliably. So each loop iteration emits discrete SSE events (`tool_call`, `observation`, and `answer`); a `thought` event is only emitted on turns where the model returns text instead of calling a tool. Do **not** promise a token-by-token reasoning stream.
+- **Stream at step granularity, not token-level "thoughts."** Gemini returns *either* text *or* a function call per `generateContent` turn - not both reliably. So each loop iteration emits discrete SSE events (`tool_call`, `observation`, and `answer`); a `thought` event is only emitted on turns where the model returns text instead of calling a tool. Do **not** promise a token-by-token reasoning stream.
 - **Model strength matters more than the chat default.** `gemini-3.1-flash-lite` is the default per project convention, but lite models often loop without calling `finish` or fabricate citations. Make the model **configurable** (`SCOUT_MODEL` env) and use a **stronger Flash (non-lite) for plan / decide / synthesize** if loop quality is poor. This is the first dial to turn if the agent misbehaves.
-- **`fetch_url` SSRF guard (required).** Allow `http`/`https` only; **block private, loopback, and link-local IP ranges** (resolve host first); enforce a request timeout (~8s) and a response-size cap (~2MB). Sanitizing the *content* is not enough — the *request* itself is the risk.
+- **`fetch_url` SSRF guard (required).** Allow `http`/`https` only; **block private, loopback, and link-local IP ranges** (resolve host first); enforce a request timeout (~8s) and a response-size cap (~2MB). Sanitizing the *content* is not enough - the *request* itself is the risk.
 - **Control the context budget.** Don't append raw 6k-token pages across 8 steps. **Summarize each observation** (1–2 paragraphs + key facts) before adding it to the transcript; keep full text only in `SourcesPanel`.
-- **Per-run cost.** A run is up to ~8 model calls + searches — far more than one chat message. Size the demo-pool usage meter accordingly and consider a per-IP run cap.
+- **Per-run cost.** A run is up to ~8 model calls + searches - far more than one chat message. Size the demo-pool usage meter accordingly and consider a per-IP run cap.
 - **SDK:** use the current **`@google/genai`** SDK (better streaming + function-calling ergonomics), not the legacy `@google/generative-ai@0.24` the older apps use. Note the divergence in the README.
-- **API key handling:** the Gemini key lives only in `.env.local` (gitignored) — never in committed files, fixtures, or logs.
+- **API key handling:** the Gemini key lives only in `.env.local` (gitignored) - never in committed files, fixtures, or logs.
 
 ## 13. One-shot build checklist (order of operations)
 
 1. Scaffold Next.js 16 + TS + Tailwind v4; set `globals.css` tokens (violet/fuchsia light + dark like gemini's blue tokens).
 2. `lib/gemini.ts` (key resolution BYOK→demo) + `lib/sse.ts`.
-3. `lib/agent/{types,tools,prompts,loop}.ts` — the loop first, prove it in a script.
+3. `lib/agent/{types,tools,prompts,loop}.ts` - the loop first, prove it in a script.
 4. `api/research/route.ts` streaming SSE; `useResearchStream.ts` to consume it.
-5. `AgentTrace` + `StepCard` + `ReportView` + `SourcesPanel` — get the live timeline working end to end.
+5. `AgentTrace` + `StepCard` + `ReportView` + `SourcesPanel` - get the live timeline working end to end.
 6. SQLite `db.ts` + `runs` routes + `RunHistorySidebar`.
 7. **Onboarding wizard + AboutContent + AboutModal** (port gemini's components, reskin violet). Wire `useOnboarding`.
 8. BYOK (`InlineKeyEntry`, `useApiKey`) + `UsageMeter` + `/api/usage`.

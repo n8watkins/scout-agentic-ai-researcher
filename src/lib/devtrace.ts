@@ -1,5 +1,5 @@
 /**
- * Shared developer-telemetry model — the "Under the Hood" X-ray layer.
+ * Shared developer-telemetry model - the "Under the Hood" X-ray layer.
  *
  * These events are PURELY ADDITIVE: the agent loop emits them alongside the
  * visible ReAct steps it already produces. They carry the real model I/O,
@@ -25,9 +25,9 @@ export type TraceEvent =
       tokensIn: number;
       tokensOut: number;
       costUsd: number;
-      /** The exact `contents` sent (serialized) — behind a "show raw" accordion. */
+      /** The exact `contents` sent (serialized) - behind a "show raw" accordion. */
       prompt?: string;
-      /** The raw model response text — behind a "show raw" accordion. */
+      /** The raw model response text - behind a "show raw" accordion. */
       rawResponse?: string;
       /** The function call the model returned this turn, if any. */
       toolCall?: { name: string; args: unknown } | null;
@@ -60,7 +60,7 @@ export type TraceEvent =
 
 /**
  * Per-1M-token paid rates (§6, verified 2026-06-14). Used only for the
- * illustrative "what this would cost at scale" readout — the demo runs on the
+ * illustrative "what this would cost at scale" readout - the demo runs on the
  * free tier. Unknown models fall back to a conservative flash-lite-ish rate.
  */
 export interface ModelRate {

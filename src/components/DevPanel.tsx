@@ -10,7 +10,7 @@ import {
 import type { TraceEvent } from '@/lib/devtrace';
 
 /**
- * The "Under the hood" X-ray panel. Purely additive — it renders the developer
+ * The "Under the hood" X-ray panel. Purely additive - it renders the developer
  * telemetry (`TraceEvent[]`) the agent loop emits alongside its visible steps.
  *
  * Shows: a call waterfall (time-axis bars per model/tool call), per-call tokens
@@ -20,7 +20,7 @@ import type { TraceEvent } from '@/lib/devtrace';
  */
 interface DevPanelProps {
   events: TraceEvent[];
-  /** The run's step budget — visualizes "a while-loop with a budget". */
+  /** The run's step budget - visualizes "a while-loop with a budget". */
   maxSteps?: number;
   /** Whether a run is currently in flight (affects empty-state copy). */
   running?: boolean;
@@ -63,7 +63,7 @@ export default function DevPanel({ events, maxSteps = DEFAULT_MAX_STEPS, running
   // ReAct steps = react-step model calls; the budget is maxSteps iterations.
   const reactSteps = modelCalls.filter((c) => c.phase === 'react-step').length;
 
-  // Waterfall timeline bounds — span across every timed event.
+  // Waterfall timeline bounds - span across every timed event.
   const timed = useMemo(
     () =>
       events
@@ -114,7 +114,7 @@ function EmptyState({ running }: { running?: boolean }) {
     <p className="text-blue-500 dark:text-blue-400/80 font-sans text-sm py-6 text-center">
       {running
         ? 'Capturing model calls, tokens, latency and cost…'
-        : 'Run a question to X-ray the agent — every model call, token count, latency, estimated cost, and raw tool result will show up here. An agent is a while-loop with a budget; this panel makes the budget visible.'}
+        : 'Run a question to X-ray the agent - every model call, token count, latency, estimated cost, and raw tool result will show up here. An agent is a while-loop with a budget; this panel makes the budget visible.'}
     </p>
   );
 }
@@ -262,7 +262,7 @@ function ModelCallRow({
         </p>
       )}
       <Accordion label="prompt sent">{call.prompt || '(empty)'}</Accordion>
-      <Accordion label="raw response">{call.rawResponse || '(no text — function call only)'}</Accordion>
+      <Accordion label="raw response">{call.rawResponse || '(no text - function call only)'}</Accordion>
     </li>
   );
 }
@@ -304,7 +304,7 @@ function ToolList({
   );
 }
 
-/** Collapsible accordion for raw I/O — defaults collapsed (decision §9). */
+/** Collapsible accordion for raw I/O - defaults collapsed (decision §9). */
 function Accordion({ label, children }: { label: string; children: string }) {
   const [open, setOpen] = useState(false);
   return (
@@ -331,7 +331,7 @@ function fmt(n: number): string {
   return n.toLocaleString('en-US');
 }
 
-/** $ readout — shows enough precision for sub-cent demo runs. */
+/** $ readout - shows enough precision for sub-cent demo runs. */
 export function formatUsd(usd: number): string {
   if (usd === 0) return '$0';
   if (usd < 0.01) return `$${usd.toFixed(5)}`;

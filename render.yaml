@@ -1,5 +1,5 @@
 # Render deploy config for Scout (agentic researcher).
-# A Node web service: `npm ci` installs deps (libSQL ships prebuilt binaries —
+# A Node web service: `npm ci` installs deps (libSQL ships prebuilt binaries -
 # no native compile), then `next build` produces the production server.
 # Saved runs use a local SQLite file (ephemeral on the free tier) unless you set
 # TURSO_DATABASE_URL for durable storage. Secrets (sync: false) set in dashboard.
@@ -33,7 +33,7 @@ services:
         value: "8"
       - key: SCOUT_RUN_WRITE_LIMIT
         value: "60"
-      # Web search keys (optional — falls back to keyless Wikipedia). Dashboard.
+      # Web search keys (optional - falls back to keyless Wikipedia). Dashboard.
       - key: TAVILY_API_KEY
         sync: false
       - key: GOOGLE_SEARCH_API_KEY

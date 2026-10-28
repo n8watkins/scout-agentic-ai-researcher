@@ -12,7 +12,7 @@ async function ownerId(): Promise<string | null> {
   return session?.user?.id ?? null;
 }
 
-/** GET /api/runs/[id]/chat — the signed-in user's saved chat for a run. */
+/** GET /api/runs/[id]/chat - the signed-in user's saved chat for a run. */
 export async function GET(_req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const owner = await ownerId();
   if (!owner) return Response.json({ messages: [] });
@@ -20,7 +20,7 @@ export async function GET(_req: NextRequest, ctx: { params: Promise<{ id: string
   return Response.json({ messages: await getRunChat(id, owner) });
 }
 
-/** PUT /api/runs/[id]/chat — replace the saved chat thread for a run. */
+/** PUT /api/runs/[id]/chat - replace the saved chat thread for a run. */
 export async function PUT(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const owner = await ownerId();
   if (!owner) return Response.json({ error: 'Unauthorized' }, { status: 401 });

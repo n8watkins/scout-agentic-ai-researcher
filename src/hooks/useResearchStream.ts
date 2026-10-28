@@ -125,7 +125,7 @@ export function useResearchStream() {
 
       function handleStep(step: AgentStep) {
         if (step.type === 'telemetry') {
-          // Additive dev-panel telemetry — never touches the visible timeline.
+          // Additive dev-panel telemetry - never touches the visible timeline.
           if (step.trace) {
             telemetry.push(step.trace);
             setState((s) => ({ ...s, telemetry: [...telemetry] }));
@@ -137,7 +137,7 @@ export function useResearchStream() {
           return;
         }
         if (step.type === 'answer_delta') {
-          // Streamed report chunk — append so the report types out live.
+          // Streamed report chunk - append so the report types out live.
           report += step.content ?? '';
           setState((s) => ({ ...s, report }));
           return;

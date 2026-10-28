@@ -8,9 +8,9 @@ import { logger } from './logger';
  * libSQL store for saved research runs.
  *
  * Durable when TURSO_DATABASE_URL (+ TURSO_AUTH_TOKEN) point at a Turso/libSQL
- * database — runs then survive redeploys and cold starts. With no Turso config
+ * database - runs then survive redeploys and cold starts. With no Turso config
  * it falls back to a local SQLite file (file:data/scout.db), which on Render's
- * free tier lives on the ephemeral disk (resets on redeploy — see README).
+ * free tier lives on the ephemeral disk (resets on redeploy - see README).
  *
  * Runs are scoped to a client-generated `session_id` (localStorage) so visitors
  * only ever see and mutate their own history on the shared instance.
@@ -62,7 +62,7 @@ function getClient(): Promise<Client> {
     return client;
   })();
   // If init fails (e.g. a transient Turso outage at cold start), don't cache the
-  // rejection forever — clear it so the next call retries.
+  // rejection forever - clear it so the next call retries.
   clientPromise.catch(() => {
     clientPromise = null;
   });
@@ -85,7 +85,7 @@ function rowToRun(row: DbRow): SavedRun {
 
 export async function saveRun(run: SavedRun, sessionId: string): Promise<void> {
   const client = await getClient();
-  // UPSERT that preserves an existing chat thread — INSERT OR REPLACE would
+  // UPSERT that preserves an existing chat thread - INSERT OR REPLACE would
   // delete the row and reset its chat column to the default.
   await client.execute({
     sql: `INSERT INTO runs

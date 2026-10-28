@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 // File-based Open Graph card. Next maps this to twitter:image automatically.
-export const alt = 'Scout — Agentic Research Assistant';
+export const alt = 'Scout - Agentic Research Assistant';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -93,7 +93,7 @@ export default function OpengraphImage() {
             maxWidth: 900,
           }}
         >
-          Watch an AI plan, search the web, and write a cited report — live.
+          Watch an AI plan, search the web, and write a cited report - live.
         </div>
 
         <div

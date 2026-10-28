@@ -22,7 +22,7 @@ export function useOnboarding() {
     try {
       if (!isOnboardingComplete(localStorage)) setShowWizard(true);
     } catch {
-      /* localStorage unavailable — never block the app */
+      /* localStorage unavailable - never block the app */
     }
   }, []);
 

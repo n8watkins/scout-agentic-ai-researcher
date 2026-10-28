@@ -13,7 +13,7 @@ interface ModalProps {
   maxWidth?: string;
 }
 
-/** Base modal shell — violet-reskinned, blurred backdrop, scroll lock. */
+/** Base modal shell - violet-reskinned, blurred backdrop, scroll lock. */
 export default function Modal({ isOpen, onClose, children, title, maxWidth = 'max-w-3xl' }: ModalProps) {
   const dialogRef = useDialogA11y(isOpen, onClose);
 

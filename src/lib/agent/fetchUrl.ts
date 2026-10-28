@@ -51,7 +51,7 @@ export function isBlockedIp(ip: string): boolean {
     if (mapped) return isBlockedIp(mapped[1]);
     return false;
   }
-  return true; // not a parseable IP — be safe
+  return true; // not a parseable IP - be safe
 }
 
 async function assertSafeHost(hostname: string): Promise<void> {

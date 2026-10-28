@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 /**
  * "Under the hood" dev-view preference. Off by default; persisted in
- * localStorage. SSR-safe — guards `window`. Mirrors the useModel/useTheme
+ * localStorage. SSR-safe - guards `window`. Mirrors the useModel/useTheme
  * persistence pattern.
  */
 const STORAGE_KEY = 'scout-dev-view';

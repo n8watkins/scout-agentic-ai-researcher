@@ -1,12 +1,12 @@
-# Scout — manual QA checklist
+# Scout - manual QA checklist
 
 > Follow-up manual QA for things that **can't be verified headlessly** (build /
-> test / lint already pass — `npm run build`, `npm test` (33 tests), `npm run
+> test / lint already pass - `npm run build`, `npm test` (33 tests), `npm run
 > lint`). Check items off as you go; note anything broken under **Findings**.
 > Run with `npm run dev` (→ http://localhost:3100). Use **Chrome** for the most
 > reliable behavior.
 >
-> Status: **deployed live** at https://scout-agentic-researcher.onrender.com —
+> Status: **deployed live** at https://scout-agentic-researcher.onrender.com -
 > run this pass against prod (or `npm run dev` locally). All features are on
 > `master` @ `fe39e68`.
 
@@ -18,7 +18,7 @@
 - [ ] Pick a different model with BYOK → responses noticeably differ; verify via
       the dev panel showing the chosen **model id** per call.
 - [ ] (Sanity) the server falls back to flash-lite if a non-shared model is
-      requested without a key — you can't trick the shared key into the expensive
+      requested without a key - you can't trick the shared key into the expensive
       models (`pickModel` gate in `src/lib/gemini.ts`).
 
 ## "Under the hood" dev panel

@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
 /**
- * POST /api/chat — "talk to the report". A grounded-first follow-up agent:
+ * POST /api/chat - "talk to the report". A grounded-first follow-up agent:
  * it answers from the already-produced report + sources, and only runs ONE
  * web search when they don't cover the question. Streams the answer as SSE.
  *
@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
 
         const call = decide.functionCalls?.[0];
         if (!call || call.name !== 'web_search') {
-          // Answer was grounded in the report/sources — send the text we have.
+          // Answer was grounded in the report/sources - send the text we have.
           const text = (decide.text ?? '').trim() || "I couldn't find that in the report.";
           send({ type: 'delta', content: text });
           send({ type: 'done', searched: false });
@@ -159,7 +159,7 @@ export async function POST(req: NextRequest) {
         try {
           const results = await webSearch(query, ac.signal);
           resultsBlock = results.length
-            ? results.map((r, i) => `(${i + 1}) ${r.title} — ${r.url}\n${r.snippet}`).join('\n\n')
+            ? results.map((r, i) => `(${i + 1}) ${r.title} - ${r.url}\n${r.snippet}`).join('\n\n')
             : 'No results found.';
         } catch (err) {
           if (ac.signal.aborted) return;
@@ -181,7 +181,7 @@ export async function POST(req: NextRequest) {
               role: 'user',
               parts: [
                 {
-                  text: `${question}\n\nThe report and its sources did not fully cover this, so here are fresh web search results for "${query}" — use them to answer, and name any newly used source inline (title + URL):\n\n${resultsBlock}`,
+                  text: `${question}\n\nThe report and its sources did not fully cover this, so here are fresh web search results for "${query}" - use them to answer, and name any newly used source inline (title + URL):\n\n${resultsBlock}`,
                 },
               ],
             },

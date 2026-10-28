@@ -5,7 +5,7 @@ import { SHARED_MODEL } from '@/lib/gemini';
 
 /**
  * Selected Gemini model. Persisted in localStorage; defaults to the shared
- * model (the only one safe on the demo pool). SSR-safe — guards `window`.
+ * model (the only one safe on the demo pool). SSR-safe - guards `window`.
  */
 const STORAGE_KEY = 'scout-model';
 

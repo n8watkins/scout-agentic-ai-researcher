@@ -43,7 +43,7 @@ function telemetryStep(trace: TraceEvent): AgentStep {
 
 /**
  * The ReAct loop. An agent is a while-loop with a step budget and an explicit
- * stop condition — that's the whole thesis. Each iteration:
+ * stop condition - that's the whole thesis. Each iteration:
  *   THINK + ACT  → model returns text and/or a single function call
  *   OBSERVE      → run the tool, summarize the result into working memory
  *   repeat until the model calls `finish` or we hit maxSteps
@@ -58,14 +58,14 @@ export async function* runAgent(
 
   // Developer telemetry buffer. The `generate` wrapper and tool calls push
   // `TraceEvent`s here as they resolve; the generator drains it into additive
-  // `telemetry` steps (see `drain()` calls below). Purely observational — it
+  // `telemetry` steps (see `drain()` calls below). Purely observational - it
   // never affects control flow or the visible steps.
   const telemetry: TraceEvent[] = [];
 
   // Every Gemini call goes through here so demo-key calls are metered against
   // the shared daily cap. BYOK calls bypass the counter entirely. It's also the
   // single choke point where we capture per-call telemetry (model, phase,
-  // timing, tokens, raw I/O, tool call) — additive, behavior unchanged.
+  // timing, tokens, raw I/O, tool call) - additive, behavior unchanged.
   type GenParams = Parameters<typeof ai.models.generateContent>[0];
   const generate = async (
     params: GenParams,
@@ -162,7 +162,7 @@ export async function* runAgent(
     const call = firstToolCall(res);
     const thought = textOf(res);
 
-    // Gemini returns text OR a function call per turn — stream a thought only
+    // Gemini returns text OR a function call per turn - stream a thought only
     // on turns where it returned prose instead of acting.
     if (thought && !call) {
       yield makeStep('thought', { content: thought, iteration });
@@ -219,7 +219,7 @@ export async function* runAgent(
           } else {
             const lines = results.map((r) => {
               const idx = registerSource(r.title, r.url, r.snippet);
-              return `[${idx}] ${r.title} — ${r.url}\n    ${r.snippet}`;
+              return `[${idx}] ${r.title} - ${r.url}\n    ${r.snippet}`;
             });
             observation = `Search results for "${query}":\n${lines.join('\n')}`;
           }
@@ -285,7 +285,7 @@ export async function* runAgent(
             startedAt: toolStartedAt,
             endedAt: Date.now(),
             ok: result.ok,
-            // Raw fetched text, BEFORE summarization — what the model actually got.
+            // Raw fetched text, BEFORE summarization - what the model actually got.
             rawResult: result.ok
               ? { title: result.title, url: result.url, text: result.text }
               : { error: result.error },
@@ -293,7 +293,7 @@ export async function* runAgent(
           if (!result.ok) {
             observation = `Could not read ${url}: ${result.error}`;
           } else {
-            // Summarize to control the context budget — full text stays in the
+            // Summarize to control the context budget - full text stays in the
             // citation record (SourcesPanel), not the transcript.
             const summary = await summarize(generate, model, question, result.text, signal);
             const idx = registerSource(result.title, result.url, summary, result.text);
@@ -333,7 +333,7 @@ export async function* runAgent(
       noProgress++;
     }
 
-    // Spinning on the same sources — bail into synthesis rather than burn budget.
+    // Spinning on the same sources - bail into synthesis rather than burn budget.
     if (noProgress >= MAX_NO_PROGRESS) {
       stoppedEarly = true;
       break;
@@ -478,7 +478,7 @@ async function summarize(
 /**
  * Build a `model_call` TraceEvent from a resolved generateContent call and
  * push it onto the telemetry buffer. Tokens come from `usageMetadata`; cost is
- * the §6 estimate. Purely observational — never throws into the loop.
+ * the §6 estimate. Purely observational - never throws into the loop.
  */
 function captureModelCall(
   telemetry: TraceEvent[],

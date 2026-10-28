@@ -1,7 +1,7 @@
 import { Type, type FunctionDeclaration } from '@google/genai';
 
 /**
- * The toolset is deliberately tiny and legible — the point is to show the
+ * The toolset is deliberately tiny and legible - the point is to show the
  * loop, not build a kitchen sink. web_search discovers sources, fetch_url
  * reads one, finish ends the loop.
  */
