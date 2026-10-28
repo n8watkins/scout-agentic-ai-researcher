@@ -173,7 +173,7 @@ const AboutContent: React.FC = () => {
               tone="amber"
               icon={<DocumentTextIcon className="w-6 h-6 text-amber-600 dark:text-amber-400" />}
               title="Cited reports"
-              desc="Every claim links to the source it came from — click [1] to jump to it."
+              desc="Every claim links to the source it came from - click [1] to jump to it."
             />
             <FeatureCard
               tone="green"
@@ -185,7 +185,7 @@ const AboutContent: React.FC = () => {
               tone="gray"
               icon={<CodeBracketIcon className="w-6 h-6 text-slate-700 dark:text-slate-300" />}
               title="Open source on GitHub"
-              desc="Full source available — fork it, read the loop, learn from it."
+              desc="Full source available - fork it, read the loop, learn from it."
             />
             <FeatureCard
               tone="teal"
@@ -197,7 +197,7 @@ const AboutContent: React.FC = () => {
               tone="violet"
               icon={<ChatBubbleLeftRightIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />}
               title="Talk to your report"
-              desc="Ask follow-ups — Scout answers from the report and its sources, searching only if needed."
+              desc="Ask follow-ups - Scout answers from the report and its sources, searching only if needed."
             />
             <FeatureCard
               tone="fuchsia"

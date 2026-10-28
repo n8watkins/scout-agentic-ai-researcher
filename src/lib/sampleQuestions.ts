@@ -59,7 +59,7 @@ export const SUGGESTIONS: { label: string; q: string }[] = [
   { label: 'Space tourism', q: "What's the current state and outlook of commercial space tourism?" },
 ];
 
-/** "Surprise me" pool — a distinct set of meaty questions (history/econ/science). */
+/** "Surprise me" pool - a distinct set of meaty questions (history/econ/science). */
 export const SAMPLE_QUESTIONS = [
   'What were the main causes of the 2008 financial crisis, in plain terms?',
   'How did the Silk Road shape trade and culture across Eurasia?',

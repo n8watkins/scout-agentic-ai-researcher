@@ -59,7 +59,7 @@ export const MODELS: ModelOption[] = [
 ];
 
 /**
- * Server-side allowlist + BYOK gate (defense-in-depth — never trust the client).
+ * Server-side allowlist + BYOK gate (defense-in-depth - never trust the client).
  * Returns `requested` only if it is a known model AND either its tier is
  * 'shared' or the run has a BYOK key. Otherwise falls back to the env default.
  */

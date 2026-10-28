@@ -21,7 +21,7 @@ export function htmlToReadableText(html: string): string {
   // Second pass: extract text. In the browser a `DOMParser` is available and
   // gives accurate text extraction. On the server (where fetched pages are
   // actually processed) there is no global `DOMParser`, so this always falls
-  // through to the regex tag-strip below — that path is the real workhorse here.
+  // through to the regex tag-strip below - that path is the real workhorse here.
   let text: string;
   if (typeof DOMParser !== 'undefined') {
     const doc = new DOMParser().parseFromString(clean, 'text/html');

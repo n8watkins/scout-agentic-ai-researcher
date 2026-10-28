@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export const maxDuration = 120;
 
 /**
- * POST /api/research — start a run, stream agent steps as Server-Sent Events.
+ * POST /api/research - start a run, stream agent steps as Server-Sent Events.
  * The stream is one-directional (server → UI), which is why SSE is the honest
  * choice here rather than a WebSocket.
  */

@@ -136,7 +136,7 @@ export default function ResearchInput({
         <p className="text-sm text-red-500 mt-1.5">Type a question to research.</p>
       )}
 
-      {/* Suggestions — stay visible until the first search; clicking runs it */}
+      {/* Suggestions - stay visible until the first search; clicking runs it */}
       {showSuggestions && !isRunning && (
         <div className="flex flex-wrap justify-center gap-2 mt-3">
           {picks.map((s) => (

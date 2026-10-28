@@ -26,7 +26,7 @@ function Collapse({ open, children }: { open: boolean; children: React.ReactNode
 }
 
 /**
- * Scout's process. Collapsed by default to a single row that — while running —
+ * Scout's process. Collapsed by default to a single row that - while running -
  * shows a LIVE readout of what Scout is doing right now (planning / searching /
  * reading / thinking), updating as it goes. Expand for the full step timeline.
  */

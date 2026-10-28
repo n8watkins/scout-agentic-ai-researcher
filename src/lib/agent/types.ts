@@ -36,7 +36,7 @@ export interface Citation {
   url: string;
   /** Short snippet (from search) or summary (from fetch). */
   snippet: string;
-  /** Full extracted text — kept server-side / in SourcesPanel only. */
+  /** Full extracted text - kept server-side / in SourcesPanel only. */
   fullText?: string;
 }
 
@@ -56,7 +56,7 @@ export interface AgentStep {
   citations?: Citation[];
   /** True when the run hit the step budget before finishing. */
   stoppedEarly?: boolean;
-  /** Developer-telemetry payload — present only on `type: 'telemetry'` steps. */
+  /** Developer-telemetry payload - present only on `type: 'telemetry'` steps. */
   trace?: TraceEvent;
   createdAt: number;
 }

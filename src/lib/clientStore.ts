@@ -6,10 +6,10 @@ import type { SavedRun, ChatMessage } from './agent/types';
 export type { ChatMessage };
 
 /**
- * Client-side, on-device persistence (IndexedDB) for anonymous visitors — the
+ * Client-side, on-device persistence (IndexedDB) for anonymous visitors - the
  * default. Runs and their follow-up chats live in the browser: private (nothing
  * leaves the device), durable across reloads AND server redeploys, no login.
- * Signed-in users sync to the server (Turso) instead — see the auth tier.
+ * Signed-in users sync to the server (Turso) instead - see the auth tier.
  *
  * Storage shape: one entry per run under `run:<id>`, one chat thread per run
  * under `chat:<id>`. Keeping runs as separate keys avoids loading every report
@@ -65,7 +65,7 @@ export async function saveLocalRun(run: SavedRun): Promise<void> {
       await del(CHAT_PREFIX + stale.id);
     }
   } catch {
-    /* storage unavailable (private mode / quota) — best effort */
+    /* storage unavailable (private mode / quota) - best effort */
   }
 }
 

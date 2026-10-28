@@ -7,7 +7,7 @@ import type { Citation } from '@/lib/agent/types';
 /**
  * Numbered source list. Sources animate in one-at-a-time as the agent
  * discovers them (the count ticks up live), and each one's description is
- * collapsed behind a chevron — an accordion, not a wall of snippets.
+ * collapsed behind a chevron - an accordion, not a wall of snippets.
  */
 export default function SourcesPanel({
   citations,
@@ -57,7 +57,7 @@ function SourceItem({ citation: c }: { citation: Citation }) {
 
   // Clicking a [n] citation opens this source's accordion AND scrolls it into
   // view in its (independently-scrolling) column, with a brief highlight. Using
-  // a ref — not getElementById — so the visible copy scrolls (the hidden mobile
+  // a ref - not getElementById - so the visible copy scrolls (the hidden mobile
   // copy is a display:none no-op).
   useEffect(() => {
     const handler = (e: Event) => {

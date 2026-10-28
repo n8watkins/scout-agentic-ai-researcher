@@ -11,7 +11,7 @@ import {
 } from '@heroicons/react/24/outline';
 import type { AgentStep } from '@/lib/agent/types';
 
-/** Smoothly-animated collapsible region (grid-rows trick — no height measuring). */
+/** Smoothly-animated collapsible region (grid-rows trick - no height measuring). */
 function Collapse({ open, children }: { open: boolean; children: React.ReactNode }) {
   return (
     <div

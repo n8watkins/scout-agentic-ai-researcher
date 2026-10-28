@@ -11,7 +11,7 @@ export interface SearchResult {
  * Web search adapter. Tavily is primary (clean text, generous free tier);
  * Google Programmable Search is the fallback. If neither key is configured,
  * we return a small DuckDuckGo Instant Answer result set so the demo still
- * does *something* without any paid key — clearly a best-effort fallback.
+ * does *something* without any paid key - clearly a best-effort fallback.
  */
 export async function webSearch(query: string, signal?: AbortSignal): Promise<SearchResult[]> {
   const tavilyKey = process.env.TAVILY_API_KEY?.trim();

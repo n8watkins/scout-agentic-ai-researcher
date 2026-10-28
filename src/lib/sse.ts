@@ -2,7 +2,7 @@ import type { AgentStep } from './agent/types';
 
 /**
  * SSE encoding helpers. The research stream is one-directional (server → UI),
- * which is exactly what Server-Sent Events are for — no WebSocket needed.
+ * which is exactly what Server-Sent Events are for - no WebSocket needed.
  */
 
 const encoder = new TextEncoder();

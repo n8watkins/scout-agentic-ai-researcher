@@ -53,7 +53,7 @@ export function useChat({ report, citations, apiKey, model, runId }: UseChatArgs
     };
   }, [runId, store]);
 
-  // Persist after each turn — only once loaded for this run/backend.
+  // Persist after each turn - only once loaded for this run/backend.
   useEffect(() => {
     const key = `${store.authed ? 'srv' : 'loc'}:${runId ?? ''}`;
     if (runId && !streaming && messages.length > 0 && loadedFor.current === key) {

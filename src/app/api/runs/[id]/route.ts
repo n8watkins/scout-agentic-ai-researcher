@@ -10,7 +10,7 @@ async function ownerId(): Promise<string | null> {
   return session?.user?.id ?? null;
 }
 
-/** GET /api/runs/[id] — fetch one saved run owned by the signed-in user. */
+/** GET /api/runs/[id] - fetch one saved run owned by the signed-in user. */
 export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   const owner = await ownerId();
   if (!owner) return Response.json({ error: 'Run not found' }, { status: 404 });
@@ -20,7 +20,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
   return Response.json({ run });
 }
 
-/** DELETE /api/runs/[id] — remove a saved run owned by the signed-in user. */
+/** DELETE /api/runs/[id] - remove a saved run owned by the signed-in user. */
 export async function DELETE(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   const owner = await ownerId();
   if (!owner) return Response.json({ error: 'Unauthorized' }, { status: 401 });

@@ -2,7 +2,7 @@ import type { NextAuthOptions } from 'next-auth';
 import GitHubProvider from 'next-auth/providers/github';
 
 /**
- * Auth.js (NextAuth v4) config. GitHub-only, JWT sessions (no DB adapter — the
+ * Auth.js (NextAuth v4) config. GitHub-only, JWT sessions (no DB adapter - the
  * session is a signed cookie; only the user's *data* needs Turso). Auth is
  * entirely optional: with no GitHub credentials set, no providers are
  * registered, the sign-in UI hides itself, and the app stays local-first.
@@ -11,7 +11,7 @@ import GitHubProvider from 'next-auth/providers/github';
 const githubId = process.env.AUTH_GITHUB_ID;
 const githubSecret = process.env.AUTH_GITHUB_SECRET;
 
-/** True only when GitHub OAuth is configured — gates the sign-in flow + UI. */
+/** True only when GitHub OAuth is configured - gates the sign-in flow + UI. */
 export const authConfigured = Boolean(githubId && githubSecret);
 
 export const authOptions: NextAuthOptions = {

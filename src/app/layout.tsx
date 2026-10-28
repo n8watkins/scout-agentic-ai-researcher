@@ -6,9 +6,9 @@ import Providers from '@/components/Providers';
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 
-const title = 'Scout — Agentic Research Assistant';
+const title = 'Scout - Agentic Research Assistant';
 const description =
-  'Ask a hard question and watch an AI plan, search the web, read sources, and write a cited report — live, step by step.';
+  'Ask a hard question and watch an AI plan, search the web, read sources, and write a cited report - live, step by step.';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://portfolio.n8builds.dev/scout'),

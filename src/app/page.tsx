@@ -89,7 +89,7 @@ export default function Home() {
       />
       <AboutModal isOpen={aboutOpen} onClose={() => setAboutOpen(false)} />
 
-      {/* Sidebar — slide-over on mobile, static on desktop */}
+      {/* Sidebar - slide-over on mobile, static on desktop */}
       <div
         className={`fixed inset-y-0 left-0 z-40 transition-transform md:static md:translate-x-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
@@ -106,7 +106,7 @@ export default function Home() {
         <div className="fixed inset-0 bg-black/50 z-30 md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Main — app shell: header / scrolling transcript (+ right sources) / bottom composer */}
+      {/* Main - app shell: header / scrolling transcript (+ right sources) / bottom composer */}
       <main className="relative flex-1 flex flex-col min-w-0 z-10">
         <Header
           onOpenSidebar={() => setSidebarOpen(true)}
@@ -184,7 +184,7 @@ export default function Home() {
             )}
             </div>
 
-            {/* Composer docked at the bottom of the center column — aligned with the text */}
+            {/* Composer docked at the bottom of the center column - aligned with the text */}
             {hasContent && (
               <div className="flex-none border-t border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/70 backdrop-blur">
                 <div className="max-w-3xl mx-auto w-full">

@@ -23,7 +23,7 @@ export function useTheme() {
     try {
       localStorage.theme = next;
     } catch {
-      /* ignore — localStorage may be unavailable */
+      /* ignore - localStorage may be unavailable */
     }
     setTheme(next);
   };
