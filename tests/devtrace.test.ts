@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { estimateCostUsd, PRICING, FALLBACK_RATE } from '@/lib/devtrace';
+import { SHARED_MODEL } from '@/lib/gemini';
 
 describe('estimateCostUsd', () => {
   it('applies the §6 per-1M rate for a known model', () => {
@@ -14,8 +15,9 @@ describe('estimateCostUsd', () => {
     expect(estimateCostUsd('gemini-2.5-flash-lite', 500_000, 250_000)).toBeCloseTo(0.15, 10);
   });
 
-  it('uses the shared model rate (gemini-3.1-flash-lite)', () => {
-    // $0.25 in / $1.50 out → 0.25 + 1.50 = 1.75 for 1M each.
+  it('uses the shared model rate (gemini-3.5-flash-lite)', () => {
+    // $0.30 in / $2.50 out → 0.30 + 2.50 = 2.80 for 1M each.
+    expect(estimateCostUsd(SHARED_MODEL, 1_000_000, 1_000_000)).toBeCloseTo(2.8, 10);
     expect(estimateCostUsd('gemini-3.1-flash-lite', 1_000_000, 1_000_000)).toBeCloseTo(1.75, 10);
   });
 
